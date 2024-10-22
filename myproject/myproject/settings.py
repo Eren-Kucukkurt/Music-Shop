@@ -52,7 +52,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    
 ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'myproject.urls'
 
@@ -80,10 +82,16 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'users',     # Replace with your database name
+        'USER': 'postgres',      # Replace with your PostgreSQL user
+        'PASSWORD': '12345678', # R12345
+        'HOST': 'localhost',         # If running locally
+        'PORT': '5432',              # Default PostgreSQL port
     }
 }
+
+
 
 
 # Password validation
