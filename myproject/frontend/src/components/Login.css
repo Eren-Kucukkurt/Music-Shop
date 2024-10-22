@@ -15,4 +15,12 @@
   body {
     background-color: #f8f9fa;
   }
+  body {
+    background: url('music_background.jpg') no-repeat center center fixed;
+    background-size: cover;
+  }
+  body, input, button {
+    font-family: "Gill Sans Extrabold", sans-serif;
+  }
+  
   
