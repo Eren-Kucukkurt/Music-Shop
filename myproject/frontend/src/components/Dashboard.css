@@ -1,0 +1,128 @@
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9; /* Light background color */
+}
+
+.dashboard-container {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+}
+
+.sidebar {
+  position: fixed; /* Fix the sidebar */
+  top: 0; /* Align with the top */
+  left: 0; /* Align with the left */
+  width: 200px; /* Sidebar width */
+  height: 100vh; /* Full height of the viewport */
+  background-color: #4370c3; /* Sidebar color */
+  color: white;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto; /* Allow scrolling if the content exceeds viewport height */
+}
+
+.sidebar h3 {
+  margin: 0 0 15px 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 10px 0;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+.sidebar ul li a:hover {
+  text-decoration: underline;
+}
+
+.main-content {
+  flex: 1; /* Take up remaining space */
+  margin-left: 200px; /* Leave space for the sidebar */
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: #4370c3; /* Header color */
+  padding: 15px;
+  color: white;
+  border-radius: 5px;
+  position: relative; /* Needed for dropdown */
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 10px; /* Space between header title and actions */
+}
+
+/* Style the buttons consistently */
+.btn, .cart-btn, .categories-btn {
+  background-color: #bc8f3c; /* Orange button color */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Hover effect for buttons */
+.btn:hover, .cart-btn:hover, .categories-btn:hover {
+  background-color: #bc8f3c; /* Slightly darker orange on hover */
+}
+
+.header-right {
+  margin-left: auto; /* Pushes the buttons to the right */
+  display: flex;
+  align-items: center; /* Align buttons vertically */
+}
+
+.categories-dropdown {
+  position: absolute;
+  top: 97%; /* Dropdown appears directly below the button */
+  left: 16%; /* Align with the left of the button */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  z-index: 10;
+  margin-top: 5px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: max-content; /* Ensures dropdown width fits content */
+}
+
+.categories-dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Style the subcategories (make text black) */
+.categories-dropdown li {
+  padding: 10px;
+  cursor: pointer;
+  color: black; /* Set subcategory text color to black */
+}
+
+/* Hover effect for subcategories */
+.categories-dropdown li:hover {
+  background-color: #f0f0f0; /* Keep the hover effect light gray */
+}
+
+.welcome-message {
+  margin-top: 5px; /* Space above the welcome message */
+  color: #ffffff; /* Color for the welcome message */
+}
