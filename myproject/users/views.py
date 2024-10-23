@@ -4,6 +4,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from rest_framework import status
+from rest_framework.serializers import Serializer, CharField, EmailField
+from rest_framework.permissions import AllowAny
+
 
 class LoginView(APIView):
     def post(self, request):
@@ -18,12 +23,6 @@ class LoginView(APIView):
             })
         else:
             return Response({"error": "Invalid credentials"}, status=400)
-
-from django.contrib.auth.models import User
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.serializers import Serializer, CharField, EmailField
-from rest_framework.permissions import AllowAny
 
 # Serializer for User Registration
 class RegisterSerializer(Serializer):
