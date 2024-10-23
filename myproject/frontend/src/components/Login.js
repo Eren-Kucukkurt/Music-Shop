@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './Login.css';  // Optional: Create your own CSS to customize further
 
 function Login({ onLoginSuccess }) {
@@ -7,19 +8,28 @@ function Login({ onLoginSuccess }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Hardcoded login details
-    const hardcodedUsername = 'admin';
-    const hardcodedPassword = '1234';
 
-    if (username === hardcodedUsername && password === hardcodedPassword) {
-      // Simulate setting a token as in a real API call
-      localStorage.setItem('access_token', 'hardcoded_access_token');
+    // Hardcoded admin credentials
+    if (username === 'admin' && password === '12345678') {
+      alert('Logged in as admin');
+      localStorage.setItem('access_token', 'hardcoded_admin_token');
       onLoginSuccess();
-    } else {
-      console.log('Login error: Invalid credentials');
-      alert('Invalid credentials');
+      return;
     }
+
+    // If not hardcoded user, proceed with API login
+    axios.post('http://localhost:8000/api/login/', {
+      username: username,
+      password: password,
+    })
+    .then(response => {
+      localStorage.setItem('access_token', response.data.access);
+      onLoginSuccess();
+    })
+    .catch(error => {
+      console.log('Login error', error);
+      alert('Invalid credentials');
+    });
   };
 
   return (
