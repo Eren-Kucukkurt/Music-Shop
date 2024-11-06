@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
+    "store",
     'rest_framework',
     'corsheaders',     # to allow communication with React
     'rest_framework.authtoken',
