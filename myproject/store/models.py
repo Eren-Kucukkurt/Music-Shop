@@ -2,15 +2,16 @@ from django.db import models
 
 class Product(models.Model):
     # ID is created automatically as the primary key by Django
-    name = models.CharField(max_length=255)
-    model = models.CharField(max_length=100)  # E.g., "Model X1000"
-    serial_number = models.CharField(max_length=100, unique=True)  # Unique serial number for each product
-    description = models.TextField()
-    quantity_in_stock = models.PositiveIntegerField()  # Only allows positive integers
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    warranty_status = models.CharField(max_length=100)  # E.g., "1 year", "2 years", etc.
-    distributor_info = models.CharField(max_length=255)  # Information about the distributor
+    name = models.CharField(max_length=255, default="Unnamed Product")
+    model = models.CharField(max_length=100, default="Unknown Model")  # E.g., "Model X1000"
+    serial_number = models.CharField(max_length=100, unique=True, null=True, blank=True)  # Unique serial number
+    description = models.TextField(null=True, blank=True)
+    quantity_in_stock = models.PositiveIntegerField(default=0)  # Defaults to 0 if stock not specified
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    warranty_status = models.CharField(max_length=100, default="No Warranty")  # E.g., "1 year", "2 years"
+    distributor_info = models.CharField(max_length=255, null=True, blank=True, default="Unknown Distributor")
 
     def __str__(self):
         return f"{self.name} ({self.model})"
+
 
