@@ -3,6 +3,7 @@ from django.db import models
 class Product(models.Model):
     # ID is created automatically as the primary key by Django
     name = models.CharField(max_length=255, default="Unnamed Product")
+    category = models.CharField(max_length=100, default="Uncategorized")  # E.g., "Electric Guitar", "Piano"
     model = models.CharField(max_length=100, default="Unknown Model")  # E.g., "Model X1000"
     serial_number = models.CharField(max_length=100, unique=True, null=True, blank=True)  # Unique serial number
     description = models.TextField(null=True, blank=True)
