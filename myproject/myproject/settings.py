@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cs308-music-shop',       # Your database name
+        'NAME': 'products',       # Your database name
         'USER': 'mustafa',                 # The PostgreSQL user
         'PASSWORD': '12345678',  # The password for user 'mustafa'
         'HOST': '34.135.205.86',           # Public IP of your Cloud SQL instance

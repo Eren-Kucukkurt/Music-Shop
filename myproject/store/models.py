@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Product(models.Model):
     # ID is created automatically as the primary key by Django
@@ -17,3 +19,26 @@ class Product(models.Model):
         return f"{self.name} ({self.model})"
 
 
+
+#08/11/2024
+class Review(models.Model):
+    product = models.ForeignKey('Product', related_name='reviews', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )  # Rating from 1 to 5
+    comment = models.TextField()  # The text content of the review
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_approved = models.BooleanField(default=False)  # New field for admin approval
+
+    def __str__(self):
+        return f"Review for {self.product.name} by {self.user.username}"
+
+class Purchase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    purchase_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} purchased {self.product.name}"
