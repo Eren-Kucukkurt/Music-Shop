@@ -10,6 +10,59 @@ body {
   height: 100vh; /* Full viewport height */
 }
 
+.cart-container {
+  width: fit-content; /* Cart icon width */
+  height: fit-content; /* Cart icon height */
+  display: flex;
+  background-color: transparent; /* Transparent background */
+
+  position: absolute; /* Needed for badge */
+  top: 10px; /* Align with the top */
+  right: 10px; /* Align with the right */
+  
+  flex-direction: column; /* Stack the badge on top of the cart icon */
+  gap: 90px; /* Space between the cart icon and badge */
+
+}
+
+.cart-link {
+  display: flex;
+  width: fit-content; /* Cart image width */
+  height: fit-content; /* Cart image height */
+  background-color: transparent; /* Transparent background */
+}
+
+.cart-icon{
+  width: 30px; /* Cart icon width */
+  height: 30px; /* Cart icon height */
+  color: white; /* Cart icon color */
+  
+
+}
+
+.cart-icon:hover {
+  color: #abaaa7; /* Slightly darker gray on hover */
+}
+
+.login-button-container{
+
+  display: flex;
+  background-color: black;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+
+}
+
+.login-button{
+
+  color: white;
+
+}
+
+
+
 .sidebar {
   position: fixed; /* Fix the sidebar */
   top: 0; /* Align with the top */

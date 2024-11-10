@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Login.css';  // Optional: Create your own CSS to customize further
+import { useNavigate } from 'react-router-dom';
 
 function Login({ onLoginSuccess }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Hardcoded admin credentials
     if (username === 'admin' && password === '12345678') {
+
+
       alert('Logged in as admin');
       localStorage.setItem('access_token', 'hardcoded_admin_token');
       onLoginSuccess();
+      navigate('/');
+      console.log('token', localStorage.getItem('access_token'));
       return;
     }
-
+    
     // If not hardcoded user, proceed with API login
     axios.post('http://localhost:8000/api/login/', {
       username: username,
