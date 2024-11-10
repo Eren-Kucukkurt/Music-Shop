@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ProductListing from './ProductListing';
 import './Dashboard.css';
+import {Link} from 'react-router-dom'; 
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
+
 
 function Dashboard() {
   const [showCategories, setShowCategories] = useState(false);
   const dropdownRef = useRef(null);
-
+  const token = localStorage.getItem('access_token');
   const handleToggleCategories = () => {
     setShowCategories(!showCategories);
   };
-
+  console.log('token', localStorage.getItem('access_token'));
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setShowCategories(false);
@@ -36,6 +40,37 @@ function Dashboard() {
       </aside>
       <div className="main-content">
         <header className="header">
+
+        <div className="cart-container">
+      
+          <Link  to="/shoppingcart" className ="cart-link">
+                
+            <FontAwesomeIcon icon={faCartShopping} className="cart-icon"/>
+            <span className="cart-count">0</span>
+
+          </Link>
+          {
+            !token ? (
+              <Link to= "/login" className="login-button-container">
+          
+              <span className= "login-button">
+                login
+              </span>
+              
+
+              
+              </Link>
+                    ) : (
+                      <>  </>
+                    )
+          }
+          
+          
+    
+        </div>
+
+        
+
           <h2>Dashboard</h2>
           <p className="welcome-message">Welcome!</p>
           <div className="header-actions">
@@ -53,10 +88,7 @@ function Dashboard() {
                 </ul>
               </div>
             )}
-            <div className="header-right">
-              <button className="categories-btn">Sign In</button> {/* Use btn class here */}
-              <button className="categories-btn">Cart</button>
-            </div>
+      
           </div>
         </header>
         <ProductListing />
