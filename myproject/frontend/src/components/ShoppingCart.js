@@ -1,34 +1,42 @@
-'use client'
-
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Minus, Plus, Trash2 } from 'lucide-react'
-
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 
 export default function ShoppingCartComponent() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([
     { id: 1, name: 'Product 1', price: 19.99, quantity: 1 },
     { id: 2, name: 'Product 2', price: 29.99, quantity: 2 },
     { id: 3, name: 'Product 3', price: 39.99, quantity: 1 },
-  ])
+  ]);
 
   const updateQuantity = (id, change) => {
     setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, quantity: Math.max(0, item.quantity + change) } : item
-      ).filter(item => item.quantity > 0)
-    )
-  }
+      prevItems
+        .map(item =>
+          item.id === id ? { ...item, quantity: Math.max(0, item.quantity + change) } : item
+        )
+        .filter(item => item.quantity > 0)
+    );
+  };
 
   const removeItem = (id) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id))
-  }
+    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+  };
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <div className="container mx-auto p-4 bg-white">
+      {/* Return/Back Button */}
+      <button
+        onClick={() => navigate('/')}
+        className="text-blue-500 mb-4"
+        aria-label="Return to home"
+      >
+        ← Back to Home
+      </button>
+
       <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
       {cartItems.length === 0 ? (
         <p>Your cart is empty.</p>
@@ -79,5 +87,5 @@ export default function ShoppingCartComponent() {
         </div>
       )}
     </div>
-  )
+  );
 }

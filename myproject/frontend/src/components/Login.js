@@ -10,19 +10,6 @@ function Login({ onLoginSuccess }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Hardcoded admin credentials
-    if (username === 'admin' && password === '12345678') {
-
-
-      alert('Logged in as admin');
-      localStorage.setItem('access_token', 'hardcoded_admin_token');
-      onLoginSuccess();
-      navigate('/');
-      console.log('token', localStorage.getItem('access_token'));
-      return;
-    }
-    
-    // If not hardcoded user, proceed with API login
     axios.post('http://localhost:8000/api/login/', {
       username: username,
       password: password,
@@ -30,6 +17,7 @@ function Login({ onLoginSuccess }) {
     .then(response => {
       localStorage.setItem('access_token', response.data.access);
       onLoginSuccess();
+      navigate('/');
     })
     .catch(error => {
       console.log('Login error', error);

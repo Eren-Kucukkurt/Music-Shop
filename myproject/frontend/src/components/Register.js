@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,6 +18,9 @@ function Register() {
     })
     .then(response => {
       setMessage(response.data.message);
+      setTimeout(() => {
+        navigate('/login');
+      }, 2500);
     })
     .catch(error => {
       console.error('There was an error!', error);
