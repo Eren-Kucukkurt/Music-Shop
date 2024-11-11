@@ -2,10 +2,13 @@ from django.shortcuts import render
 
 # Create your views here.
 #08/11/2024
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
 from rest_framework.response import Response
-from .models import Review, Purchase
+from .models import Review, Purchase, Product
 from .serializers import ReviewSerializer
+from .serializers import ProductSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 class IsPurchaser(permissions.BasePermission):
     """
@@ -38,3 +41,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
         # Save the review with the logged-in user and set is_approved=False by default
         serializer.save(user=self.request.user, is_approved=False)
         return Response({"message": "Your review has been submitted for approval."}, status=status.HTTP_201_CREATED)
+
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    search_fields = ['name', 'description', 'model']
+    filterset_fields = {
+        'price': ['gte', 'lte'],  # Allows filtering by price range (greater than or equal, less than or equal)
+        'quantity_in_stock': ['gt'],  # Filter for products that are in stock
+        'warranty_status': ['exact'],  # Filter by exact warranty status
+    }
