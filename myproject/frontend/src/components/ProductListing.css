@@ -38,3 +38,8 @@
   font-size: 1rem;
   color: #333;
 }
+
+.product-item-link {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit color from the parent or custom styles */
+}
