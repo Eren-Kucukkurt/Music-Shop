@@ -1,6 +1,5 @@
-// src/components/Dashboard.js
 import React, { useState, useEffect, useRef } from 'react';
-import ProductListing from './ProductListing'; // Importing ProductListing component
+import ProductListing from './ProductListing';
 import FilterPanel from './FilterPanel';
 import axios from 'axios';
 import './Dashboard.css';
@@ -14,21 +13,23 @@ function Dashboard() {
   const token = localStorage.getItem('access_token');
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
+  const [fullProductList, setFullProductList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showFilterOptions, setShowFilterOptions] = useState(false);
-  const [maxPrice, setMaxPrice] = useState(1000);
+  const [maxPrice, setMaxPrice] = useState(1000); // New state to store max price
   const [filters, setFilters] = useState({ priceSort: '', priceRange: [0, 1000], inStock: false });
 
-  useEffect(() => {
-    fetchAllProducts();
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const handleToggleCategories = () => {
+    setShowCategories(!showCategories);
+  };
 
-  const handleToggleCategories = () => setShowCategories(!showCategories);
-  const handleSearchChange = (e) => setSearchQuery(e.target.value);
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
-  const handleSearch = () => applySearchAndFilters(searchQuery, filters);
+  const handleSearch = () => {
+    applySearchAndFilters(searchQuery, filters);
+  };
 
   const fetchAllProducts = async () => {
     setIsLoading(true);
@@ -36,8 +37,15 @@ function Dashboard() {
       const response = await axios.get('http://localhost:8000/api/products/');
       const productsData = response.data;
       setProducts(productsData);
-      setMaxPrice(Math.max(...productsData.map(product => Number(product.price) || 0)));
-      setFilters(prev => ({ ...prev, priceRange: [0, maxPrice] }));
+      setFullProductList(productsData);
+      
+      // Calculate the max price from the products
+      const calculatedMaxPrice = Math.max(...productsData.map(product => product.price));
+      setMaxPrice(calculatedMaxPrice);
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        priceRange: [0, calculatedMaxPrice]
+      }));
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -45,51 +53,67 @@ function Dashboard() {
     }
   };
 
+  useEffect(() => {
+    fetchAllProducts(); // Fetch all products on mount
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setShowCategories(false);
     }
   };
 
-  const toggleFilterOptions = () => setShowFilterOptions(!showFilterOptions);
+  const toggleFilterOptions = () => {
+    setShowFilterOptions(!showFilterOptions);
+  };
 
   const applyFilters = (newFilters) => {
     setFilters(newFilters);
-    applySearchAndFilters(searchQuery, newFilters);
+    applySearchAndFilters(searchQuery, newFilters); // Combine search and filter
     setShowFilterOptions(false);
   };
 
   const applySearchAndFilters = (searchQuery, filters) => {
-    let filteredProducts = [...products];
+    let filteredProducts = [...fullProductList];
 
+    // Apply search filter
     if (searchQuery) {
       filteredProducts = filteredProducts.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
+    // Apply price range filter
     filteredProducts = filteredProducts.filter(
-      product => Number(product.price) >= filters.priceRange[0] && Number(product.price) <= filters.priceRange[1]
+      product => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
     );
 
+    // Apply in-stock filter
     if (filters.inStock) {
       filteredProducts = filteredProducts.filter(product => product.quantity_in_stock > 0);
     }
 
+    // Apply sorting
     if (filters.priceSort === 'lowToHigh') {
-      filteredProducts.sort((a, b) => Number(a.price) - Number(b.price));
+      filteredProducts.sort((a, b) => a.price - b.price);
     } else if (filters.priceSort === 'highToLow') {
-      filteredProducts.sort((a, b) => Number(b.price) - Number(a.price));
+      filteredProducts.sort((a, b) => b.price - a.price);
     }
 
     setProducts(filteredProducts);
   };
 
+  // Reset filters and search
   const resetFilters = () => {
     const defaultFilters = { priceSort: '', priceRange: [0, maxPrice], inStock: false };
     setFilters(defaultFilters);
-    applySearchAndFilters(searchQuery, defaultFilters);
-    setShowFilterOptions(false);
+    applySearchAndFilters(searchQuery, defaultFilters); // Reapply with reset filters and current search query
+    setShowFilterOptions(false); // Hide the filter panel if open
   };
 
   return (
@@ -97,13 +121,12 @@ function Dashboard() {
       <aside className="sidebar">
         <h3>Navigation</h3>
         <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/profile">Profile</Link></li>
-          <li><Link to="/orders">Orders</Link></li>
-          <li><Link to="/settings">Settings</Link></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/profile">Profile</a></li>
+          <li><a href="/orders">Orders</a></li>
+          <li><a href="/settings">Settings</a></li>
         </ul>
       </aside>
-      
       <div className="main-content">
         <header className="header">
           <div className="cart-container">
@@ -111,10 +134,12 @@ function Dashboard() {
               <FontAwesomeIcon icon={faCartShopping} className="cart-icon" />
               <span className="cart-count">0</span>
             </Link>
-            {!token && (
+            {!token ? (
               <Link to="/login" className="login-button-container">
-                <span className="login-button">Login</span>
+                <span className="login-button">login</span>
               </Link>
+            ) : (
+              <></>
             )}
           </div>
           <h2>Dashboard</h2>
@@ -129,7 +154,9 @@ function Dashboard() {
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
             <button onClick={handleSearch} className="search-button">Search</button>
-            <button onClick={handleToggleCategories} className="categories-btn">Categories</button>
+            <button onClick={handleToggleCategories} className="categories-btn">
+              Categories
+            </button>
             {showCategories && (
               <div className="categories-dropdown" ref={dropdownRef}>
                 <ul>
@@ -143,16 +170,14 @@ function Dashboard() {
             <button onClick={toggleFilterOptions} className="filter-button">Filter</button>
             {showFilterOptions && (
               <FilterPanel
-                filters={filters}
-                maxPrice={maxPrice}
-                onApplyFilters={applyFilters}
-                resetFilters={resetFilters}
-              />
+              filters={filters}
+              maxPrice={maxPrice}  // Pass the dynamic max price
+              onApplyFilters={applyFilters}
+              resetFilters={resetFilters} // Pass the resetFilters function to FilterPanel
+            />
             )}
           </div>
         </header>
-        
-        {/* Use ProductListing component for product display */}
         <ProductListing products={products} isLoading={isLoading} />
       </div>
     </div>
