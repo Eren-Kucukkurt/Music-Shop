@@ -42,3 +42,29 @@ class Purchase(models.Model):
 
     def __str__(self):
         return f"{self.user.username} purchased {self.product.name}"
+
+class Cart(models.Model):
+    """
+    Represents a shopping cart, which may or may not be linked to a logged-in user.
+    If the user is not logged in, the cart can be session-based.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        if self.user:
+            return f"Cart for {self.user.username}"
+        return "Guest Cart"
+
+class CartItem(models.Model):
+    """
+    Represents an individual item within a shopping cart.
+    Each CartItem links to a Cart and a Product, storing the quantity for that product in the cart.
+    """
+    cart = models.ForeignKey(Cart, related_name="items", on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)  # Assume 'Product' model exists
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} in {self.cart}"
