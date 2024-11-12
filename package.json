@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@fortawesome/free-regular-svg-icons": "^6.6.0",
     "axios": "^1.7.7"
   }
 }

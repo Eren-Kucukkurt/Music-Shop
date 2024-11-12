@@ -52,4 +52,4 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         'quantity_in_stock': ['gt'],  # Filter for products that are in stock
         'warranty_status': ['exact'],  # Filter by exact warranty status
     }
-    ordering_fields = ['price']  # Specify fields that can be used for ordering
+    

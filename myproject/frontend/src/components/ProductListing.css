@@ -43,3 +43,34 @@
   text-decoration: none; /* Remove underline */
   color: inherit; /* Inherit color from the parent or custom styles */
 }
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2em;
+}
+
+.star {
+  color: #ffc107; /* Gold color for filled and half stars */
+}
+
+.star.empty {
+  color: #ccc; /* Gray color for empty stars */
+}
+
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rating-value {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.no-rating-message {
+  font-size: 0.9em;
+  color: #999;
+  font-style: italic;
+}
