@@ -23,3 +23,21 @@ class ProductSerializer(serializers.ModelSerializer):
             'distributor_info',
             'image',            # Added image field to match the Product model
         ]
+
+
+class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)  # Nested serializer for product details
+
+    class Meta:
+        model = CartItem
+        fields = ['product', 'quantity']
+
+
+
+class CartSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(many=True, read_only=True)  # Nested CartItems for all items in the cart
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'user', 'items']
+        read_only_fields = ['user', 'items']
