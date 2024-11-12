@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ProductListing from './ProductListing';
+import FilterPanel from './FilterPanel';
 import axios from 'axios';
 import './Dashboard.css';
 import { Link } from 'react-router-dom'; 
@@ -12,7 +13,11 @@ function Dashboard() {
   const token = localStorage.getItem('access_token');
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
+  const [fullProductList, setFullProductList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showFilterOptions, setShowFilterOptions] = useState(false);
+  const [maxPrice, setMaxPrice] = useState(1000); // New state to store max price
+  const [filters, setFilters] = useState({ priceSort: '', priceRange: [0, 1000], inStock: false });
 
   const handleToggleCategories = () => {
     setShowCategories(!showCategories);
@@ -23,30 +28,24 @@ function Dashboard() {
   };
 
   const handleSearch = () => {
-    if (searchQuery.trim()) {
-      fetchProducts(searchQuery);
-    } else {
-      fetchAllProducts();  // Reset to all products if search is cleared
-    }
-  };
-
-  const fetchProducts = async (query) => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(`http://localhost:8000/api/products/?search=${query}`);
-      setProducts(response.data);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    applySearchAndFilters(searchQuery, filters);
   };
 
   const fetchAllProducts = async () => {
     setIsLoading(true);
     try {
       const response = await axios.get('http://localhost:8000/api/products/');
-      setProducts(response.data);
+      const productsData = response.data;
+      setProducts(productsData);
+      setFullProductList(productsData);
+      
+      // Calculate the max price from the products
+      const calculatedMaxPrice = Math.max(...productsData.map(product => product.price));
+      setMaxPrice(calculatedMaxPrice);
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        priceRange: [0, calculatedMaxPrice]
+      }));
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -55,7 +54,7 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    fetchAllProducts();  // Fetch all products when the component mounts
+    fetchAllProducts(); // Fetch all products on mount
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -67,6 +66,54 @@ function Dashboard() {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setShowCategories(false);
     }
+  };
+
+  const toggleFilterOptions = () => {
+    setShowFilterOptions(!showFilterOptions);
+  };
+
+  const applyFilters = (newFilters) => {
+    setFilters(newFilters);
+    applySearchAndFilters(searchQuery, newFilters); // Combine search and filter
+    setShowFilterOptions(false);
+  };
+
+  const applySearchAndFilters = (searchQuery, filters) => {
+    let filteredProducts = [...fullProductList];
+
+    // Apply search filter
+    if (searchQuery) {
+      filteredProducts = filteredProducts.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply price range filter
+    filteredProducts = filteredProducts.filter(
+      product => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+    );
+
+    // Apply in-stock filter
+    if (filters.inStock) {
+      filteredProducts = filteredProducts.filter(product => product.quantity_in_stock > 0);
+    }
+
+    // Apply sorting
+    if (filters.priceSort === 'lowToHigh') {
+      filteredProducts.sort((a, b) => a.price - b.price);
+    } else if (filters.priceSort === 'highToLow') {
+      filteredProducts.sort((a, b) => b.price - a.price);
+    }
+
+    setProducts(filteredProducts);
+  };
+
+  // Reset filters and search
+  const resetFilters = () => {
+    const defaultFilters = { priceSort: '', priceRange: [0, maxPrice], inStock: false };
+    setFilters(defaultFilters);
+    applySearchAndFilters(searchQuery, defaultFilters); // Reapply with reset filters and current search query
+    setShowFilterOptions(false); // Hide the filter panel if open
   };
 
   return (
@@ -119,6 +166,15 @@ function Dashboard() {
                   <li>Wind Instruments</li>
                 </ul>
               </div>
+            )}
+            <button onClick={toggleFilterOptions} className="filter-button">Filter</button>
+            {showFilterOptions && (
+              <FilterPanel
+              filters={filters}
+              maxPrice={maxPrice}  // Pass the dynamic max price
+              onApplyFilters={applyFilters}
+              resetFilters={resetFilters} // Pass the resetFilters function to FilterPanel
+            />
             )}
           </div>
         </header>

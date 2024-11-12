@@ -118,8 +118,10 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  margin-top: 10px; /* Space between header title and actions */
+  margin-top: 10px; /* Space above the header actions */
+  gap: 10px; /* Space between each action item */
 }
+
 
 /* Style the buttons consistently */
 .btn, .cart-btn, .categories-btn {
@@ -134,7 +136,7 @@ body {
 }
 
 /* Hover effect for buttons */
-.btn:hover, .cart-btn:hover, .categories-btn:hover {
+.btn:hover, .cart-btn:hover, .categories-btn:hover, .filter-button:hover, .categories-btn:hover {
   background-color: #bc8f3c; /* Slightly darker orange on hover */
 }
 
@@ -178,4 +180,104 @@ body {
 .welcome-message {
   margin-top: 5px; /* Space above the welcome message */
   color: #ffffff; /* Color for the welcome message */
+}
+.filter-options {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  top: 60px;
+  right: 20px;
+  width: 200px;
+  z-index: 10;
+}
+
+.apply-filters-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.apply-filters-button:hover {
+  background-color: #0056b3;
+}
+
+/* Style for the search bar */
+.search-bar {
+  padding: 8px 12px; /* Padding inside the input */
+  font-size: 16px;
+  border: 1px solid #ddd; /* Light border */
+  border-radius: 5px; /* Rounded corners */
+  outline: none; /* Remove default outline */
+  width: 250px; /* Width of the search bar */
+  transition: box-shadow 0.3s;
+  margin-right: 10px; /* Space between search bar and buttons */
+}
+
+/* Focus effect for search bar */
+.search-bar:focus {
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Blue shadow on focus */
+  border-color: #007bff; /* Border color change on focus */
+}
+
+/* Style for buttons consistently */
+.filter-button, .search-button, .apply-filters-button {
+  background-color: #bc8f3c; /* Consistent button color */
+  color: white;
+  border: none;
+  padding: 8px 12px; /* Padding inside the button */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+  font-size: 16px; /* Font size */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transition */
+}
+
+/* Hover effect for buttons */
+.filter-button:hover, .search-button:hover, .apply-filters-button:hover {
+  background-color: #9c7a33; /* Slightly darker shade on hover */
+  transform: translateY(-1px); /* Subtle "lift" effect on hover */
+}
+
+/* Active effect for button click */
+.filter-button:active, .search-button:active, .apply-filters-button:active {
+  background-color: #6a5323; /* Darker shade on click */
+  transform: translateY(1px); /* "Press" effect */
+}
+.filter-options h4 {
+  margin-top: 15px; /* Add space above each section heading */
+  color: #333; /* Ensure the text is dark and readable */
+  font-weight: bold;
+}
+
+.filter-options label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333; /* Darker color for visibility */
+  margin-top: 8px; /* Space above the label */
+}
+
+.filter-options input[type="checkbox"] {
+  margin-right: 8px; /* Space between checkbox and label text */
+}
+.reset-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%; /* Full width button */
+}
+
+.reset-button:hover {
+  background-color: #d32f2f;
 }
