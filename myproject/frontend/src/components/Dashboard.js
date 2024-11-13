@@ -3,21 +3,23 @@ import ProductListing from './ProductListing';
 import FilterPanel from './FilterPanel';
 import axios from 'axios';
 import './Dashboard.css';
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 
 function Dashboard() {
   const [showCategories, setShowCategories] = useState(false);
+  const [showLoginDropdown, setShowLoginDropdown] = useState(false); // New state for dropdown visibility
   const dropdownRef = useRef(null);
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem('access_token'); // Check if the user is logged in
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [fullProductList, setFullProductList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showFilterOptions, setShowFilterOptions] = useState(false);
-  const [maxPrice, setMaxPrice] = useState(1000); // New state to store max price
+  const [maxPrice, setMaxPrice] = useState(1000);
   const [filters, setFilters] = useState({ priceSort: '', priceRange: [0, 1000], inStock: false });
+  const navigate = useNavigate();
 
   const handleToggleCategories = () => {
     setShowCategories(!showCategories);
@@ -39,7 +41,6 @@ function Dashboard() {
       setProducts(productsData);
       setFullProductList(productsData);
       
-      // Calculate the max price from the products
       const calculatedMaxPrice = Math.max(...productsData.map(product => product.price));
       setMaxPrice(calculatedMaxPrice);
       setFilters(prevFilters => ({
@@ -54,7 +55,14 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    fetchAllProducts(); // Fetch all products on mount
+    fetchAllProducts();
+
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowLoginDropdown(false);
+        setShowCategories(false);
+      }
+    };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -62,43 +70,33 @@ function Dashboard() {
     };
   }, []);
 
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setShowCategories(false);
-    }
-  };
-
   const toggleFilterOptions = () => {
     setShowFilterOptions(!showFilterOptions);
   };
 
   const applyFilters = (newFilters) => {
     setFilters(newFilters);
-    applySearchAndFilters(searchQuery, newFilters); // Combine search and filter
+    applySearchAndFilters(searchQuery, newFilters);
     setShowFilterOptions(false);
   };
 
   const applySearchAndFilters = (searchQuery, filters) => {
     let filteredProducts = [...fullProductList];
 
-    // Apply search filter
     if (searchQuery) {
       filteredProducts = filteredProducts.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Apply price range filter
     filteredProducts = filteredProducts.filter(
       product => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
     );
 
-    // Apply in-stock filter
     if (filters.inStock) {
       filteredProducts = filteredProducts.filter(product => product.quantity_in_stock > 0);
     }
 
-    // Apply sorting
     if (filters.priceSort === 'lowToHigh') {
       filteredProducts.sort((a, b) => a.price - b.price);
     } else if (filters.priceSort === 'highToLow') {
@@ -108,12 +106,21 @@ function Dashboard() {
     setProducts(filteredProducts);
   };
 
-  // Reset filters and search
   const resetFilters = () => {
     const defaultFilters = { priceSort: '', priceRange: [0, maxPrice], inStock: false };
     setFilters(defaultFilters);
-    applySearchAndFilters(searchQuery, defaultFilters); // Reapply with reset filters and current search query
-    setShowFilterOptions(false); // Hide the filter panel if open
+    applySearchAndFilters(searchQuery, defaultFilters);
+    setShowFilterOptions(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    navigate('/');
+    window.location.reload();
+  };
+
+  const toggleLoginDropdown = () => {
+    setShowLoginDropdown(!showLoginDropdown);
   };
 
   return (
@@ -134,14 +141,34 @@ function Dashboard() {
               <FontAwesomeIcon icon={faCartShopping} className="cart-icon" />
               <span className="cart-count">0</span>
             </Link>
+
             {!token ? (
-              <Link to="/login" className="login-button-container">
-                <span className="login-button">login</span>
-              </Link>
+              <div className="login-register-container" ref={dropdownRef}>
+                <FontAwesomeIcon
+                  icon={faUser}
+                  onClick={toggleLoginDropdown}
+                  className="user-icon"
+                />
+                <span className="login-register-text" onClick={toggleLoginDropdown}>
+                  Login or Register
+                </span>
+                {showLoginDropdown && (
+                  <div className="login-dropdown">
+                    <Link to="/login" className="dropdown-link">Login</Link>
+                    <Link to="/register" className="dropdown-link">Register</Link>
+                  </div>
+                )}
+              </div>
             ) : (
-              <></>
+              <div className="logout-container">
+                <FontAwesomeIcon icon={faUser} className="user-icon" />
+                <button onClick={handleLogout} className="logout-button">
+                  Logout
+                </button>
+              </div>
             )}
           </div>
+
           <h2>Dashboard</h2>
           <p className="welcome-message">Welcome!</p>
           <div className="header-actions">
@@ -170,11 +197,11 @@ function Dashboard() {
             <button onClick={toggleFilterOptions} className="filter-button">Filter</button>
             {showFilterOptions && (
               <FilterPanel
-              filters={filters}
-              maxPrice={maxPrice}  // Pass the dynamic max price
-              onApplyFilters={applyFilters}
-              resetFilters={resetFilters} // Pass the resetFilters function to FilterPanel
-            />
+                filters={filters}
+                maxPrice={maxPrice}
+                onApplyFilters={applyFilters}
+                resetFilters={resetFilters}
+              />
             )}
           </div>
         </header>

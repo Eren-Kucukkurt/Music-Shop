@@ -148,8 +148,8 @@ body {
 
 .categories-dropdown {
   position: absolute;
-  top: 97%; /* Dropdown appears directly below the button */
-  left: 16%; /* Align with the left of the button */
+  top: 95%; /* Dropdown appears directly below the button */
+  left: 30%; /* Align with the left of the button */
   background-color: #fff;
   border: 1px solid #ddd;
   z-index: 10;
@@ -280,4 +280,115 @@ body {
 
 .reset-button:hover {
   background-color: #d32f2f;
+}
+
+/* Login Button */
+.login-button {
+  padding: 10px;
+  background-color: #bc8f3c;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #bc8f3c;
+}
+
+/* Logout Button */
+.logout-button {
+  background-color: white;
+  color: #4370c3;
+  border: 1px solid #4370c3;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #4370c3;
+  color: white;
+  border: 1px solid #4370c3;
+}
+
+.logout-button:active {
+  background-color: #365899;
+  border-color: #365899;
+}
+
+/* Logout Container */
+.logout-container {
+  display: flex;
+  align-items: center; /* Align the icon and button vertically */
+  gap: 8px; /* Space between the icon and the button */
+  position: relative; /* Optional, depending on layout needs */
+}
+
+/* Login/Register Container */
+.login-register-container {
+  display: flex;
+  align-items: center; /* Vertically center icon and text */
+  gap: 8px; /* Space between icon and text */
+  position: relative; /* Needed for dropdown positioning */
+  margin-top: 9px; /* Adjust vertical positioning */
+  left: -10px; /* Adjust horizontal positioning */
+  top: -10px;
+  cursor: pointer;
+}
+/* User Icon */
+.user-icon {
+  font-size: 24px; /* Icon size */
+  color: white;
+  cursor: pointer;
+  position: relative;
+  margin-right: 0px; /* Adjust spacing */
+}
+
+/* Login/Register Text */
+.login-register-text {
+  display: inline-block;
+  background-color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid #4370c3;
+  font-weight: bold;
+  font-size: 14px;
+  color: #4370c3;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+/* Login Dropdown */
+.login-dropdown {
+  position: absolute;
+  top: 35px; /* Adjust based on layout */
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  padding: 10px;
+  width: 150px;
+}
+
+/* Dropdown Link */
+.dropdown-link {
+  display: block;
+  padding: 8px 12px;
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.dropdown-link:hover {
+  background-color: #4370c3;
+  color: white;
+  border: 1px solid #4370c3;
 }
