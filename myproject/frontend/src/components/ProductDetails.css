@@ -132,3 +132,11 @@
   color: #777;
   margin-top: 15px;
 }
+
+/* Optional: Disable buttons for out-of-stock items */
+.add-to-cart-button:disabled,
+.quantity-button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}

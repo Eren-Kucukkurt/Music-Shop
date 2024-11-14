@@ -57,13 +57,19 @@ const ProductDetails = () => {
               {product.quantity_in_stock > 0 ? (
                 `In Stock: ${product.quantity_in_stock} available`
               ) : (
-                <span className="out-of-stock">Out of Stock</span>
+                <span className="out-of-stock">Sold out.</span>
               )}
             </p>
-
+  
             <div className="product-actions">
               <div className="quantity-selector">
-                <button onClick={decreaseQuantity} className="quantity-button">-</button>
+                <button
+                  onClick={decreaseQuantity}
+                  className="quantity-button"
+                  disabled={product.quantity_in_stock <= 0}
+                >
+                  -
+                </button>
                 <input
                   type="number"
                   min="1"
@@ -71,9 +77,20 @@ const ProductDetails = () => {
                   readOnly
                   className="quantity-input"
                 />
-                <button onClick={increaseQuantity} className="quantity-button">+</button>
+                <button
+                  onClick={increaseQuantity}
+                  className="quantity-button"
+                  disabled={product.quantity_in_stock <= 0}
+                >
+                  +
+                </button>
               </div>
-              <button className="add-to-cart-button">Add to Cart</button>
+              <button
+                className="add-to-cart-button"
+                disabled={product.quantity_in_stock <= 0}
+              >
+                {product.quantity_in_stock > 0 ? "Add to Cart" : "Out of Stock"}
+              </button>
             </div>
             
             <p className="delivery-info">Delivery: 1-3 business days</p>
@@ -81,7 +98,7 @@ const ProductDetails = () => {
         </div>
       )}
     </div>
-  );
+  );  
 };
 
 export default ProductDetails;

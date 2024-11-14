@@ -74,3 +74,38 @@
   color: #999;
   font-style: italic;
 }
+
+/* Container for product images */
+.product-image-container {
+  position: relative; /* Required for positioning the overlay */
+  width: 100%;
+  overflow: hidden; /* Ensures the overlay is confined to the image */
+  border-radius: 8px; /* Match the product card's border radius */
+}
+
+/* Product image */
+.product-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Style for the "Out of Stock" overlay */
+.out-of-stock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Text shadow for emphasis */
+  z-index: 1; /* Ensure the overlay appears above the image */
+  border-radius: 8px; /* Match the image's border radius */
+}
