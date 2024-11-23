@@ -36,20 +36,31 @@ export default function ProductListing({ products, isLoading }) {
       {products.length === 0 ? (
         <p>No products found.</p>
       ) : (
-        products.map(product => (
+        products.map((product) => (
           <Link to={`/product/${product.id}`} key={product.id} className="product-item-link">
             <div className="product-item">
-              {product.image ? (
-                <img src={product.image} alt={product.name} className="product-image" />
-              ) : (
-                <div className="no-image-placeholder">No Image Available</div>
-              )}
+              {/* Product Image with Overlay */}
+              <div className="product-image-container">
+                {product.image ? (
+                  <img src={product.image} alt={product.name} className="product-image" />
+                ) : (
+                  <div className="no-image-placeholder">No Image Available</div>
+                )}
+
+                {/* Out of Stock Banner */}
+                {product.quantity_in_stock <= 0 && (
+                  <div className="out-of-stock-overlay">Out of Stock</div>
+                )}
+              </div>
+
+              {/* Product Name and Price */}
               <h3 className="product-name">{product.name}</h3>
               <p className="product-price">Price: ${Number(product.price).toFixed(2)}</p>
+
+              {/* Display Rating or "No ratings yet" */}
               {product.average_rating > 0 ? (
                 <div className="product-rating">
-                  {renderStars(product.average_rating)}
-                  <span className="rating-value">({product.average_rating.toFixed(1)})</span>
+                  {/* Render stars for rating */}
                 </div>
               ) : (
                 <p className="no-rating-message">No ratings yet</p>
