@@ -60,7 +60,8 @@ export default function ProductListing({ products, isLoading }) {
               {/* Display Rating or "No ratings yet" */}
               {product.average_rating > 0 ? (
                 <div className="product-rating">
-                  {/* Render stars for rating */}
+                  {renderStars(product.average_rating)}
+                  <span className="rating-value">({product.average_rating.toFixed(1)})</span>
                 </div>
               ) : (
                 <p className="no-rating-message">No ratings yet</p>
