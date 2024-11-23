@@ -3,10 +3,13 @@ from .models import *
 from django.db.models import Avg
 
 class ReviewSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')  # Fetch the username from the related user
+
     class Meta:
         model = Review
-        fields = ['id', 'product', 'user', 'rating', 'comment', 'created_at', 'updated_at', 'is_approved']
+        fields = ['id', 'product', 'user', 'username', 'rating', 'comment', 'created_at', 'updated_at', 'is_approved']
         read_only_fields = ['user', 'created_at', 'updated_at', 'is_approved']
+
 
 class ProductSerializer(serializers.ModelSerializer):
     average_rating = serializers.SerializerMethodField()  # New field for average rating

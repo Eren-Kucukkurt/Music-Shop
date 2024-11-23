@@ -1,11 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import ProductViewSet
+from .views import ReviewViewSet
 
 
 # Create a router and register the ProductViewSet with it
 router = DefaultRouter()
 router.register(r'products', ProductViewSet)
+router.register(r'reviews', ReviewViewSet)
 
 # Include the router-generated URLs in urlpatterns
 urlpatterns = [

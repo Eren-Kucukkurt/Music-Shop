@@ -8,6 +8,8 @@ from .models import Review, Purchase, Product
 from .serializers import ReviewSerializer
 from .serializers import ProductSerializer
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
 
 
 class IsPurchaser(permissions.BasePermission):
@@ -29,18 +31,22 @@ class IsPurchaser(permissions.BasePermission):
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsPurchaser]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        """
-        Filter reviews to only show approved ones.
-        """
-        return Review.objects.filter(is_approved=True)
+     product_id = self.request.query_params.get('product_id')
+     if product_id:
+        queryset = Review.objects.filter(is_approved=True, product_id=product_id)
+        print(f"Filtered QuerySet: {queryset}")  # Debugging
+        return queryset
+     return Review.objects.filter(is_approved=True)
+
 
     def perform_create(self, serializer):
         # Save the review with the logged-in user and set is_approved=False by default
         serializer.save(user=self.request.user, is_approved=False)
         return Response({"message": "Your review has been submitted for approval."}, status=status.HTTP_201_CREATED)
+
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
