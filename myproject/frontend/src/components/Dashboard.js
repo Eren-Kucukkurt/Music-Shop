@@ -9,9 +9,9 @@ import { faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 
 function Dashboard() {
   const [showCategories, setShowCategories] = useState(false);
-  const [showLoginDropdown, setShowLoginDropdown] = useState(false); // New state for dropdown visibility
+  const [showLoginDropdown, setShowLoginDropdown] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Track authentication state
   const dropdownRef = useRef(null);
-  const token = localStorage.getItem('access_token'); // Check if the user is logged in
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [fullProductList, setFullProductList] = useState([]);
@@ -21,17 +21,24 @@ function Dashboard() {
   const [filters, setFilters] = useState({ priceSort: '', priceRange: [0, 1000], inStock: false });
   const navigate = useNavigate();
 
-  const handleToggleCategories = () => {
-    setShowCategories(!showCategories);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleSearch = () => {
-    applySearchAndFilters(searchQuery, filters);
-  };
+  useEffect(() => {
+    // Check if the user is authenticated (based on token existence in sessionStorage)
+    const token = sessionStorage.getItem('access_token');
+    setIsAuthenticated(!!token); // Set authentication state
+    fetchAllProducts();
+  
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowLoginDropdown(false);
+        setShowCategories(false);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);  
 
   const fetchAllProducts = async () => {
     setIsLoading(true);
@@ -45,7 +52,7 @@ function Dashboard() {
       setMaxPrice(calculatedMaxPrice);
       setFilters(prevFilters => ({
         ...prevFilters,
-        priceRange: [0, calculatedMaxPrice]
+        priceRange: [0, calculatedMaxPrice],
       }));
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -54,30 +61,28 @@ function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    fetchAllProducts();
-
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowLoginDropdown(false);
-        setShowCategories(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  const toggleFilterOptions = () => {
-    setShowFilterOptions(!showFilterOptions);
+  const handleLogout = () => {
+    sessionStorage.removeItem('access_token'); // Clear access token
+    sessionStorage.removeItem('refresh_token'); // Clear refresh token (if used)
+    setIsAuthenticated(false); // Update state
+    window.location.reload(); // Refresh to update UI (optional)
   };
 
+  const handleToggleCategories = () => {
+    setShowCategories(!showCategories);
+  };
   const applyFilters = (newFilters) => {
     setFilters(newFilters);
     applySearchAndFilters(searchQuery, newFilters);
     setShowFilterOptions(false);
+  };
+    
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearch = () => {
+    applySearchAndFilters(searchQuery, filters);
   };
 
   const applySearchAndFilters = (searchQuery, filters) => {
@@ -113,14 +118,12 @@ function Dashboard() {
     setShowFilterOptions(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    navigate('/');
-    window.location.reload();
-  };
-
   const toggleLoginDropdown = () => {
     setShowLoginDropdown(!showLoginDropdown);
+  };
+
+  const toggleFilterOptions = () => {
+    setShowFilterOptions(!showFilterOptions);
   };
 
   return (
@@ -142,7 +145,7 @@ function Dashboard() {
               <span className="cart-count">0</span>
             </Link>
 
-            {!token ? (
+            {!isAuthenticated ? (
               <div className="login-register-container" ref={dropdownRef}>
                 <FontAwesomeIcon
                   icon={faUser}

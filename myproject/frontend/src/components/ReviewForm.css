@@ -1,0 +1,108 @@
+/* src/components/ReviewForm.css */
+.review-form-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .review-form-section h3 {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .review-form-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .review-form-section label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  .review-form-section select {
+    width: 100px;
+    padding: 8px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #333;
+  }
+  
+  .review-form-section textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    resize: none;
+  }
+  
+  .review-form-section button {
+    background-color: #4370c3;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .review-form-section button:hover {
+    background-color: #3658a3;
+  }
+  
+  .review-form-section .text-danger {
+    color: #e63946;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+  }
+  
+  /* Review Items */
+  .product-reviews h2 {
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .review-item {
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .review-item p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  .review-item strong {
+    color: #333;
+  }
+  
+  .review-date {
+    font-size: 0.85em;
+    color: #888;
+    margin-top: 5px;
+    display: block;
+  }
+  
+  /* Add some spacing between reviews */
+  .product-reviews {
+    margin-top: 20px;
+    padding: 10px;
+  }
+  

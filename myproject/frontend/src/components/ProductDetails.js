@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductDetails.css';
+import ReviewForm from './ReviewForm'; // Import the ReviewForm component
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -8,40 +9,44 @@ const ProductDetails = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [quantity, setQuantity] = useState(1); // State to manage quantity
+  const [quantity, setQuantity] = useState(1);
+
+  const fetchProduct = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/products/${productId}/`);
+      if (!response.ok) {
+        throw new Error("Product not found");
+      }
+      const data = await response.json();
+      setProduct(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/reviews/?product_id=${productId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch reviews");
+      }
+      const data = await response.json();
+      setReviews(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await fetch(`http://localhost:8000/api/products/${productId}/`);
-        if (!response.ok) {
-          throw new Error("Product not found");
-        }
-        const data = await response.json();
-        setProduct(data);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch(`http://localhost:8000/api/reviews/?product_id=${productId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch reviews");
-        }
-        const data = await response.json();
-        setReviews(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
     Promise.all([fetchProduct(), fetchReviews()]).finally(() => setLoading(false));
   }, [productId]);
 
   const increaseQuantity = () => setQuantity(prev => Math.min(prev + 1, product?.quantity_in_stock || prev));
   const decreaseQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
+
+  const handleReviewSubmitted = () => {
+    fetchReviews(); // Refresh the reviews after a new review is submitted
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -115,6 +120,11 @@ const ProductDetails = () => {
               ) : (
                 <p>No reviews yet for this product.</p>
               )}
+            </div>
+
+            {/* Include the ReviewForm component */}
+            <div className="review-form-section">
+              <ReviewForm productId={productId} onReviewSubmitted={handleReviewSubmitted} />
             </div>
           </div>
         </div>
