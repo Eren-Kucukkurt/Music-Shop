@@ -87,29 +87,30 @@ function Dashboard() {
 
   const applySearchAndFilters = (searchQuery, filters) => {
     let filteredProducts = [...fullProductList];
-
+  
     if (searchQuery) {
       filteredProducts = filteredProducts.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase()) // Include description in search
       );
     }
-
+  
     filteredProducts = filteredProducts.filter(
       product => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
     );
-
+  
     if (filters.inStock) {
       filteredProducts = filteredProducts.filter(product => product.quantity_in_stock > 0);
     }
-
+  
     if (filters.priceSort === 'lowToHigh') {
       filteredProducts.sort((a, b) => a.price - b.price);
     } else if (filters.priceSort === 'highToLow') {
       filteredProducts.sort((a, b) => b.price - a.price);
     }
-
+  
     setProducts(filteredProducts);
-  };
+  };  
 
   const resetFilters = () => {
     const defaultFilters = { priceSort: '', priceRange: [0, maxPrice], inStock: false };
