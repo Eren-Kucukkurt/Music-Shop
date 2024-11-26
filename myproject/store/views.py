@@ -12,6 +12,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
 
+from rest_framework.filters import OrderingFilter
+
 
 class IsPurchaser(permissions.BasePermission):
     """
@@ -63,11 +65,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend, OrderingFilter]
     search_fields = ['name', 'description', 'model']
     filterset_fields = {
-        'price': ['gte', 'lte'],  # Allows filtering by price range (greater than or equal, less than or equal)
+        'price': ['gte', 'lte'],  # Filter by price range
         'quantity_in_stock': ['gt'],  # Filter for products that are in stock
         'warranty_status': ['exact'],  # Filter by exact warranty status
     }
+    ordering_fields = ['popularity', 'price']  # Support sorting by price and popularity
     
+

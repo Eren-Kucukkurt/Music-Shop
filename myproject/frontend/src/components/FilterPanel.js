@@ -1,19 +1,25 @@
 import React from 'react';
-import './Dashboard.css';
+import './FilterPanel.css';
 
 export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFilters }) {
   const [localFilters, setLocalFilters] = React.useState(filters);
 
-  const handlePriceSortChange = (e) => {
+  const handleSortChange = (e) => {
     setLocalFilters({ ...localFilters, priceSort: e.target.value });
   };
 
   const handleMinPriceChange = (e) => {
-    setLocalFilters({ ...localFilters, priceRange: [Number(e.target.value), localFilters.priceRange[1]] });
+    setLocalFilters({
+      ...localFilters,
+      priceRange: [e.target.value ? Number(e.target.value) : 0, localFilters.priceRange[1]],
+    });
   };
 
   const handleMaxPriceChange = (e) => {
-    setLocalFilters({ ...localFilters, priceRange: [localFilters.priceRange[0], Number(e.target.value)] });
+    setLocalFilters({
+      ...localFilters,
+      priceRange: [localFilters.priceRange[0], e.target.value ? Number(e.target.value) : maxPrice],
+    });
   };
 
   const handleInStockChange = (e) => {
@@ -25,41 +31,60 @@ export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFi
   };
 
   return (
-    <div className="filter-options">
-      <h4>Sort by Price</h4>
-      <select onChange={handlePriceSortChange} value={localFilters.priceSort}>
-        <option value="">Select</option>
-        <option value="lowToHigh">Low to High</option>
-        <option value="highToLow">High to Low</option>
-      </select>
+    <div className="filter-panel">
+      {/* Sort By Section */}
+      <div className="filter-section">
+        <h4 className="filter-title">Sort By</h4>
+        <select
+          className="filter-dropdown"
+          onChange={handleSortChange}
+          value={localFilters.priceSort}
+        >
+          <option value="">Select</option>
+          <option value="lowToHigh">Price: Low to High</option>
+          <option value="highToLow">Price: High to Low</option>
+          <option value="popularityHigh">Popularity: High to Low</option>
+          <option value="popularityLow">Popularity: Low to High</option>
+        </select>
+      </div>
 
-      <h4>Price Range</h4>
-      <input
-        type="number"
-        placeholder="Min"
-        onChange={handleMinPriceChange}
-        value={localFilters.priceRange[0]}
-      />
-      <input
-        type="number"
-        placeholder="Max"
-        onChange={handleMaxPriceChange}
-        value={localFilters.priceRange[1]}
-        max={maxPrice}
-      />
+      {/* Price Range Section */}
+      <div className="filter-section">
+        <h4 className="filter-title">Price Range</h4>
+        <div className="price-range-container">
+          <input
+            type="number"
+            className="price-input"
+            placeholder="Min"
+            value={localFilters.priceRange[0] || ''}
+            onChange={handleMinPriceChange}
+          />
+          <input
+            type="number"
+            className="price-input"
+            placeholder="Max"
+            value={localFilters.priceRange[1] !== maxPrice ? localFilters.priceRange[1] : ''}
+            onChange={handleMaxPriceChange}
+          />
+        </div>
+      </div>
 
-      <h4>Stock Status</h4>
-      <label>
-        <input
-          type="checkbox"
-          onChange={handleInStockChange}
-          checked={localFilters.inStock}
-        />
-        In Stock Only
-      </label>
-
-      <button onClick={applyFilters} className="apply-filters-button">Apply Filters</button>
-      <button onClick={resetFilters} className="reset-button">Reset</button>
+      {/* Stock Status and Buttons Section */}
+      <div className="filter-section">
+        <h4 className="filter-title">Stock Status</h4>
+        <label className="stock-checkbox">
+          <input
+            type="checkbox"
+            onChange={handleInStockChange}
+            checked={localFilters.inStock}
+          />
+          In Stock Only
+        </label>
+        <div className="filter-actions">
+          <button onClick={applyFilters} className="apply-filters-button">Apply</button>
+          <button onClick={resetFilters} className="reset-button">Reset</button>
+        </div>
+      </div>
     </div>
   );
 }

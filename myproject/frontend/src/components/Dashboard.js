@@ -107,10 +107,15 @@ function Dashboard() {
       filteredProducts.sort((a, b) => a.price - b.price);
     } else if (filters.priceSort === 'highToLow') {
       filteredProducts.sort((a, b) => b.price - a.price);
+    } else if (filters.priceSort === 'popularityHigh') {
+      filteredProducts.sort((a, b) => b.popularity - a.popularity);
+    } else if (filters.priceSort === 'popularityLow') {
+      filteredProducts.sort((a, b) => a.popularity - b.popularity);
     }
   
     setProducts(filteredProducts);
-  };  
+  };
+  
 
   const resetFilters = () => {
     const defaultFilters = { priceSort: '', priceRange: [0, maxPrice], inStock: false };

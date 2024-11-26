@@ -17,13 +17,10 @@ export default function ProductListing({ products, isLoading }) {
 
     return (
       <div className="star-rating">
-        {/* Render full stars */}
         {[...Array(fullStars)].map((_, index) => (
           <FontAwesomeIcon key={`full-${index}`} icon={filledStar} className="star filled" />
         ))}
-        {/* Render half star if needed */}
         {hasHalfStar && <FontAwesomeIcon icon={halfStar} className="star half" />}
-        {/* Render empty stars */}
         {[...Array(emptyStars)].map((_, index) => (
           <FontAwesomeIcon key={`empty-${index}`} icon={emptyStar} className="star empty" />
         ))}
@@ -36,40 +33,40 @@ export default function ProductListing({ products, isLoading }) {
       {products.length === 0 ? (
         <p>No products found.</p>
       ) : (
-        products.map((product) => (
-          <Link to={`/product/${product.id}`} key={product.id} className="product-item-link">
-            <div className="product-item">
-              {/* Product Image with Overlay */}
-              <div className="product-image-container">
-                {product.image ? (
-                  <img src={product.image} alt={product.name} className="product-image" />
-                ) : (
-                  <div className="no-image-placeholder">No Image Available</div>
-                )}
+        products.map((product) => {
+          const rating = parseFloat(product.rating) || 0; // Safeguard against invalid rating
+          return (
+            <Link to={`/product/${product.id}`} key={product.id} className="product-item-link">
+              <div className="product-item">
+                <div className="product-image-container">
+                  {product.image ? (
+                    <img src={product.image} alt={product.name} className="product-image" />
+                  ) : (
+                    <div className="no-image-placeholder">No Image Available</div>
+                  )}
+                  {product.quantity_in_stock <= 0 && (
+                    <div className="out-of-stock-overlay">Out of Stock</div>
+                  )}
+                </div>
 
-                {/* Out of Stock Banner */}
-                {product.quantity_in_stock <= 0 && (
-                  <div className="out-of-stock-overlay">Out of Stock</div>
+                <h3 className="product-name">{product.name}</h3>
+                <p className="product-price">Price: ${Number(product.price).toFixed(2)}</p>
+
+                {/* Display Rating */}
+                {rating > 0 ? (
+                  <div className="product-rating">
+                    {renderStars(rating)}
+                    <span className="rating-value">({rating.toFixed(1)})</span>
+                  </div>
+                ) : (
+                  <p className="no-rating-message">No ratings yet</p>
                 )}
               </div>
-
-              {/* Product Name and Price */}
-              <h3 className="product-name">{product.name}</h3>
-              <p className="product-price">Price: ${Number(product.price).toFixed(2)}</p>
-
-              {/* Display Rating or "No ratings yet" */}
-              {product.average_rating > 0 ? (
-                <div className="product-rating">
-                  {renderStars(product.average_rating)}
-                  <span className="rating-value">({product.average_rating.toFixed(1)})</span>
-                </div>
-              ) : (
-                <p className="no-rating-message">No ratings yet</p>
-              )}
-            </div>
-          </Link>
-        ))
+            </Link>
+          );
+        })
       )}
     </div>
   );
 }
+
