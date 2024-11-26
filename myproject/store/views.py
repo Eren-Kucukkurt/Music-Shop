@@ -10,7 +10,7 @@ from .serializers import ProductSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import PermissionDenied
-
+from rest_framework.pagination import PageNumberPagination
 
 
 class IsPurchaser(permissions.BasePermission):
@@ -28,11 +28,16 @@ class IsPurchaser(permissions.BasePermission):
         if product_id is not None:
             return Purchase.objects.filter(user=request.user, product_id=product_id).exists()
         return False
-
+class ReviewPagination(PageNumberPagination):
+    page_size = 5  # Number of reviews per page
+    page_size_query_param = 'page_size'  # Optional: Allows client to specify page size
+    max_page_size = 50  # Optional: Maximum limit for page size
+    
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = ReviewPagination  # Use custom pagination only for this viewset
 
     def get_queryset(self):
      product_id = self.request.query_params.get('product_id')

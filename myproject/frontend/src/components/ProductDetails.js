@@ -7,7 +7,9 @@ const ProductDetails = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [nextPage, setNextPage] = useState(null); // Track the next page of reviews
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false); // For "Load More" button
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
@@ -24,28 +26,45 @@ const ProductDetails = () => {
     }
   };
 
-  const fetchReviews = async () => {
+  const fetchReviews = async (url, isInitialLoad = false) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/reviews/?product_id=${productId}`);
+      setLoadingMore(true); // Show loading spinner for "Load More"
+      const response = await fetch(url || `http://localhost:8000/api/reviews/?product_id=${productId}`);
       if (!response.ok) {
         throw new Error("Failed to fetch reviews");
       }
       const data = await response.json();
-      setReviews(data);
+
+      // Replace reviews on initial load, append reviews on "Load More"
+      setReviews(prev => (isInitialLoad ? data.results : [...prev, ...data.results]));
+      setNextPage(data.next); // Update the next page URL
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
   useEffect(() => {
-    Promise.all([fetchProduct(), fetchReviews()]).finally(() => setLoading(false));
+    setLoading(true);
+    Promise.all([
+      fetchProduct(),
+      fetchReviews(null, true), // Pass `isInitialLoad = true`
+    ]).finally(() => setLoading(false));
   }, [productId]);
 
   const increaseQuantity = () => setQuantity(prev => Math.min(prev + 1, product?.quantity_in_stock || prev));
   const decreaseQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
 
   const handleReviewSubmitted = () => {
-    fetchReviews(); // Refresh the reviews after a new review is submitted
+    setReviews([]); // Clear existing reviews
+    fetchReviews(null, true); // Reload reviews after a new review is submitted
+  };
+
+  const loadMoreReviews = () => {
+    if (nextPage) {
+      fetchReviews(nextPage);
+    }
   };
 
   if (loading) return <p>Loading...</p>;
@@ -58,13 +77,13 @@ const ProductDetails = () => {
           <div className="product-image-section">
             <img src={product.image} alt={product.name} className="product-main-image" />
           </div>
-          
+
           <div className="product-info-section">
             <h1 className="product-title">{product.name}</h1>
             <p className="product-code">Product Code: {product.serial_number || "N/A"}</p>
             <p className="product-price">Price: ${Number(product.price || 0).toFixed(2)}</p>
             <p className="product-description">{product.description}</p>
-            
+
             <p className="product-stock">
               {product.quantity_in_stock > 0 ? (
                 `In Stock: ${product.quantity_in_stock} available`
@@ -72,7 +91,7 @@ const ProductDetails = () => {
                 <span className="out-of-stock">Sold out.</span>
               )}
             </p>
-  
+
             <div className="product-actions">
               <div className="quantity-selector">
                 <button
@@ -110,13 +129,24 @@ const ProductDetails = () => {
             <div className="product-reviews">
               <h2>Reviews</h2>
               {reviews.length > 0 ? (
-                reviews.map(review => (
-                  <div key={review.id} className="review-item">
-                    <p><strong>{review.username}</strong> rated: {review.rating}★</p>
-                    <p>{review.comment}</p>
-                    <p className="review-date">{new Date(review.created_at).toLocaleDateString()}</p>
-                  </div>
-                ))
+                <>
+                  {reviews.map(review => (
+                    <div key={review.id} className="review-item">
+                      <p><strong>{review.username}</strong> rated: {review.rating}★</p>
+                      <p>{review.comment}</p>
+                      <p className="review-date">{new Date(review.created_at).toLocaleDateString()}</p>
+                    </div>
+                  ))}
+                  {nextPage && (
+                    <button
+                      onClick={loadMoreReviews}
+                      disabled={loadingMore}
+                      className="load-more-button"
+                    >
+                      {loadingMore ? "Loading..." : "Load More Reviews"}
+                    </button>
+                  )}
+                </>
               ) : (
                 <p>No reviews yet for this product.</p>
               )}
@@ -130,7 +160,7 @@ const ProductDetails = () => {
         </div>
       )}
     </div>
-  );  
+  );
 };
 
 export default ProductDetails;
