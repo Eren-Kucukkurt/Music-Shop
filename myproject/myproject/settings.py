@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     "store",
+    'cart',
     'rest_framework',
     'corsheaders',     # to allow communication with React
     'rest_framework.authtoken',
@@ -57,6 +58,17 @@ MIDDLEWARE = [
     
 ]
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React frontend
+]
+
+CORS_ALLOW_CREADENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+    'Guest-Token',  # Custom header
+]
 
 ROOT_URLCONF = 'myproject.urls'
 

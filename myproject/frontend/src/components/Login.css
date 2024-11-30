@@ -16,7 +16,7 @@
     background-color: #f8f9fa;
   }
   body {
-    background: url('music_background.jpg') no-repeat center center fixed;
+    background: url('blank_white.png') no-repeat center center fixed;
     background-size: cover;
   }
   body, input, button {

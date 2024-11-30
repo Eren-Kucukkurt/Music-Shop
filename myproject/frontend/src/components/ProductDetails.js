@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import './ProductDetails.css';
-import ReviewForm from './ReviewForm'; // Import the ReviewForm component
+import ReviewForm from './ReviewForm';
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -10,6 +11,7 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [cartMessage, setCartMessage] = useState(null); // For feedback messages
 
   const fetchProduct = async () => {
     try {
@@ -37,6 +39,66 @@ const ProductDetails = () => {
     }
   };
 
+  /*
+  const handleAddToCart = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/cart/add_item/', {
+        product_id: productId,
+        quantity: quantity,
+      });
+      setCartMessage(response.data.message); // Display success message
+    } catch (err) {
+      console.error('Error adding item to cart:', err);
+      setCartMessage('Failed to add item to cart. Please try again.');
+    }
+  };
+  */
+
+  const handleAddToCart = async () => {
+    try {
+      const accessToken = sessionStorage.getItem('access_token'); // For logged-in users
+      const guestToken = sessionStorage.getItem('guest_token') || generateGuestToken(); // For guest users
+  
+      // Prepare headers
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+  
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      } else {
+        headers['Guest-Token'] = guestToken;
+      }
+
+      console.log('quantity:', quantity);
+
+      // Make the API call
+      const response = await axios.post(
+        'http://localhost:8000/cart/add_item/',
+        {
+          product_id: productId,
+          quantity: quantity,
+        },
+        {
+          headers: headers, // Include the headers in the request
+        }
+      );
+  
+      // Handle the response
+      setCartMessage(response.data.message); // Display success message
+
+    } catch (err) {
+      console.error('Error adding item to cart:', err);
+      setCartMessage('Failed to add item to cart. Please try again.');
+    }
+  };
+  const generateGuestToken = () => {
+    const token = Math.random().toString(36).substring(2);
+    sessionStorage.setItem('guest_token', token);
+    return token;
+  };
+  
+  
   useEffect(() => {
     Promise.all([fetchProduct(), fetchReviews()]).finally(() => setLoading(false));
   }, [productId]);
@@ -98,12 +160,15 @@ const ProductDetails = () => {
                 </button>
               </div>
               <button
+                onClick={handleAddToCart}
                 className="add-to-cart-button"
                 disabled={product.quantity_in_stock <= 0}
               >
                 {product.quantity_in_stock > 0 ? "Add to Cart" : "Out of Stock"}
               </button>
             </div>
+
+            {cartMessage && <p className="cart-message">{cartMessage}</p>} {/* Show feedback message */}
 
             <p className="delivery-info">Delivery: 1-3 business days</p>
 
@@ -122,7 +187,6 @@ const ProductDetails = () => {
               )}
             </div>
 
-            {/* Include the ReviewForm component */}
             <div className="review-form-section">
               <ReviewForm productId={productId} onReviewSubmitted={handleReviewSubmitted} />
             </div>

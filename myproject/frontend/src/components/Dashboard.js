@@ -142,7 +142,6 @@ function Dashboard() {
           <div className="cart-container">
             <Link to="/shoppingcart" className="cart-link">
               <FontAwesomeIcon icon={faCartShopping} className="cart-icon" />
-              <span className="cart-count">0</span>
             </Link>
 
             {!isAuthenticated ? (
