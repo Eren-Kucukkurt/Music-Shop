@@ -11,9 +11,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'created_at', 'updated_at', 'is_approved']
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    average_rating = serializers.SerializerMethodField()  # New field for average rating
+from decimal import Decimal
 
+class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
@@ -28,10 +28,15 @@ class ProductSerializer(serializers.ModelSerializer):
             'warranty_status',
             'distributor_info',
             'image',
-            'average_rating',  # Include the average rating field
+            'rating',  # Ensure rating is included
+            'total_sale',
+            'popularity'
         ]
 
-    def get_average_rating(self, obj):
-        # Calculate the average rating of approved reviews for the product
-        average = Review.objects.filter(product=obj, is_approved=True).aggregate(Avg('rating'))['rating__avg']
-        return round(average, 1) if average else None
+    def to_representation(self, instance):
+        """
+        Override the representation to ensure 'rating' is a float.
+        """
+        data = super().to_representation(instance)
+        data['rating'] = float(data['rating']) if instance.rating is not None else 0
+        return data
