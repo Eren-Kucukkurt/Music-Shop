@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Login.css';  
+import './Login.css';
 import { useNavigate } from 'react-router-dom';
 
 function Login({ onLoginSuccess }) {
@@ -12,6 +12,7 @@ function Login({ onLoginSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Authenticate user and get tokens
       const response = await axios.post('http://localhost:8000/api/token/', {
         username: username,
         password: password,
@@ -24,7 +25,7 @@ function Login({ onLoginSuccess }) {
       // Notify parent component (optional)
       if (onLoginSuccess) onLoginSuccess();
 
-      // Navigate to the dashboard
+      // Redirect to the dashboard
       navigate('/');
     } catch (error) {
       console.error('Login error:', error);

@@ -1,0 +1,50 @@
+.admin-review-manager {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.review-item {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.product-info {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.review-actions {
+  margin-top: 10px;
+}
+
+.approve-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.reject-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.approved {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.pending {
+  color: #f44336;
+  font-weight: bold;
+}

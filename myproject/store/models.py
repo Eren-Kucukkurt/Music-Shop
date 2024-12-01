@@ -36,7 +36,7 @@ class Product(models.Model):
         """
         weight_sales = Decimal("0.7")
         weight_rating = Decimal("0.3")
-        self.popularity = (Decimal(self.total_sale) * weight_sales) + (self.rating * weight_rating)
+        self.popularity = (Decimal(self.total_sale) * weight_sales) + (Decimal(self.rating) * weight_rating)
         super().save(*args, **kwargs)
 
     def __str__(self):
