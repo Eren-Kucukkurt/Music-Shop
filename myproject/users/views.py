@@ -8,9 +8,13 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.serializers import Serializer, CharField, EmailField
 from rest_framework.permissions import AllowAny
+## import the cart class
+from cart.models import Cart, CartItem
 
 
 class LoginView(APIView):
+    
+
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')

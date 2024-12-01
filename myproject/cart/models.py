@@ -7,7 +7,7 @@ import uuid
 class Cart(models.Model):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    session_id = models.CharField(max_length=255, unique=True, null=True,  default= uuid.uuid4, blank=True)  # For guest users
+    session_id = models.CharField(max_length=255, unique=True, null=True, blank=True)  # For guest users
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

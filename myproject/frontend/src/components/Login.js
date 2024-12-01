@@ -9,6 +9,9 @@ function Login({ onLoginSuccess }) {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+
+  const guestToken = sessionStorage.getItem('guest_token');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -16,11 +19,35 @@ function Login({ onLoginSuccess }) {
       const response = await axios.post('http://localhost:8000/api/token/', {
         username: username,
         password: password,
+
       });
 
       // Store the tokens in sessionStorage
       sessionStorage.setItem('access_token', response.data.access);
       sessionStorage.setItem('refresh_token', response.data.refresh);
+      
+      //make an api call for the merge_cart function inside the cart app
+
+      // Step 3: Call the merge_cart API
+      if (guestToken) {
+        try {
+          await axios.post(
+            'http://localhost:8000/cart/merge_cart/',
+            {}, // No payload required
+            {
+              headers: {
+                'Authorization': `Bearer ${response.data.access}`,
+                // Guest-Token is sent only in the merge_cart API call
+                'Guest-Token': guestToken,
+              },
+            }
+          );
+          console.log('Cart merged successfully');
+        
+        } catch (mergeError) {
+          console.error('Error merging cart:', mergeError);
+        }
+      }
 
       // Notify parent component (optional)
       if (onLoginSuccess) onLoginSuccess();

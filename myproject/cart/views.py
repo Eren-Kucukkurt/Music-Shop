@@ -31,6 +31,7 @@ class CartViewSet(viewsets.ViewSet):
 
         # Validate the product
         product = get_object_or_404(Product, id=product_id)
+        
         if product.quantity_in_stock < quantity:
             return Response(
                 {"error": "Not enough stock available"},
@@ -170,3 +171,33 @@ class CartViewSet(viewsets.ViewSet):
 
 
 
+    @action(detail=False, methods=['post'])
+    def merge_cart(self, request):
+        """POST /cart/merge_cart/ - Merge guest cart into user's cart"""
+        if not request.user.is_authenticated:
+            return Response({'error': 'User must be logged in to merge carts'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        guest_token = request.headers.get('Guest-Token')
+        if not guest_token:
+            return Response({'error': 'Guest token is required for cart merging'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Retrieve the guest cart using the session ID
+            guest_cart = Cart.objects.get(session_id=guest_token)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Guest cart not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Retrieve or create the logged-in user's cart
+        user_cart, _ = Cart.objects.get_or_create(user=request.user)
+
+        # Merge items from the guest cart into the user's cart
+        for guest_item in guest_cart.items.all():
+            user_item, created = CartItem.objects.get_or_create(cart=user_cart, product=guest_item.product)
+            if not created:
+                user_item.quantity += guest_item.quantity
+            user_item.save()
+
+        # Delete the guest cart after merging
+        guest_cart.delete()
+
+        return Response({'message': 'Carts merged successfully'}, status=status.HTTP_200_OK)

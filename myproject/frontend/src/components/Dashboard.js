@@ -21,8 +21,18 @@ function Dashboard() {
   const [filters, setFilters] = useState({ priceSort: '', priceRange: [0, 1000], inStock: false });
   const navigate = useNavigate();
 
+  const generateGuestToken = () => {
+    const token = Math.random().toString(36).substring(2);
+    sessionStorage.setItem('guest_token', token);
+    return token;
+  };
+
+
   useEffect(() => {
+    
+    const guestToken = sessionStorage.getItem('guest_token') || generateGuestToken();
     // Check if the user is authenticated (based on token existence in sessionStorage)
+    
     const token = sessionStorage.getItem('access_token');
     setIsAuthenticated(!!token); // Set authentication state
     fetchAllProducts();
