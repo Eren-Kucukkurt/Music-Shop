@@ -1,0 +1,11 @@
+.text-yellow-600 {
+  color: #d97706; /* Tailwind's yellow-600 color */
+}
+
+.text-sm {
+  font-size: 0.875rem; /* Tailwind's text-sm size */
+}
+
+.mt-2 {
+  margin-top: 0.5rem; /* Tailwind's mt-2 size */
+}

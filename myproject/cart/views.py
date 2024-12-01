@@ -23,7 +23,6 @@ class CartViewSet(viewsets.ViewSet):
         
         """POST /cart/add_item/ - Add an item to the cart."""
 
-        
         #print(f"request.data: {request.data}")
         
         product_id = request.data.get('product_id')
@@ -114,7 +113,8 @@ class CartViewSet(viewsets.ViewSet):
         cart_item = get_object_or_404(CartItem, id=pk, cart=cart)
         #print(f"cart_item: {cart_item}")
 
-        cart_item.quantity = quantity
+        # Update the quantity, ensuring it does not exceed the product's stock
+        cart_item.quantity = min(quantity, cart_item.product.quantity_in_stock)
         cart_item.save()
         return Response({'message': 'Item updated successfully'})
 
@@ -196,6 +196,7 @@ class CartViewSet(viewsets.ViewSet):
             return Response({'error': 'User must be logged in to merge carts'}, status=status.HTTP_401_UNAUTHORIZED)
 
         guest_token = request.headers.get('Guest-Token')
+
         if not guest_token:
             return Response({'error': 'Guest token is required for cart merging'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -203,7 +204,7 @@ class CartViewSet(viewsets.ViewSet):
             # Retrieve the guest cart using the session ID
             guest_cart = Cart.objects.get(session_id=guest_token)
             
-            #print(f"Guest cart ID: {guest_cart.id}")
+            print(f"Guest cart ID to be merged: {guest_cart.id}")
 
         except Cart.DoesNotExist:
             return Response({'error': 'Guest cart not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -216,8 +217,15 @@ class CartViewSet(viewsets.ViewSet):
             
             user_item, created = CartItem.objects.get_or_create(cart=user_cart, product=guest_item.product)
             
-            if not created:
+            if created:
+                user_item.quantity = guest_item.quantity
+
+            else:
                 user_item.quantity += guest_item.quantity
+
+            # Ensure the quantity does not exceed the product's stock
+            user_item.quantity = min(user_item.quantity, user_item.product.quantity_in_stock)
+
             user_item.save()
 
         # Delete the guest cart after merging

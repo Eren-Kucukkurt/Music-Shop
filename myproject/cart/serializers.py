@@ -1,5 +1,3 @@
-
-
 from rest_framework import serializers
 from .models import Cart, CartItem
 
@@ -8,16 +6,24 @@ class CartItemSerializer(serializers.ModelSerializer):
     product = serializers.StringRelatedField()  # Serialize product as a string (e.g., name)
     price = serializers.SerializerMethodField()  # Add product price
     total_price = serializers.SerializerMethodField()  # Add total price (quantity * price)
+    is_at_max_stock = serializers.SerializerMethodField()  # Add this
+    stock_quantity = serializers.SerializerMethodField()   # Add this
 
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity', 'price', 'total_price']
+        fields = ['id', 'product', 'quantity', 'price', 'total_price', 'is_at_max_stock', 'stock_quantity']
 
     def get_price(self, obj):
         return obj.product.price  # Ensure product has a price
 
     def get_total_price(self, obj):
         return obj.quantity * obj.product.price  # Quantity * price
+
+    def get_is_at_max_stock(self, obj):
+        return obj.quantity >= obj.product.quantity_in_stock
+
+    def get_stock_quantity(self, obj):
+        return obj.product.quantity_in_stock
 
 
 class CartSerializer(serializers.ModelSerializer):

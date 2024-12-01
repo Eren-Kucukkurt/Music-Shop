@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Minus, Plus, Trash2 } from 'lucide-react';
@@ -60,29 +59,23 @@ export default function ShoppingCartComponent() {
   // Function to update quantity
   const updateQuantity = async (id, change) => {
     try {
-      
       const updatedItem = cartItems.find(item => item.id === id);
       const newQuantity = Math.max(0, updatedItem.quantity + change);
 
       if (newQuantity === 0) {
-        
         // If quantity becomes 0, remove the item
         await axios.post(`http://localhost:8000/cart/${id}/remove_item/`, {}, { headers });
         setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-      
       } else {
-        
         // Otherwise, update the quantity
         await axios.post(`http://localhost:8000/cart/${id}/update_item/`, {
           quantity: newQuantity,
         }, 
         { headers });
-        
-        setCartItems(prevItems =>
-          prevItems.map(item =>
-            item.id === id ? { ...item, quantity: newQuantity, total_price: newQuantity * item.price } : item
-          )
-        );
+
+        // Fetch the updated cart data to ensure the frontend reflects the correct state
+        const response = await axios.get('http://localhost:8000/cart/', { headers });
+        setCartItems(response.data.items);
       }
     } catch (err) {
       console.error('Error updating quantity:', err);
@@ -137,54 +130,67 @@ export default function ShoppingCartComponent() {
         <p>Your cart is empty.</p>
       ) : (
         <div>
-          {cartItems.map(item => (
-            <div key={item.id} className="flex items-center justify-between border-b py-4 bg-white border-[1.2px] rounded-[8px] border-gray">
-              {/* Product Name and Price */}
-              <div>
-                <h2 className="font-semibold">{item.product}</h2>
-                <p className="text-gray-600">
-                  Price: ${item.price ? item.price.toFixed(2) : '0.00'}
-                </p>
-                <p className="text-gray-600">
-                  Total: ${item.total_price ? item.total_price.toFixed(2) : '0.00'}
-                </p>
-              </div>
+          {cartItems
+            .slice() // Create a shallow copy to avoid mutating the original array
+            .sort((a, b) => a.product.localeCompare(b.product)) // Sort by product name
+            .map(item => (
+              <div key={item.id} className="flex items-center justify-between border-b py-4 bg-white border-[1.2px] rounded-[8px] border-gray">
+                {/* Product Name and Price */}
+                <div>
+                  <h2 className="font-semibold">{item.product}</h2>
+                  <p className="text-gray-600">
+                    Price: ${item.price ? item.price.toFixed(2) : '0.00'}
+                  </p>
+                  <p className="text-gray-600">
+                    Total: ${item.total_price ? item.total_price.toFixed(2) : '0.00'}
+                  </p>
+                </div>
 
-              {/* Quantity Controls */}
-              <div className="flex items-center">
+                {/* Quantity Controls */}
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center">
+                    <button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateQuantity(item.id, -1)}
+                      aria-label="Decrease quantity"
+                      className="border p-2 rounded"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="mx-2 w-8 text-center">{item.quantity}</span>
+                    <button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateQuantity(item.id, 1)}
+                      aria-label="Increase quantity"
+                      className="border p-2 rounded"
+                      disabled={item.is_at_max_stock}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                  
+                  {/* Stock Warning Message */}
+                  {item.is_at_max_stock && (
+                    <div className="text-yellow-600 text-sm mt-2">
+                      Max stock reached ({item.stock_quantity} items)
+                    </div>
+                  )}
+                </div>
+
+                {/* Remove Button (Trash Bin) */}
                 <button
                   variant="outline"
                   size="icon"
-                  onClick={() => updateQuantity(item.id, -1)}
-                  aria-label="Decrease quantity"
-                  className="border p-2 rounded"
+                  className="ml-4 text-red-500"
+                  onClick={() => removeItem(item.id)}
+                  aria-label="Remove item"
                 >
-                  <Minus className="h-4 w-4" />
-                </button>
-                <span className="mx-2 w-8 text-center">{item.quantity}</span>
-                <button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => updateQuantity(item.id, 1)}
-                  aria-label="Increase quantity"
-                  className="border p-2 rounded"
-                >
-                  <Plus className="h-4 w-4" />
+                  <Trash2 className="h-6 w-6" />
                 </button>
               </div>
-
-              {/* Remove Button (Trash Bin) */}
-              <button
-                variant="outline"
-                size="icon"
-                className="ml-4 text-red-500"
-                onClick={() => removeItem(item.id)}
-                aria-label="Remove item"
-              >
-                <Trash2 className="h-6 w-6" />
-              </button>
-            </div>
-          ))}
+            ))}
           {/* Total Price and Checkout */}
           <div className="mt-4 flex justify-between items-center">
             <p className="text-xl font-semibold">Total: ${totalPrice.toFixed(2)}</p>
