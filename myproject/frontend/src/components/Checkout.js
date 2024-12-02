@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './Checkout.css'; // Import a dedicated CSS file
 
 const Checkout = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -13,7 +14,6 @@ const Checkout = () => {
     const [formError, setFormError] = useState('');
     const navigate = useNavigate();
 
-    // Check for authentication
     const accessToken = sessionStorage.getItem('access_token');
     const headers = {
         'Content-Type': 'application/json',
@@ -21,7 +21,6 @@ const Checkout = () => {
     };
 
     useEffect(() => {
-        // Redirect to login if not authenticated
         if (!accessToken) {
             navigate('/login');
             return;
@@ -41,7 +40,6 @@ const Checkout = () => {
                 setCartItems(items);
                 setLoading(false);
             } catch (err) {
-                console.error('Error fetching cart:', err);
                 setError('Failed to load cart data.');
                 setLoading(false);
             }
@@ -50,22 +48,19 @@ const Checkout = () => {
         fetchCart();
     }, [accessToken, navigate, headers]);
 
-    // Validate credit card details
     const validateCardDetails = () => {
-        const cardNumberRegex = /^\d{16}$/; // 16-digit number
-        const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/; // MM/YY format
-        const cvvRegex = /^\d{3}$/; // 3-digit CVV
+        const cardNumberRegex = /^\d{16}$/;
+        const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+        const cvvRegex = /^\d{3}$/;
 
         if (!cardNumberRegex.test(cardNumber)) {
             setFormError('Invalid card number. Please enter a 16-digit card number.');
             return false;
         }
-
         if (!expiryDateRegex.test(expiryDate)) {
             setFormError('Invalid expiry date. Use MM/YY format.');
             return false;
         }
-
         if (!cvvRegex.test(cvv)) {
             setFormError('Invalid CVV. Please enter a 3-digit CVV.');
             return false;
@@ -76,24 +71,19 @@ const Checkout = () => {
     };
 
     const handleCheckout = async () => {
-        // Validate credit card details before proceeding
         if (!validateCardDetails()) return;
 
         try {
-            const response = await axios.post('http://localhost:8000/checkout/', {}, { headers });
-            console.log('Checkout successful:', response.data); // Debug log
+            await axios.post('http://localhost:8000/checkout/', {}, { headers });
             setSuccessMessage('Order placed successfully!');
-            setCartItems([]); // Clear local cart data
-
-            console.log('Redirecting to MockBank'); // Debug log
-            navigate('/mockbank'); // Redirect to mock bank page
-        } catch (err) {
-            console.error('Checkout error:', err);
+            setCartItems([]);
+            navigate('/mockbank');
+        } catch {
             setError('Failed to complete checkout. Please try again.');
         }
     };
 
-    if (loading) return <p>Loading your cart...</p>;
+    if (loading) return <p className="loader">Loading your cart...</p>;
     if (error) return <p className="error-message">{error}</p>;
 
     return (
@@ -103,53 +93,57 @@ const Checkout = () => {
             {cartItems.length === 0 ? (
                 <p>Your cart is empty.</p>
             ) : (
-                <div>
-                    <h2>Cart Summary</h2>
-                    {cartItems.map((item) => (
-                        <div key={item.id} className="cart-item">
-                            <p>
-                                <strong>{item.productName}</strong> - {item.quantity} x ${item.price.toFixed(2)}
-                            </p>
-                            <p>Total: ${item.totalPrice.toFixed(2)}</p>
+                <div className="checkout-content">
+                    <div className="cart-summary">
+                        <h2>Cart Summary</h2>
+                        {cartItems.map((item) => (
+                            <div key={item.id} className="cart-item">
+                                <p>
+                                    <strong>{item.productName}</strong> - {item.quantity} x ${item.price.toFixed(2)}
+                                </p>
+                                <p>Total: ${item.totalPrice.toFixed(2)}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="payment-form">
+                        <h2>Payment Details</h2>
+                        {formError && <p className="form-error">{formError}</p>}
+                        <div className="form-group">
+                            <label htmlFor="cardNumber">Card Number</label>
+                            <input
+                                id="cardNumber"
+                                type="text"
+                                maxLength="16"
+                                value={cardNumber}
+                                onChange={(e) => setCardNumber(e.target.value)}
+                                placeholder="Enter 16-digit card number"
+                                required
+                            />
                         </div>
-                    ))}
-
-                    <h2>Payment Details</h2>
-                    {formError && <p className="error-message">{formError}</p>}
-                    <div className="form-group">
-                        <label>Card Number</label>
-                        <input
-                            type="text"
-                            maxLength="16"
-                            value={cardNumber}
-                            onChange={(e) => setCardNumber(e.target.value)}
-                            placeholder="Enter 16-digit card number"
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Expiry Date (MM/YY)</label>
-                        <input
-                            type="text"
-                            maxLength="5"
-                            value={expiryDate}
-                            onChange={(e) => setExpiryDate(e.target.value)}
-                            placeholder="MM/YY"
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>CVV</label>
-                        <input
-                            type="text"
-                            maxLength="3"
-                            value={cvv}
-                            onChange={(e) => setCvv(e.target.value)}
-                            placeholder="3-digit CVV"
-                            required
-                        />
-                    </div>
-                    <div className="checkout-actions">
+                        <div className="form-group">
+                            <label htmlFor="expiryDate">Expiry Date (MM/YY)</label>
+                            <input
+                                id="expiryDate"
+                                type="text"
+                                maxLength="5"
+                                value={expiryDate}
+                                onChange={(e) => setExpiryDate(e.target.value)}
+                                placeholder="MM/YY"
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="cvv">CVV</label>
+                            <input
+                                id="cvv"
+                                type="text"
+                                maxLength="3"
+                                value={cvv}
+                                onChange={(e) => setCvv(e.target.value)}
+                                placeholder="3-digit CVV"
+                                required
+                            />
+                        </div>
                         <button onClick={handleCheckout} className="checkout-button">
                             Place Order
                         </button>

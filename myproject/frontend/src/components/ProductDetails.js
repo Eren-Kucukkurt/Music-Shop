@@ -188,7 +188,17 @@ const ProductDetails = () => {
               </button>
             </div>
 
-            {cartMessage && <p className="cart-message">{cartMessage}</p>} {/* Show feedback message */}
+            {cartMessage && (
+              <div className="cart-message-container">
+                <p className="cart-message">{cartMessage}</p>
+                <button
+                  onClick={() => (window.location.href = "http://localhost:3000/shoppingcart")}
+                  className="go-to-cart-button"
+                >
+                  Go to Cart
+                </button>
+              </div>
+            )}
 
             <p className="delivery-info">Delivery: 1-3 business days</p>
 

@@ -20,22 +20,14 @@ function Register() {
         email: email,
       });
 
-      // Automatically log in the user after successful registration
-      const loginResponse = await axios.post('http://localhost:8000/api/token/', {
-        username: username,
-        password: password,
-      });
-
-      // Store tokens and username in sessionStorage
-      sessionStorage.setItem('access_token', loginResponse.data.access);
-      sessionStorage.setItem('refresh_token', loginResponse.data.refresh);
-      sessionStorage.setItem('username', username);
-
-      // Redirect to the homepage
-      navigate('/');
+      // Redirect to the login page after successful registration
+      setMessage('Registration successful!');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000); // Optional: delay for showing success message
     } catch (error) {
       console.error('There was an error!', error);
-      setMessage('Error creating account or logging in');
+      setMessage('Error creating account. Please try again.');
     }
   };
 

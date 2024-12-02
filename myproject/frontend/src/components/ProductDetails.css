@@ -179,3 +179,20 @@
 .load-more-button:hover:not(:disabled) {
   background-color: #0056b3;
 }
+
+
+.go-to-cart-button {
+  background-color: #bc8f3c;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.go-to-cart-button:hover {
+  background-color: #926c23;
+}
+
