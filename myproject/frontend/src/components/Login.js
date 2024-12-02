@@ -10,8 +10,10 @@ function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+
   // Get the intended path from state (default to '/')
   const from = location.state?.from?.pathname || '/';
+  const guestToken = sessionStorage.getItem('guest_token');
 
   useEffect(() => {
     // Redirect if already logged in
@@ -34,6 +36,27 @@ function Login({ onLoginSuccess }) {
       sessionStorage.setItem('access_token', response.data.access);
       sessionStorage.setItem('refresh_token', response.data.refresh);
       sessionStorage.setItem('username', username); // Store the username
+            //make an api call for the merge_cart function inside the cart app
+      // Step 3: Call the merge_cart API
+      if (guestToken) {
+        try {
+          await axios.post(
+            'http://localhost:8000/cart/merge_cart/',
+            {}, // No payload required
+            {
+              headers: {
+                'Authorization': `Bearer ${response.data.access}`,
+                // Guest-Token is sent only in the merge_cart API call
+                'Guest-Token': guestToken,
+              },
+            }
+          );
+          console.log('Cart merged successfully');
+        
+        } catch (mergeError) {
+          console.error('Error merging cart:', mergeError);
+        }
+      }
 
       // Notify parent component (optional)
       if (onLoginSuccess) onLoginSuccess();

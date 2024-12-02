@@ -5,9 +5,14 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import Cart, CartItem
-from .serializers import CartSerializer, CartItemSerializer
-from store.models import Product
+from .models import *
+from .serializers import *
+from store.models import *
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from decimal import Decimal
+
+
 
 
 from rest_framework.exceptions import NotAuthenticated
@@ -232,3 +237,64 @@ class CartViewSet(viewsets.ViewSet):
         guest_cart.delete()
 
         return Response({'message': 'Carts merged successfully'}, status=status.HTTP_200_OK)
+
+class CheckoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        try:
+            # Fetch the user's cart and cart items
+            cart = Cart.objects.get(user=user)
+            cart_items = CartItem.objects.filter(cart=cart)
+
+            if not cart_items.exists():
+                return Response({"detail": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Calculate total price
+            total_price = Decimal(0.00)
+            for item in cart_items:
+                if item.product.quantity_in_stock < item.quantity:
+                    return Response(
+                        {"detail": f"Not enough stock for {item.product.name}"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                total_price += item.quantity * item.product.price
+
+            # Create the Order
+            order = Order.objects.create(
+                user=user,
+                total_price=total_price,
+                status="PENDING"
+            )
+
+            # Create OrderItems and deduct stock
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price,
+                )
+                # Deduct product stock
+                item.product.quantity_in_stock -= item.quantity
+                item.product.save()
+
+                # Create Purchase entry
+                Purchase.objects.create(
+                    user=user,
+                    product=item.product,
+                    quantity=item.quantity,
+                )
+
+            # Clear the cart
+            cart_items.delete()
+
+            # Serialize and return the order with its items
+            serializer = OrderSerializer(order)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Cart.DoesNotExist:
+            return Response({"detail": "Cart not found"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
