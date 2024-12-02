@@ -130,8 +130,8 @@ export default function ShoppingCartComponent() {
       padding: '40px 60px',
 
     }} > 
-    <Typography.Title level={1}>Your Cart</Typography.Title>
-    <>
+    <Typography.Title level={1}>Shopping Cart</Typography.Title>
+    {cartItems.length!=0 ? (<><>
     {cartItems.slice() // Create a shallow copy to avoid mutating the original array
             .sort((a, b) => a.product.localeCompare(b.product)) // Sort by product name
             .map(item => (
@@ -188,14 +188,11 @@ export default function ShoppingCartComponent() {
                   </Col>
                   </Row>
               ))}
-
-    
     </>
     <Space direction="vertical" style={{float:"right"}}>
     <Typography.Title  level={3}>Total Price: ${totalPrice.toFixed(2)}</Typography.Title>
     <Button variant='outline'onClick={() => navigate('/checkout')} style={{borderColor:"black",float:"right"}}>Checkout</Button>
-    </Space>
-    
+    </Space> </>):(<Typography.Title level={3}>Your cart is empty</Typography.Title>)}
     </div>
 
 
