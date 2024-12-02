@@ -28,8 +28,8 @@ const AdminReviewManager = () => {
     fetchReviews();
   }, []);
 
-  const handleApproval = async (reviewId, action) => {
-    // Send approval or rejection to the backend
+  const handleAction = async (reviewId, action) => {
+    // Send approval, rejection, or pending update to the backend
     try {
       await axios.post(
         'http://localhost:8000/api/admin-reviews/',
@@ -47,16 +47,20 @@ const AdminReviewManager = () => {
         ));
       } else if (action === 'reject') {
         setReviews(reviews.filter((review) => review.id !== reviewId)); // Remove the rejected review
+      } else if (action === 'pending') {
+        setReviews(reviews.map((review) =>
+          review.id === reviewId ? { ...review, is_approved: false } : review
+        ));
       }
     } catch (err) {
-      console.error(`Error ${action === 'approve' ? 'approving' : 'rejecting'} review:`, err);
+      console.error(`Error performing ${action} action on review:`, err);
       setError(`Failed to ${action} review`);
     }
   };
 
   const confirmReject = (reviewId) => {
     if (window.confirm("Are you sure you want to reject and delete this review?")) {
-      handleApproval(reviewId, 'reject');
+      handleAction(reviewId, 'reject');
     }
   };
 
@@ -96,10 +100,10 @@ const AdminReviewManager = () => {
             )}
           </p>
 
-          {/* Approval Buttons */}
+          {/* Action Buttons */}
           <div className="review-actions">
             <button
-              onClick={() => handleApproval(review.id, 'approve')}
+              onClick={() => handleAction(review.id, 'approve')}
               className="approve-button"
               disabled={review.is_approved}
             >
@@ -110,6 +114,13 @@ const AdminReviewManager = () => {
               className="reject-button"
             >
               Reject
+            </button>
+            <button
+              onClick={() => handleAction(review.id, 'pending')}
+              className="pending-button"
+              disabled={!review.is_approved}
+            >
+              Mark as Pending
             </button>
           </div>
         </div>
