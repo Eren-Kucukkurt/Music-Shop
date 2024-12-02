@@ -22,6 +22,7 @@ const ProductDetails = () => {
         throw new Error("Product not found");
       }
       const data = await response.json();
+      //console.log(data);
       setProduct(data);
     } catch (err) {
       setError(err.message);
@@ -78,7 +79,7 @@ const ProductDetails = () => {
         headers['Guest-Token'] = guestToken;
       }
 
-      console.log('quantity:', quantity);
+      //console.log('quantity:', quantity);
 
       // Make the API call
       const response = await axios.post(

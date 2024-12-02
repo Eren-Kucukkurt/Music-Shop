@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Minus, Plus, Trash2 } from 'lucide-react';
+import { Minus, Plus} from 'lucide-react';
 import axios from 'axios';
+import {Typography,Row,Col, Button,Space} from 'antd';
+import {DeleteOutlined} from '@ant-design/icons';
 
 export default function ShoppingCartComponent() {
   const navigate = useNavigate();
@@ -40,7 +42,11 @@ export default function ShoppingCartComponent() {
       try {
         
         const response = await axios.get('http://localhost:8000/cart/', { headers });
-        setCartItems(response.data.items); // Populate cart items
+        setCartItems(response.data.items);
+        // Populate cart items
+
+        //print the response data
+        //console.log(response.data.items);
         setLoading(false);
 
       } catch (err) {
@@ -114,39 +120,35 @@ export default function ShoppingCartComponent() {
     return <div className="text-red-500">{error}</div>;
   }
 
-  return (
-    <div className="container mx-auto p-4 bg-white">
-      {/* Return/Back Button */}
-      <button
-        onClick={() => navigate('/')}
-        className="text-blue-500 mb-4"
-        aria-label="Return to home"
-      >
-        ← Back to Home
-      </button>
+  
+  
+  return ( 
 
-      <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
-      {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <div>
-          {cartItems
-            .slice() // Create a shallow copy to avoid mutating the original array
+    <div style={{
+      height: '100%',
+      width: '100%',
+      padding: '40px 60px',
+
+    }} > 
+    <Typography.Title level={1}>Your Cart</Typography.Title>
+    <>
+    {cartItems.slice() // Create a shallow copy to avoid mutating the original array
             .sort((a, b) => a.product.localeCompare(b.product)) // Sort by product name
             .map(item => (
-              <div key={item.id} className="flex items-center justify-between border-b py-4 bg-white border-[1.2px] rounded-[8px] border-gray">
-                {/* Product Name and Price */}
-                <div>
-                  <h2 className="font-semibold">{item.product}</h2>
-                  <p className="text-gray-600">
-                    Price: ${item.price ? item.price.toFixed(2) : '0.00'}
-                  </p>
-                  <p className="text-gray-600">
-                    Total: ${item.total_price ? item.total_price.toFixed(2) : '0.00'}
-                  </p>
-                </div>
+              
+                <Row key={item.id} style={{borderBottom: '1px solid #f0f0f0', padding: '20px 0',backgroundColor: "white",borderRadius:"20px",margin:"10px 0 10px 0"}} align="middle">
+              <Col span={4} style={{padding:"10px 15px"}}>
+                <img src={`http://localhost:8000`+item.product_image} style={{height:"100%",width:"100%"}}/>
+                </Col>
+                <Col span={4} style={{padding:"10px 15px"}}>
+                <Typography.Title level={5}>{item.product}</Typography.Title>
+                </Col>
+                <Col span={4}style={{padding:"10px 15px"}}>
+                <Typography.Title level={5}>${item.price ? item.price.toFixed(2) : '0.00'}</Typography.Title>
+                </Col>
+                <Col span={4}style={{padding:"10px 15px"}}>
 
-                {/* Quantity Controls */}
+                                {/* Quantity Controls */}
                 <div className="flex flex-col items-center">
                   <div className="flex items-center">
                     <button
@@ -170,39 +172,32 @@ export default function ShoppingCartComponent() {
                       <Plus className="h-4 w-4" />
                     </button>
                   </div>
-                  
-                  {/* Stock Warning Message */}
-                  {item.is_at_max_stock && (
-                    <div className="text-yellow-600 text-sm mt-2">
-                      Max stock reached ({item.stock_quantity} items)
-                    </div>
-                  )}
                 </div>
-
-                {/* Remove Button (Trash Bin) */}
-                <button
-                  variant="outline"
+                </Col>
+                <Col span={4}style={{padding:"10px 15px"}}>
+                <Typography.Title level={5}>${item.price ? (item.price*item.quantity).toFixed(2) : '0.00'}</Typography.Title>
+                </Col>
+                <Col span={4}style={{padding:"10px 15px"}}>
+                <Button
+                  color='danger'
+                  variant="solid"
                   size="icon"
-                  className="ml-4 text-red-500"
-                  onClick={() => removeItem(item.id)}
-                  aria-label="Remove item"
-                >
-                  <Trash2 className="h-6 w-6" />
-                </button>
-              </div>
-            ))}
-          {/* Total Price and Checkout */}
-          <div className="mt-4 flex justify-between items-center">
-            <p className="text-xl font-semibold">Total: ${totalPrice.toFixed(2)}</p>
-            <button
-              onClick={() => navigate('/checkout')}
-              className="bg-blue-500 text-white py-2 px-4 rounded"
-            >
-              Proceed to Checkout
-            </button>
-          </div>
-        </div>
-      )}
+                  icon={<DeleteOutlined />}
+                  onClick={() => updateQuantity(item.id, -item.quantity)}
+                  ></Button>
+                  </Col>
+                  </Row>
+              ))}
+
+    
+    </>
+    <Space direction="vertical" style={{float:"right"}}>
+    <Typography.Title  level={3}>Total Price: ${totalPrice.toFixed(2)}</Typography.Title>
+    <Button variant='outline'onClick={() => navigate('/checkout')} style={{borderColor:"black",float:"right"}}>Checkout</Button>
+    </Space>
+    
     </div>
+
+
   );
 }

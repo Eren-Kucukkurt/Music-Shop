@@ -51,7 +51,7 @@ function Login({ onLoginSuccess }) {
               },
             }
           );
-          console.log('Cart merged successfully');
+          //console.log('Cart merged successfully');
         
         } catch (mergeError) {
           console.error('Error merging cart:', mergeError);

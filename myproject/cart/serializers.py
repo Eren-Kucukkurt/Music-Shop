@@ -4,6 +4,7 @@ from .models import Cart, CartItem, Order, OrderItem
 class CartItemSerializer(serializers.ModelSerializer):
     
     product = serializers.StringRelatedField()  # Serialize product as a string (e.g., name)
+    product_image = serializers.SerializerMethodField()  # Add product image
     price = serializers.SerializerMethodField()  # Add product price
     total_price = serializers.SerializerMethodField()  # Add total price (quantity * price)
     is_at_max_stock = serializers.SerializerMethodField()  # Add this
@@ -11,7 +12,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity', 'price', 'total_price', 'is_at_max_stock', 'stock_quantity']
+        fields = ['id', 'product', 'product_image', 'quantity', 'price', 'total_price', 'is_at_max_stock', 'stock_quantity']
 
     def get_price(self, obj):
         return obj.product.price  # Ensure product has a price
@@ -24,6 +25,10 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     def get_stock_quantity(self, obj):
         return obj.product.quantity_in_stock
+    
+    def get_product_image(self, obj):
+        return obj.product.image.url if obj.product.image else None
+
 
 
 class CartSerializer(serializers.ModelSerializer):
