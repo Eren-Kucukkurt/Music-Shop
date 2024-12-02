@@ -13,8 +13,6 @@ from rest_framework.permissions import IsAuthenticated
 from decimal import Decimal
 
 
-
-
 from rest_framework.exceptions import NotAuthenticated
 
 
@@ -298,3 +296,24 @@ class CheckoutView(APIView):
             return Response({"detail": "Cart not found"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class UserOrdersView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Get all orders for the authenticated user
+        orders = Order.objects.filter(user=request.user).order_by('-created_at')
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
+    
+class LatestOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            order = Order.objects.filter(user=request.user).latest('created_at')
+            serializer = OrderSerializer(order)
+            return Response(serializer.data)
+        except Order.DoesNotExist:
+            return Response({"detail": "No orders found."}, status=404)

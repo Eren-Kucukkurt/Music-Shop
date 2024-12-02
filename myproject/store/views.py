@@ -41,27 +41,21 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    pagination_class = ReviewPagination  # Use custom pagination only for this viewset
+    pagination_class = ReviewPagination
 
     def get_queryset(self):
-     product_id = self.request.query_params.get('product_id')
-     if product_id:
-        queryset = Review.objects.filter(is_approved=True, product_id=product_id)
-        return queryset
-     return Review.objects.filter(is_approved=True)
-
+        product_id = self.request.query_params.get('product_id')
+        if product_id:
+            return Review.objects.filter(product_id=product_id, is_approved=True)
+        return Review.objects.filter(is_approved=True)
 
     def perform_create(self, serializer):
-        """
-        Save the review with the logged-in user if they meet the purchase requirement.
-        """
         product_id = self.request.data.get("product")
         if not Purchase.objects.filter(user=self.request.user, product_id=product_id).exists():
             raise PermissionDenied("You can only leave reviews for products you have purchased.")
-        
-        # Save the review with the logged-in user and set is_approved=False by default
+
+        # Allow rating submission without a comment
         serializer.save(user=self.request.user, is_approved=False)
-        return Response({"message": "Your review has been submitted for approval."}, status=status.HTTP_201_CREATED)
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):

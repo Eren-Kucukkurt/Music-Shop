@@ -9,7 +9,7 @@ function ReviewForm({ productId, onReviewSubmitted }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = sessionStorage.getItem('access_token'); // Retrieve the access token
+    const token = sessionStorage.getItem('access_token');
     if (!token) {
       setError('You must be logged in to submit a review.');
       return;
@@ -20,21 +20,21 @@ function ReviewForm({ productId, onReviewSubmitted }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Add the token in the header
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          product: productId, // The product ID for which the review is being submitted
+          product: productId,
           rating,
-          comment,
+          comment: comment || null,
         }),
       });
 
       if (response.ok) {
         alert('Review submitted for approval.');
-        onReviewSubmitted(); // Refresh reviews after submission
-        setRating(5); // Reset the form
+        onReviewSubmitted();
+        setRating(5);
         setComment('');
-        window.location.reload(); // Refresh the window after leaving a comment
+        window.location.reload();
       } else {
         const errorData = await response.json();
         setError(errorData.detail || 'Could not submit review.');
@@ -47,7 +47,7 @@ function ReviewForm({ productId, onReviewSubmitted }) {
 
   return (
     <div>
-      <h3>Write a Review</h3>
+      <h3>Rate and Review</h3>
       {error && <p className="text-danger">{error}</p>}
       <form onSubmit={handleSubmit}>
         <div>
@@ -59,17 +59,16 @@ function ReviewForm({ productId, onReviewSubmitted }) {
           </select>
         </div>
         <div>
-          <label>Comment:</label>
+          <label>Comment (Optional):</label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            required
           />
         </div>
-        <button type="submit">Submit Review</button>
+        <button type="submit">Submit</button>
       </form>
     </div>
   );
 }
 
-export default ReviewForm;
+export default ReviewForm; // Ensure the component is properly exported

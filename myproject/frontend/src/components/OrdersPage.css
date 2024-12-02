@@ -1,0 +1,33 @@
+.orders-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.order-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.order-card h2 {
+    margin: 0;
+    color: #333;
+}
+
+.order-card p {
+    margin: 5px 0;
+}
+
+.order-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.order-card ul li {
+    margin: 5px 0;
+}
