@@ -7,6 +7,10 @@ const Checkout = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
+    const [cardNumber, setCardNumber] = useState('');
+    const [expiryDate, setExpiryDate] = useState('');
+    const [cvv, setCvv] = useState('');
+    const [formError, setFormError] = useState('');
     const navigate = useNavigate();
 
     // Check for authentication
@@ -46,15 +50,43 @@ const Checkout = () => {
         fetchCart();
     }, [accessToken, navigate, headers]);
 
+    // Validate credit card details
+    const validateCardDetails = () => {
+        const cardNumberRegex = /^\d{16}$/; // 16-digit number
+        const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/; // MM/YY format
+        const cvvRegex = /^\d{3}$/; // 3-digit CVV
+
+        if (!cardNumberRegex.test(cardNumber)) {
+            setFormError('Invalid card number. Please enter a 16-digit card number.');
+            return false;
+        }
+
+        if (!expiryDateRegex.test(expiryDate)) {
+            setFormError('Invalid expiry date. Use MM/YY format.');
+            return false;
+        }
+
+        if (!cvvRegex.test(cvv)) {
+            setFormError('Invalid CVV. Please enter a 3-digit CVV.');
+            return false;
+        }
+
+        setFormError('');
+        return true;
+    };
+
     const handleCheckout = async () => {
+        // Validate credit card details before proceeding
+        if (!validateCardDetails()) return;
+
         try {
             const response = await axios.post('http://localhost:8000/checkout/', {}, { headers });
             console.log('Checkout successful:', response.data); // Debug log
             setSuccessMessage('Order placed successfully!');
             setCartItems([]); // Clear local cart data
 
-            console.log('Redirecting to /orders'); // Debug log
-            navigate('/orders'); // Redirect to orders page
+            console.log('Redirecting to MockBank'); // Debug log
+            navigate('/mockbank'); // Redirect to mock bank page
         } catch (err) {
             console.error('Checkout error:', err);
             setError('Failed to complete checkout. Please try again.');
@@ -81,6 +113,42 @@ const Checkout = () => {
                             <p>Total: ${item.totalPrice.toFixed(2)}</p>
                         </div>
                     ))}
+
+                    <h2>Payment Details</h2>
+                    {formError && <p className="error-message">{formError}</p>}
+                    <div className="form-group">
+                        <label>Card Number</label>
+                        <input
+                            type="text"
+                            maxLength="16"
+                            value={cardNumber}
+                            onChange={(e) => setCardNumber(e.target.value)}
+                            placeholder="Enter 16-digit card number"
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Expiry Date (MM/YY)</label>
+                        <input
+                            type="text"
+                            maxLength="5"
+                            value={expiryDate}
+                            onChange={(e) => setExpiryDate(e.target.value)}
+                            placeholder="MM/YY"
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>CVV</label>
+                        <input
+                            type="text"
+                            maxLength="3"
+                            value={cvv}
+                            onChange={(e) => setCvv(e.target.value)}
+                            placeholder="3-digit CVV"
+                            required
+                        />
+                    </div>
                     <div className="checkout-actions">
                         <button onClick={handleCheckout} className="checkout-button">
                             Place Order

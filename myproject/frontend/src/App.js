@@ -13,7 +13,8 @@ import AddProductForm from './components/AddProductForm';
 import AdminReviewManager from './components/AdminReviewManager.js';
 import Checkout from './components/Checkout'; // Import the Checkout component
 import OrdersPage from './components/OrdersPage';
-
+import MockBank from './components/Mockbank';
+import Invoice from './components/Invoice';
 
 
 function App() {
@@ -36,6 +37,8 @@ function App() {
           <Route path="/admin/reviews" element={<AdminRoute><AdminReviewManager /></AdminRoute>} />
           <Route path="/checkout" element={<Checkout />} /> {/* Add this route */}
           <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/mockbank" element={<MockBank />} />
+          <Route path="/invoice" element={<Invoice />} />
 
           
         </Routes>

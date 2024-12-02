@@ -1,0 +1,40 @@
+.mockbank-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  
+  .mockbank-container h1 {
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .mockbank-container p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ddd;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
