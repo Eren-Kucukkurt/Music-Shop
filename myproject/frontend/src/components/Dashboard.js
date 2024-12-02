@@ -11,6 +11,7 @@ function Dashboard() {
   const [showCategories, setShowCategories] = useState(false);
   const [showLoginDropdown, setShowLoginDropdown] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Track authentication state
+  const [username, setUsername] = useState(''); // Add username state
   const dropdownRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
@@ -27,28 +28,35 @@ function Dashboard() {
     return token;
   };
 
-
   useEffect(() => {
-    
     const guestToken = sessionStorage.getItem('guest_token') || generateGuestToken();
-    // Check if the user is authenticated (based on token existence in sessionStorage)
-    
+
+    // Check if the user is authenticated
     const token = sessionStorage.getItem('access_token');
-    setIsAuthenticated(!!token); // Set authentication state
+    setIsAuthenticated(!!token);
+
+    // Retrieve username if authenticated
+    if (token) {
+      const storedUsername = sessionStorage.getItem('username');
+      if (storedUsername) {
+        setUsername(storedUsername);
+      }
+    }
+
     fetchAllProducts();
-  
+
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowLoginDropdown(false);
         setShowCategories(false);
       }
     };
-  
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);  
+  }, []);
 
   const fetchAllProducts = async () => {
     setIsLoading(true);
@@ -57,7 +65,7 @@ function Dashboard() {
       const productsData = response.data;
       setProducts(productsData);
       setFullProductList(productsData);
-      
+
       const calculatedMaxPrice = Math.max(...productsData.map(product => product.price));
       setMaxPrice(calculatedMaxPrice);
       setFilters(prevFilters => ({
@@ -72,21 +80,24 @@ function Dashboard() {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem('access_token'); // Clear access token
-    sessionStorage.removeItem('refresh_token'); // Clear refresh token (if used)
-    setIsAuthenticated(false); // Update state
-    window.location.reload(); // Refresh to update UI (optional)
+    sessionStorage.removeItem('access_token');
+    sessionStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('username'); // Clear username
+    setIsAuthenticated(false);
+    setUsername(''); // Reset username
+    window.location.reload();
   };
 
   const handleToggleCategories = () => {
     setShowCategories(!showCategories);
   };
+
   const applyFilters = (newFilters) => {
     setFilters(newFilters);
     applySearchAndFilters(searchQuery, newFilters);
     setShowFilterOptions(false);
   };
-    
+
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -97,22 +108,22 @@ function Dashboard() {
 
   const applySearchAndFilters = (searchQuery, filters) => {
     let filteredProducts = [...fullProductList];
-  
+
     if (searchQuery) {
       filteredProducts = filteredProducts.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase()) // Include description in search
+        product.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-  
+
     filteredProducts = filteredProducts.filter(
       product => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
     );
-  
+
     if (filters.inStock) {
       filteredProducts = filteredProducts.filter(product => product.quantity_in_stock > 0);
     }
-  
+
     if (filters.priceSort === 'lowToHigh') {
       filteredProducts.sort((a, b) => a.price - b.price);
     } else if (filters.priceSort === 'highToLow') {
@@ -122,10 +133,9 @@ function Dashboard() {
     } else if (filters.priceSort === 'popularityLow') {
       filteredProducts.sort((a, b) => a.popularity - b.popularity);
     }
-  
+
     setProducts(filteredProducts);
   };
-  
 
   const resetFilters = () => {
     const defaultFilters = { priceSort: '', priceRange: [0, maxPrice], inStock: false };
@@ -187,8 +197,10 @@ function Dashboard() {
             )}
           </div>
 
-          <h2>Dashboard</h2>
-          <p className="welcome-message">Welcome!</p>
+          <h2>Sekans Music Shop</h2>
+          <p className="welcome-message">
+            Welcome{username ? `, ${username}!` : '!'}
+          </p>
           <div className="header-actions">
             <input
               type="text"

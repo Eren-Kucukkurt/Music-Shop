@@ -9,23 +9,34 @@ function Register() {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios.post('http://localhost:8000/api/register/', {
-      username: username,
-      password: password,
-      email: email,
-    })
-    .then(response => {
-      setMessage(response.data.message);
-      setTimeout(() => {
-        navigate('/login');
-      }, 2500);
-    })
-    .catch(error => {
+
+    try {
+      // Register the user
+      await axios.post('http://localhost:8000/api/register/', {
+        username: username,
+        password: password,
+        email: email,
+      });
+
+      // Automatically log in the user after successful registration
+      const loginResponse = await axios.post('http://localhost:8000/api/token/', {
+        username: username,
+        password: password,
+      });
+
+      // Store tokens and username in sessionStorage
+      sessionStorage.setItem('access_token', loginResponse.data.access);
+      sessionStorage.setItem('refresh_token', loginResponse.data.refresh);
+      sessionStorage.setItem('username', username);
+
+      // Redirect to the homepage
+      navigate('/');
+    } catch (error) {
       console.error('There was an error!', error);
-      setMessage('Error creating account');
-    });
+      setMessage('Error creating account or logging in');
+    }
   };
 
   return (
@@ -63,9 +74,18 @@ function Register() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary w-100">Register</button>
+          <button type="submit" className="btn btn-primary w-100 mb-3">Register</button>
         </form>
         {message && <p className="mt-3 text-center">{message}</p>}
+        <div className="text-center">
+          <p className="mb-2">Already have an account?</p>
+          <button
+            onClick={() => navigate('/login')}
+            className="btn btn-primary w-100"
+          >
+            Login
+          </button>
+        </div>
       </div>
     </div>
   );
