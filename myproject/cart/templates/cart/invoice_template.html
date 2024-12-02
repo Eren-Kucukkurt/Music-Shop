@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice #{{ order.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .invoice-details {
+            margin: 20px 0;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+        }
+        ul {
+            padding: 0;
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-header">
+        <h1>Invoice #{{ order.id }}</h1>
+        <p>Date: {{ order.created_at|date:"F d, Y H:i" }}</p>
+        <p>Status: {{ order.status }}</p>
+    </div>
+
+    <div class="invoice-details">
+        <h3>Items Purchased:</h3>
+        <ul>
+            {% for item in order_items %}
+            <li class="item">
+                <span>{{ item.quantity }} x {{ item.product.name }}</span>
+                <span>${{ item.price|floatformat:2 }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <h3>Total: ${{ order.total_price|floatformat:2 }}</h3>
+    </div>
+</body>
+</html>
