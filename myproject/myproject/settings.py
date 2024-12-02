@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',     # to allow communication with React
     'rest_framework.authtoken',
     'django_filters',
+    'background_task',
 ]
 
 MIDDLEWARE = [
@@ -177,3 +178,10 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Gmail SMTP server
+EMAIL_PORT = 587  # Port for TLS
+EMAIL_USE_TLS = True  # Use TLS for secure email sending
+EMAIL_HOST_USER = 'musicshop308@gmail.com'  # Your email address
+EMAIL_HOST_PASSWORD = 'oseb npwz ljkx feus '  # Your email's app password or password

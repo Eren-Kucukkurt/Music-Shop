@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from decimal import Decimal
 
-
+from .tasks import *
 from rest_framework.exceptions import NotAuthenticated
 
 
@@ -312,8 +312,10 @@ class LatestOrderView(APIView):
 
     def get(self, request):
         try:
+            user = request.user
             order = Order.objects.filter(user=request.user).latest('created_at')
             serializer = OrderSerializer(order)
+            send_order_confirmation_email(user.email, order.id)
             return Response(serializer.data)
         except Order.DoesNotExist:
             return Response({"detail": "No orders found."}, status=404)

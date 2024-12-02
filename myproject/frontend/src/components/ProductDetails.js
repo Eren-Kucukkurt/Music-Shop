@@ -156,29 +156,29 @@ const ProductDetails = () => {
             </p>
 
             <div className="product-actions">
-              <div className="quantity-selector">
+            <div className="quantity-selector">
                 <button
-                  onClick={decreaseQuantity}
-                  className="quantity-button"
-                  disabled={product.quantity_in_stock <= 0}
+                    onClick={decreaseQuantity}
+                    className="quantity-button"
+                    disabled={quantity <= 1}
                 >
-                  -
+                    -
                 </button>
                 <input
-                  type="number"
-                  min="1"
-                  value={quantity}
-                  readOnly
-                  className="quantity-input"
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    readOnly
+                    className="quantity-input"
                 />
                 <button
-                  onClick={increaseQuantity}
-                  className="quantity-button"
-                  disabled={product.quantity_in_stock <= 0}
+                    onClick={increaseQuantity}
+                    className="quantity-button"
+                    disabled={quantity >= (product?.quantity_in_stock || 0)}
                 >
-                  +
+                    +
                 </button>
-              </div>
+            </div>
               <button
                 onClick={handleAddToCart}
                 className="add-to-cart-button"

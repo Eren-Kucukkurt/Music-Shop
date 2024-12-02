@@ -116,6 +116,10 @@ function Dashboard() {
       );
     }
 
+    if (filters.category) {
+      filteredProducts = filteredProducts.filter((product) => product.category === filters.category);
+    }
+
     filteredProducts = filteredProducts.filter(
       product => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
     );
@@ -142,6 +146,13 @@ function Dashboard() {
     setFilters(defaultFilters);
     applySearchAndFilters(searchQuery, defaultFilters);
     setShowFilterOptions(false);
+  };
+
+  const handleCategoryClick = (category) => {
+    const updatedFilters = { ...filters, category };
+    setFilters(updatedFilters);
+    applySearchAndFilters(searchQuery, updatedFilters);
+    setShowCategories(false);
   };
 
   const toggleLoginDropdown = () => {
@@ -216,13 +227,14 @@ function Dashboard() {
             </button>
             {showCategories && (
               <div className="categories-dropdown" ref={dropdownRef}>
-                <ul>
-                  <li>Guitars</li>
-                  <li>Pianos</li>
-                  <li>Drums</li>
-                  <li>Wind Instruments</li>
-                </ul>
-              </div>
+              <ul>
+                <li onClick={() => handleCategoryClick('Guitars')}>Guitars</li>
+                <li onClick={() => handleCategoryClick('Pianos')}>Pianos</li>
+                <li onClick={() => handleCategoryClick('Drums')}>Drums</li>
+                <li onClick={() => handleCategoryClick('Wind Instruments')}>Wind Instruments</li>
+                <li onClick={() => handleCategoryClick('')}>All Categories</li>
+              </ul>
+            </div>
             )}
             <button onClick={toggleFilterOptions} className="filter-button">Filter</button>
             {showFilterOptions && (
