@@ -42,6 +42,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)  # Nest the OrderItem serializer
+    total_price = serializers.DecimalField(max_digits=10, decimal_places=2)  # Ensure proper serialization
 
     class Meta:
         model = Order
