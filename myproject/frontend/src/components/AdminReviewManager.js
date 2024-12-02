@@ -28,12 +28,12 @@ const AdminReviewManager = () => {
     fetchReviews();
   }, []);
 
-  const handleApproval = async (reviewId, isApproved) => {
+  const handleApproval = async (reviewId, action) => {
     // Send approval or rejection to the backend
     try {
       await axios.post(
         'http://localhost:8000/api/admin-reviews/',
-        { review_id: reviewId, is_approved: isApproved },
+        { review_id: reviewId, action },
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem('access_token')}`,
@@ -41,12 +41,22 @@ const AdminReviewManager = () => {
         }
       );
       // Update the local state
-      setReviews(reviews.map((review) =>
-        review.id === reviewId ? { ...review, is_approved: isApproved } : review
-      ));
+      if (action === 'approve') {
+        setReviews(reviews.map((review) =>
+          review.id === reviewId ? { ...review, is_approved: true } : review
+        ));
+      } else if (action === 'reject') {
+        setReviews(reviews.filter((review) => review.id !== reviewId)); // Remove the rejected review
+      }
     } catch (err) {
-      console.error('Error updating review status:', err);
-      setError('Failed to update review approval status');
+      console.error(`Error ${action === 'approve' ? 'approving' : 'rejecting'} review:`, err);
+      setError(`Failed to ${action} review`);
+    }
+  };
+
+  const confirmReject = (reviewId) => {
+    if (window.confirm("Are you sure you want to reject and delete this review?")) {
+      handleApproval(reviewId, 'reject');
     }
   };
 
@@ -88,22 +98,19 @@ const AdminReviewManager = () => {
 
           {/* Approval Buttons */}
           <div className="review-actions">
-            {!review.is_approved && (
-              <button
-                onClick={() => handleApproval(review.id, true)}
-                className="approve-button"
-              >
-                Approve
-              </button>
-            )}
-            {review.is_approved && (
-              <button
-                onClick={() => handleApproval(review.id, false)}
-                className="reject-button"
-              >
-                Reject
-              </button>
-            )}
+            <button
+              onClick={() => handleApproval(review.id, 'approve')}
+              className="approve-button"
+              disabled={review.is_approved}
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => confirmReject(review.id)}
+              className="reject-button"
+            >
+              Reject
+            </button>
           </div>
         </div>
       ))}

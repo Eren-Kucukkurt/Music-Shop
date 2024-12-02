@@ -101,23 +101,28 @@ class AdminReviewView(APIView):
     def post(self, request):
         """
         Approve or reject a review based on the provided ID and action.
+        If rejecting, delete the review.
         """
         review_id = request.data.get('review_id')
-        is_approved = request.data.get('is_approved')
+        action = request.data.get('action')  # Expect 'approve' or 'reject'
 
-        if review_id is None or is_approved is None:
+        if review_id is None or action not in ['approve', 'reject']:
             return Response(
-                {"error": "review_id and is_approved are required."},
+                {"error": "review_id and a valid action ('approve' or 'reject') are required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
             review = Review.objects.get(id=review_id)
-            review.is_approved = is_approved
-            review.save()
-            return Response(
-                {"message": f"Review {'approved' if is_approved else 'rejected'} successfully."},
-                status=status.HTTP_200_OK,
-            )
+
+            if action == 'approve':
+                review.is_approved = True
+                review.save()
+                return Response({"message": "Review approved successfully."}, status=status.HTTP_200_OK)
+
+            elif action == 'reject':
+                review.delete()  # Delete the review
+                return Response({"message": "Review rejected and deleted successfully."}, status=status.HTTP_200_OK)
+
         except Review.DoesNotExist:
             return Response({"error": "Review not found."}, status=status.HTTP_404_NOT_FOUND)
