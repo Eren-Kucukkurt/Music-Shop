@@ -23,12 +23,17 @@ class Product(models.Model):
 
     def update_rating(self):
         """
-        Calculate and update the average rating of the product based on approved reviews.
+        Calculate and update the average rating for the product based on all its reviews.
         """
-        from .models import Review  # Avoid circular import
-        average = Review.objects.filter(product=self, is_approved=True).aggregate(Avg('rating'))['rating__avg']
-        self.rating = round(Decimal(average), 2) if average else Decimal(0.00)
+        reviews = Review.objects.filter(product=self)
+        if reviews.exists():
+            # Calculate the average rating
+            average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+            self.rating = average_rating or 0  # Default to 0 if no reviews
+        else:
+            self.rating = 0  # No reviews, set rating to 0
         self.save()
+
 
     def save(self, *args, **kwargs):
         """
@@ -51,7 +56,7 @@ class Review(models.Model):
     rating = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
-    comment = models.TextField()
+    comment = models.TextField(blank=True, null=True)  # Comment is now optional
     created_at = models.DateTimeField(default=now)  # Use default instead of auto_now_add
     updated_at = models.DateTimeField(auto_now=True)
     is_approved = models.BooleanField(default=False)
