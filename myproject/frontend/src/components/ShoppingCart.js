@@ -138,7 +138,11 @@ export default function ShoppingCartComponent() {
               
                 <Row key={item.id} style={{borderBottom: '1px solid #f0f0f0', padding: '20px 0',backgroundColor: "white",borderRadius:"20px",margin:"10px 0 10px 0"}} align="middle">
               <Col span={4} style={{padding:"10px 15px"}}>
-                <img src={`http://localhost:8000`+item.product_image} style={{height:"100%",width:"100%"}}/>
+                <img
+                  src={`http://localhost:8000` + item.product_image}
+                  alt={item.product}
+                  style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                />
                 </Col>
                 <Col span={4} style={{padding:"10px 15px"}}>
                 <Typography.Title level={5}>{item.product}</Typography.Title>
