@@ -263,7 +263,7 @@ class CheckoutView(APIView):
             order = Order.objects.create(
                 user=user,
                 total_price=total_price,
-                status="PENDING"
+                status="PROCESSING",
             )
 
             # Create OrderItems and deduct stock
@@ -304,6 +304,11 @@ class UserOrdersView(APIView):
     def get(self, request):
         # Get all orders for the authenticated user
         orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
+        # Update the status of each order based on elapsed time
+        for order in orders:
+            order.update_status()
+
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
     

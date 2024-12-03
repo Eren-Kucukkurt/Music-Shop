@@ -18,12 +18,10 @@ const OrdersPage = () => {
         const response = await axios.get('http://localhost:8000/orders/', { headers });
         const parsedOrders = response.data.map(order => ({
           ...order,
-          total_price: parseFloat(order.total_price),
+          total_price: parseFloat(order.total_price), // Convert total_price to number
           items: order.items.map(item => ({
             ...item,
-            price: parseFloat(item.price),
-            image: item.product_image, // Ensure backend provides the image
-            name: item.product_name, // Ensure backend provides the product name
+            price: parseFloat(item.price), // Convert item price to number
           })),
         }));
         setOrders(parsedOrders);
@@ -68,15 +66,15 @@ const OrdersPage = () => {
                 <p><strong>Status:</strong> {order.status}</p>
                 <p><strong>Order Date:</strong> {new Date(order.created_at).toLocaleString()}</p>
                 <div>
-                <strong>Items:</strong>
-                {order.items.map(item => (
-                  <div key={item.id} className="order-item-detail">
-                    <p>
-                      {item.quantity} x Product {item.product} @ ${item.price.toFixed(2)}
-                    </p>
-                  </div>
-                ))}
-              </div>
+                  <strong>Items:</strong>
+                  {order.items.map(item => (
+                    <div key={item.id} className="order-item-detail">
+                      <p>
+                        {item.quantity} x Product {item.product} @ ${item.price.toFixed(2)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
