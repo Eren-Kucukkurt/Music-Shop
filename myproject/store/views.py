@@ -54,8 +54,17 @@ class ReviewViewSet(viewsets.ModelViewSet):
         if not Purchase.objects.filter(user=self.request.user, product_id=product_id).exists():
             raise PermissionDenied("You can only leave reviews for products you have purchased.")
 
-        # Allow rating submission without a comment
-        serializer.save(user=self.request.user, is_approved=False)
+        # Check if comment is explicitly None
+        comment = self.request.data.get("comment")
+        if comment is None or comment.strip() == "":
+            is_approved = True  # Auto-approve if no comment
+        else:
+            is_approved = False  # Require approval if comment is provided
+
+        # Save the review
+        serializer.save(user=self.request.user, is_approved=is_approved)
+
+
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
