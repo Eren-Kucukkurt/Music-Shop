@@ -152,6 +152,8 @@ const ProductDetails = () => {
           <div className="product-info-section">
             <h1 className="product-title">{product.name}</h1>
             <p className="product-code">Product Code: {product.serial_number || "N/A"}</p>
+            <p className="product-model">Product Model: {product.model || "Not Specified"}</p> {/* Add Model */}
+            <p className="product-warranty">Warranty: {product.warranty || "No Warranty"}</p> {/* Add Warranty */}
             {/* Display Rating */}
             {rating > 0 ? (
               <div className="product-rating">

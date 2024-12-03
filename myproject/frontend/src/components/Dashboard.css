@@ -5,18 +5,12 @@
 }
 
 .cart-container {
-  width: fit-content; /* Cart icon width */
-  height: fit-content; /* Cart icon height */
-  display: flex;
-  background-color: transparent; /* Transparent background */
-
-  position: absolute; /* Needed for badge */
-  top: 10px; /* Align with the top */
-  right: 10px; /* Align with the right */
-  
-  flex-direction: column; /* Stack the badge on top of the cart icon */
-  gap: 90px; /* Space between the cart icon and badge */
-
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Align items vertically */
+  gap: 50px; /* Space between cart and login/register */
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
 .cart-link {
@@ -39,14 +33,22 @@
 }
 
 .login-button-container{
-
   display: flex;
-  background-color: black;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  align-items: center;
+  gap: 8px;
+  position: static; /* Remove absolute positioning */
+  margin: 0; /* Reset any margin */
+  cursor: pointer;
 
+}
+.login-register-container .login-register-text {
+  position: relative; /* Allows vertical adjustment */
+  top: 5px; /* Move the button slightly downward */
+}
+
+.logout-container {
+  position: relative;
+  top: 0; /* Ensure the logout button stays in place */
 }
 
 .login-button{

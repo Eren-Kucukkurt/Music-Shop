@@ -61,7 +61,7 @@
   color: #333;
 }
 
-.product-code {
+.product-code, .product-model, .product-warranty {
   font-size: 0.9em;
   color: #777;
   margin-bottom: 20px;
