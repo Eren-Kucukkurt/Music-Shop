@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './ProductDetails.css';
 import ReviewForm from './ReviewForm';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar as filledStar } from '@fortawesome/free-solid-svg-icons';
+import { faStarHalfAlt as halfStar, faStar as emptyStar } from '@fortawesome/free-regular-svg-icons';
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -48,20 +51,6 @@ const ProductDetails = () => {
     }
   };
 
-  /*
-  const handleAddToCart = async () => {
-    try {
-      const response = await axios.post('http://localhost:8000/cart/add_item/', {
-        product_id: productId,
-        quantity: quantity,
-      });
-      setCartMessage(response.data.message); // Display success message
-    } catch (err) {
-      console.error('Error adding item to cart:', err);
-      setCartMessage('Failed to add item to cart. Please try again.');
-    }
-  };
-  */
 
   const handleAddToCart = async () => {
     try {
@@ -132,6 +121,25 @@ const ProductDetails = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
+  const rating = parseFloat(product.rating) || 0;
+
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating); // Number of full stars
+    const hasHalfStar = rating % 1 >= 0.5; // Determine if there's a half star
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0); // Calculate remaining empty stars
+
+    return (
+      <div className="star-rating">
+        {[...Array(fullStars)].map((_, index) => (
+          <FontAwesomeIcon key={`full-${index}`} icon={filledStar} className="star filled" />
+        ))}
+        {hasHalfStar && <FontAwesomeIcon icon={halfStar} className="star half" />}
+        {[...Array(emptyStars)].map((_, index) => (
+          <FontAwesomeIcon key={`empty-${index}`} icon={emptyStar} className="star empty" />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="product-details-fullpage">
@@ -144,6 +152,15 @@ const ProductDetails = () => {
           <div className="product-info-section">
             <h1 className="product-title">{product.name}</h1>
             <p className="product-code">Product Code: {product.serial_number || "N/A"}</p>
+            {/* Display Rating */}
+            {rating > 0 ? (
+              <div className="product-rating">
+                {renderStars(rating)}
+                <span className="rating-value">({rating.toFixed(1)})</span>
+              </div>
+            ) : (
+              <p className="no-rating-message">No ratings yet</p>
+            )}
             <p className="product-price">Price: ${Number(product.price || 0).toFixed(2)}</p>
             <p className="product-description">{product.description}</p>
 
