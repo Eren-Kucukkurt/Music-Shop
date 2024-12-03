@@ -75,37 +75,42 @@
   font-style: italic;
 }
 
-/* Container for product images */
 .product-image-container {
-  position: relative; /* Required for positioning the overlay */
+  position: relative; /* Make this the positioning context */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  overflow: hidden; /* Ensures the overlay is confined to the image */
-  border-radius: 8px; /* Match the product card's border radius */
-}
-
-/* Product image */
-.product-image {
-  width: 100%;
-  height: auto;
+  height: 200px;
+  overflow: visible;
   border-radius: 8px;
-  object-fit: cover;
+  background-color: #f0f0f0; /* Placeholder for products with no image */
+
 }
 
-/* Style for the "Out of Stock" overlay */
+.product-image {
+  flex-shrink: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: contain;
+}
+
+
 .out-of-stock-overlay {
-  position: absolute;
+  position: absolute; /* Overlay above the container */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Text shadow for emphasis */
-  z-index: 1; /* Ensure the overlay appears above the image */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Subtle text shadow */
+  z-index: 10; /* Ensure this appears on top of the image */
   border-radius: 8px; /* Match the image's border radius */
+  pointer-events: none; /* Prevent interaction */
 }
