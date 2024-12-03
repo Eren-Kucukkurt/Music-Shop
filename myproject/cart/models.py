@@ -45,7 +45,7 @@ class Order(models.Model):
         """Update the status based on time elapsed."""
         elapsed_time = now() - self.last_status_change
 
-        if self.status == 'PROCESSING' and elapsed_time > timedelta(seconds=35):
+        if self.status == 'PROCESSING' and elapsed_time > timedelta(seconds=60):
             self.status = 'IN-TRANSIT'
             self.last_status_change = now()
             self.save()

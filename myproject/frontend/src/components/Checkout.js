@@ -32,7 +32,7 @@ const Checkout = () => {
                 const items = response.data.items.map(item => ({
                     id: item.id,
                     productId: item.product.id,
-                    productName: item.product.name,
+                    productName: item.product, // Use product name directly
                     quantity: item.quantity,
                     price: parseFloat(item.price),
                     totalPrice: parseFloat(item.total_price),
@@ -99,7 +99,7 @@ const Checkout = () => {
                         {cartItems.map((item) => (
                             <div key={item.id} className="cart-item">
                                 <p>
-                                    <strong>{item.productName}</strong> - {item.quantity} x ${item.price.toFixed(2)}
+                                    <strong>{item.quantity} x {item.productName}</strong> @ ${item.price.toFixed(2)}
                                 </p>
                                 <p>Total: ${item.totalPrice.toFixed(2)}</p>
                             </div>
