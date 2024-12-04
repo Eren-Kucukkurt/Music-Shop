@@ -70,7 +70,7 @@ const OrdersPage = () => {
                   {order.items.map(item => (
                     <div key={item.id} className="order-item-detail">
                       <p>
-                        {item.quantity} x Product {item.product} @ ${item.price.toFixed(2)}
+                        {item.quantity} x Product {item.product_name} @ ${item.price.toFixed(2)}
                       </p>
                     </div>
                   ))}

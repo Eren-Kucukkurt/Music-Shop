@@ -47,7 +47,7 @@ const Invoice = () => {
         <ul>
           {order.items.map((item) => (
             <li key={item.id}>
-              {item.quantity} x {item.product} @ ${parseFloat(item.price).toFixed(2)} each
+              {item.quantity} x {item.product_name} @ ${parseFloat(item.price).toFixed(2)} each
             </li>
           ))}
         </ul>
