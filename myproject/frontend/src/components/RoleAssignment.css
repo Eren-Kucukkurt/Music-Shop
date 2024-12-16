@@ -1,0 +1,62 @@
+.role-assignment-container {
+    max-width: 400px;
+    margin: 50px auto;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+  }
+  
+  .role-assignment-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .role-assignment-form div {
+    margin-bottom: 15px;
+  }
+  
+  .role-assignment-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .role-assignment-form input,
+  .role-assignment-form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .role-assignment-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .role-assignment-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  .success-message {
+    color: #28a745;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+  }
+  

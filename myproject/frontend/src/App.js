@@ -15,6 +15,7 @@ import Checkout from './components/Checkout'; // Import the Checkout component
 import OrdersPage from './components/OrdersPage';
 import MockBank from './components/Mockbank';
 import Invoice from './components/Invoice';
+import RoleAssignment from './components/RoleAssignment.js';
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/mockbank" element={<MockBank />} />
           <Route path="/invoice" element={<Invoice />} />
+          <Route path="/assign-role" element={<RoleAssignment />} />
 
           
         </Routes>
