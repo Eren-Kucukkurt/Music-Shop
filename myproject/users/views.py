@@ -12,7 +12,8 @@ from rest_framework.permissions import AllowAny
 from cart.models import Cart, CartItem
 from .models import Profile
 from rest_framework.permissions import IsAdminUser
-
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
 
 class LoginView(APIView):
     
@@ -82,3 +83,8 @@ class AssignRoleView(APIView):
             return Response({"message": f"Role {role} assigned to user {username}."}, status=200)
         except User.DoesNotExist:
             return Response({"error": "User not found."}, status=404)
+        
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

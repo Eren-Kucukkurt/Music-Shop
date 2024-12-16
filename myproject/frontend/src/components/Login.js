@@ -10,7 +10,6 @@ function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-
   // Get the intended path from state (default to '/')
   const from = location.state?.from?.pathname || '/';
   const guestToken = sessionStorage.getItem('guest_token');
@@ -32,12 +31,25 @@ function Login({ onLoginSuccess }) {
         password: password,
       });
 
-      // Store the tokens and username in sessionStorage
+      // Store the tokens in sessionStorage
       sessionStorage.setItem('access_token', response.data.access);
       sessionStorage.setItem('refresh_token', response.data.refresh);
-      sessionStorage.setItem('username', username); // Store the username
-            //make an api call for the merge_cart function inside the cart app
-      // Step 3: Call the merge_cart API
+      sessionStorage.setItem('username', username);
+
+      // **Store the user's role in sessionStorage**
+      sessionStorage.setItem('user_role', response.data.role);
+
+      // **Redirect based on role**
+      const userRole = response.data.role;
+      if (userRole === 'PRODUCT_MANAGER') {
+        navigate('/productManager');
+      } else if (userRole === 'SALES_MANAGER') {
+        navigate('/salesManager');
+      } else {
+        navigate('/'); // Redirect to the homepage
+      }
+
+      // Merge cart if guestToken exists
       if (guestToken) {
         try {
           await axios.post(
@@ -46,13 +58,11 @@ function Login({ onLoginSuccess }) {
             {
               headers: {
                 'Authorization': `Bearer ${response.data.access}`,
-                // Guest-Token is sent only in the merge_cart API call
                 'Guest-Token': guestToken,
               },
             }
           );
           //console.log('Cart merged successfully');
-        
         } catch (mergeError) {
           console.error('Error merging cart:', mergeError);
         }
@@ -60,9 +70,6 @@ function Login({ onLoginSuccess }) {
 
       // Notify parent component (optional)
       if (onLoginSuccess) onLoginSuccess();
-
-      // Redirect to the intended page or homepage
-      navigate(from);
     } catch (error) {
       console.error('Login error:', error);
       setError('Invalid username or password');
