@@ -6,7 +6,6 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import ShoppingCartComponent from './components/ShoppingCart';
 import ProductDetails from './components/ProductDetails';
-import RequireAuth from './middleware';
 import AdminRoute from './components/AdminRoute';
 import AddProductForm from './components/AddProductForm';
 import AdminReviewManager from './components/AdminReviewManager.js';
@@ -15,8 +14,14 @@ import OrdersPage from './components/OrdersPage';
 import MockBank from './components/Mockbank';
 import Invoice from './components/Invoice';
 import RoleAssignment from './components/RoleAssignment.js';
-import ProductManager from './components/ProductManager'; // Temporary ProductManager
-import SalesManager from './components/SalesManager'; // Temporary SalesManager
+import ProductManager from './components/ProductManager';
+import SalesManager from './components/SalesManager';
+import withRoleGuard from './hoc/withRoleGuard'; // Import the role guard HOC
+import UnauthorizedPage from './components/UnauthorizedPage'; // Page for unauthorized users
+
+// Wrap the components with the role guard
+const ProtectedProductManager = withRoleGuard(ProductManager, ['PRODUCT_MANAGER']);
+const ProtectedSalesManager = withRoleGuard(SalesManager, ['SALES_MANAGER']);
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -40,9 +45,10 @@ function App() {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/mockbank" element={<MockBank />} />
           <Route path="/invoice" element={<Invoice />} />
-          <Route path="/admin/assign-role" element={<RoleAssignment />} />
-          <Route path="/productManager" element={<ProductManager />} />
-          <Route path="/salesManager" element={<SalesManager />} />
+          <Route path="/assign-role" element={<RoleAssignment />} />
+          <Route path="/productManager" element={<ProtectedProductManager />} />
+          <Route path="/salesManager" element={<ProtectedSalesManager />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>
       </div>
     </Router>

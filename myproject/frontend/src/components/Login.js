@@ -30,25 +30,16 @@ function Login({ onLoginSuccess }) {
         username: username,
         password: password,
       });
-
-      // Store the tokens in sessionStorage
-      sessionStorage.setItem('access_token', response.data.access);
-      sessionStorage.setItem('refresh_token', response.data.refresh);
+  
+      // Extract tokens and role from the response
+      const { access, refresh, role } = response.data;
+  
+      // Store tokens and user information in sessionStorage
+      sessionStorage.setItem('access_token', access);
+      sessionStorage.setItem('refresh_token', refresh);
       sessionStorage.setItem('username', username);
-
-      // **Store the user's role in sessionStorage**
-      sessionStorage.setItem('user_role', response.data.role);
-
-      // **Redirect based on role**
-      const userRole = response.data.role;
-      if (userRole === 'PRODUCT_MANAGER') {
-        navigate('/productManager');
-      } else if (userRole === 'SALES_MANAGER') {
-        navigate('/salesManager');
-      } else {
-        navigate('/'); // Redirect to the homepage
-      }
-
+      sessionStorage.setItem('user_role', role);
+  
       // Merge cart if guestToken exists
       if (guestToken) {
         try {
@@ -57,7 +48,7 @@ function Login({ onLoginSuccess }) {
             {}, // No payload required
             {
               headers: {
-                'Authorization': `Bearer ${response.data.access}`,
+                'Authorization': `Bearer ${access}`,
                 'Guest-Token': guestToken,
               },
             }
@@ -67,14 +58,30 @@ function Login({ onLoginSuccess }) {
           console.error('Error merging cart:', mergeError);
         }
       }
-
+  
+      // Redirect based on user role
+      if (role === 'PRODUCT_MANAGER') {
+        navigate('/productManager');
+      } else if (role === 'SALES_MANAGER') {
+        navigate('/salesManager');
+      } else {
+        navigate('/'); // Redirect to homepage or customer dashboard
+      }
+  
       // Notify parent component (optional)
       if (onLoginSuccess) onLoginSuccess();
     } catch (error) {
       console.error('Login error:', error);
-      setError('Invalid username or password');
+  
+      // Handle specific error scenarios if needed
+      if (error.response?.status === 401) {
+        setError('Invalid username or password');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     }
   };
+  
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
