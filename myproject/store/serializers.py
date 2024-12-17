@@ -37,7 +37,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 from decimal import Decimal
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer): 
+    discounted_price = serializers.SerializerMethodField()  # Dynamically calculate discounted price
+
     class Meta:
         model = Product
         fields = [
@@ -49,12 +51,17 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'quantity_in_stock',
             'price',
+            'discount_percentage',      # Added discount percentage
+            'discount_start_date',      # Added start date for discount
+            'discount_end_date',        # Added end date for discount
+            'is_discount_active',       # Added status for discount activation
             'warranty_status',
             'distributor_info',
             'image',
             'rating',  # Ensure rating is included
             'total_sale',
-            'popularity'
+            'popularity',
+            'discounted_price',         # Dynamically calculated field
         ]
 
     def to_representation(self, instance):
@@ -64,3 +71,10 @@ class ProductSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['rating'] = float(data['rating']) if instance.rating is not None else 0
         return data
+
+    def get_discounted_price(self, obj):
+        """
+        Calculate the discounted price if discount is active.
+        """
+        return obj.get_discounted_price()
+

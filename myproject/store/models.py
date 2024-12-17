@@ -6,6 +6,9 @@ from django.db.models import Avg
 from decimal import Decimal
 from django.utils.timezone import now
 
+from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 class Product(models.Model):
     name = models.CharField(max_length=255, default="Unnamed Product")
     category = models.CharField(max_length=100, default="Uncategorized")
@@ -15,33 +18,49 @@ class Product(models.Model):
     quantity_in_stock = models.PositiveIntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     warranty_status = models.CharField(max_length=100, default="No Warranty")
-    distributor_info = models.CharField(max_length=255, null=True, blank=True, default="Unknown Distributor")
-    image = models.ImageField(upload_to="products/", null=True, blank=True)
+    distributor_info = models.TextField(null=True, blank=True)
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
+    
+
+    
+    # Discount Fields
+    discount_percentage = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0.00,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    discount_start_date = models.DateTimeField(null=True, blank=True)
+    discount_end_date = models.DateTimeField(null=True, blank=True)
+    is_discount_active = models.BooleanField(default=False)
+
+    # Other Fields
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     total_sale = models.PositiveIntegerField(default=0)
     popularity = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
-    def update_rating(self):
+    def get_discounted_price(self):
         """
-        Calculate and update the average rating for the product based on all its reviews.
+        Calculate and return the discounted price if the discount is active.
         """
-        reviews = Review.objects.filter(product=self)
-        if reviews.exists():
-            # Calculate the average rating
-            average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
-            self.rating = average_rating or 0  # Default to 0 if no reviews
-        else:
-            self.rating = 0  # No reviews, set rating to 0
-        self.save()
-
+        now = timezone.now()
+        if self.is_discount_active and self.discount_start_date and self.discount_end_date:
+            if self.discount_start_date <= now <= self.discount_end_date:
+                return self.price - (self.price * (self.discount_percentage / 100))
+        return self.price  # Return original price if no discount is active
 
     def save(self, *args, **kwargs):
         """
-        Update popularity before saving.
+        Auto-toggle `is_discount_active` based on discount fields.
         """
-        weight_sales = Decimal("0.7")
-        weight_rating = Decimal("0.3")
-        self.popularity = (Decimal(self.total_sale) * weight_sales) + (Decimal(self.rating) * weight_rating)
+        now = timezone.now()
+        if (
+            self.discount_percentage > 0
+            and self.discount_start_date
+            and self.discount_end_date
+            and self.discount_start_date <= now <= self.discount_end_date
+        ):
+            self.is_discount_active = True
+        else:
+            self.is_discount_active = False
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -49,7 +68,6 @@ class Product(models.Model):
 
 
 
-#08/11/2024
 class Review(models.Model):
     product = models.ForeignKey('Product', related_name='reviews', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
