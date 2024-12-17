@@ -249,15 +249,8 @@ class CheckoutView(APIView):
             if not cart_items.exists():
                 return Response({"detail": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Calculate total price
+            # Initialize total price
             total_price = Decimal(0.00)
-            for item in cart_items:
-                if item.product.quantity_in_stock < item.quantity:
-                    return Response(
-                        {"detail": f"Not enough stock for {item.product.name}"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                total_price += item.quantity * item.product.price
 
             # Create the Order
             order = Order.objects.create(
@@ -268,22 +261,33 @@ class CheckoutView(APIView):
 
             # Create OrderItems and deduct stock
             for item in cart_items:
+                product = item.product
+                discounted_price = product.get_discounted_price()
+
+                # Save order item with the discounted price
                 OrderItem.objects.create(
                     order=order,
-                    product=item.product,
+                    product=product,
                     quantity=item.quantity,
-                    price=item.product.price,
+                    price=discounted_price * item.quantity,
                 )
+
                 # Deduct product stock
-                item.product.quantity_in_stock -= item.quantity
-                item.product.save()
+                product.quantity_in_stock -= item.quantity
+                product.save()
 
                 # Create Purchase entry
                 Purchase.objects.create(
                     user=user,
-                    product=item.product,
+                    product=product,
                     quantity=item.quantity,
                 )
+
+                total_price += discounted_price * item.quantity
+
+            # Update order total price
+            order.total_price = total_price
+            order.save()
 
             # Clear the cart
             cart_items.delete()
@@ -296,6 +300,7 @@ class CheckoutView(APIView):
             return Response({"detail": "Cart not found"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         
 
 class UserOrdersView(APIView):
@@ -311,7 +316,8 @@ class UserOrdersView(APIView):
 
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
-    
+
+
 class LatestOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -319,8 +325,10 @@ class LatestOrderView(APIView):
         try:
             user = request.user
             order = Order.objects.filter(user=request.user).latest('created_at')
+
             serializer = OrderSerializer(order)
             send_order_confirmation_email(user.email, order.id)
             return Response(serializer.data)
         except Order.DoesNotExist:
             return Response({"detail": "No orders found."}, status=404)
+

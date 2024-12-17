@@ -41,17 +41,26 @@ class CartSerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.ReadOnlyField(source='product.name')  # Fetch the product name
-    
+    original_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'product_name', 'quantity', 'price']
+        fields = ['id', 'product', 'product_name', 'quantity', 'original_price', 'price']
+
 
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True)  # Nest the OrderItem serializer
-    total_price = serializers.DecimalField(max_digits=10, decimal_places=2)  # Ensure proper serialization
+    items = OrderItemSerializer(many=True)
+    total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = ['id', 'user', 'total_price', 'status', 'created_at', 'items']
+
+    def get_total_price(self, obj):
+        """
+        Calculate the total price for the order from all OrderItems.
+        """
+        return sum(item.price for item in obj.items.all())

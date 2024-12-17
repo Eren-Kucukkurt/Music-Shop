@@ -51,6 +51,9 @@ class Product(models.Model):
         """
         Auto-toggle `is_discount_active` based on discount fields.
         """
+        weight_sales = Decimal("0.7")
+        weight_rating = Decimal("0.3")
+        self.popularity = (Decimal(self.total_sale) * weight_sales) + (Decimal(self.rating) * weight_rating)
         now = timezone.now()
         if (
             self.discount_percentage > 0
@@ -66,6 +69,18 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} ({self.model})"
 
+    def update_rating(self):
+        """
+        Update the product's rating based on approved reviews.
+        """
+        reviews = Review.objects.filter(product=self)
+        if reviews.exists():
+            # Calculate the average rating
+            average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+            self.rating = average_rating or 0  # Default to 0 if no reviews
+        else:
+            self.rating = 0  # No reviews, set rating to 0
+        self.save()
 
 
 class Review(models.Model):
