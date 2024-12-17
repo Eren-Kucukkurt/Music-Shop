@@ -11,7 +11,9 @@ from store.models import *
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from decimal import Decimal
-
+from users.models import *
+from users.serializers import *
+from users.utils import get_fernet
 from .tasks import *
 from rest_framework.exceptions import NotAuthenticated
 
@@ -236,18 +238,48 @@ class CartViewSet(viewsets.ViewSet):
 
         return Response({'message': 'Carts merged successfully'}, status=status.HTTP_200_OK)
 
+
+
 class CheckoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         user = request.user
         try:
+            # Extract credit card data from request
+            card_data = request.data.get('credit_card', {})
+            use_saved_card = card_data.get('use_saved_card', False)
+            save_new_card = card_data.get('save_new_card', False)
+            card_name = card_data.get('card_name', '')
+            card_number = card_data.get('card_number', '')
+            expiry_date = card_data.get('expiry_date', '')
+            cvv = card_data.get('cvv', '')
+
             # Fetch the user's cart and cart items
             cart = Cart.objects.get(user=user)
             cart_items = CartItem.objects.filter(cart=cart)
 
             if not cart_items.exists():
                 return Response({"detail": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Handle payment validation (mocked here)
+            if use_saved_card:
+                card_id = card_data.get('card_id')
+                try:
+                    saved_card = CreditCard.objects.get(id=card_id, user=user)
+                    card_number = saved_card.get_decrypted_card_number()
+                    expiry_date = saved_card.get_decrypted_expiry_date()
+                    cvv = saved_card.get_decrypted_cvv()
+                except CreditCard.DoesNotExist:
+                    return Response({"detail": "Saved card not found"}, status=status.HTTP_400_BAD_REQUEST)
+            elif not all([card_number, expiry_date, cvv]):
+                return Response({"detail": "Card details are incomplete"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Simulate successful payment validation (mocked)
+            payment_successful = True  # In a real app, integrate payment gateway
+
+            if not payment_successful:
+                return Response({"detail": "Payment failed"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Initialize total price
             total_price = Decimal(0.00)
@@ -288,6 +320,20 @@ class CheckoutView(APIView):
             # Update order total price
             order.total_price = total_price
             order.save()
+
+            # Save new credit card if requested
+            if save_new_card and card_number and expiry_date and cvv and card_name:
+                fernet = get_fernet()
+                CreditCard.objects.create(
+                    user=user,
+                    card_name=card_name,
+                    encrypted_card_number=card_number,  # pass raw number
+                    encrypted_expiry_date=expiry_date,  # pass raw expiry date
+                    encrypted_cvv=cvv,                  # pass raw CVV
+                    last4=card_number[-4:],
+                )
+
+                print("New card saved successfully")
 
             # Clear the cart
             cart_items.delete()

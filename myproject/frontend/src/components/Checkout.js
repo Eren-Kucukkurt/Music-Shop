@@ -5,12 +5,16 @@ import './Checkout.css'; // Import a dedicated CSS file
 
 const Checkout = () => {
     const [cartItems, setCartItems] = useState([]);
+    const [savedCards, setSavedCards] = useState([]);
+    const [selectedCardId, setSelectedCardId] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
     const [cvv, setCvv] = useState('');
+    const [saveCard, setSaveCard] = useState(false);
+    const [cardName, setCardName] = useState('');
     const [formError, setFormError] = useState('');
     const navigate = useNavigate();
 
@@ -20,16 +24,21 @@ const Checkout = () => {
         Authorization: accessToken ? `Bearer ${accessToken}` : null,
     };
 
+    // Fetch cart and saved cards
     useEffect(() => {
         if (!accessToken) {
             navigate('/login');
             return;
         }
 
-        const fetchCart = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/cart/', { headers });
-                const items = response.data.items.map(item => ({
+                const [cartResponse, cardsResponse] = await Promise.all([
+                    axios.get('http://localhost:8000/cart/', { headers }),
+                    axios.get('http://localhost:8000/credit-cards/', { headers })
+                ]);
+
+                const items = cartResponse.data.items.map(item => ({
                     id: item.id,
                     productId: item.product.id,
                     productName: item.product, // Use product name directly
@@ -37,16 +46,18 @@ const Checkout = () => {
                     price: parseFloat(item.price),
                     totalPrice: parseFloat(item.total_price),
                 }));
+
                 setCartItems(items);
+                setSavedCards(cardsResponse.data); // Load saved credit cards
                 setLoading(false);
             } catch (err) {
-                setError('Failed to load cart data.');
+                setError('Failed to load data.');
                 setLoading(false);
             }
         };
 
-        fetchCart();
-    }, [accessToken, navigate, headers]);
+        fetchData();
+    }, [accessToken, navigate]);
 
     const validateCardDetails = () => {
         const cardNumberRegex = /^\d{16}$/;
@@ -71,10 +82,30 @@ const Checkout = () => {
     };
 
     const handleCheckout = async () => {
-        if (!validateCardDetails()) return;
+        let payload = {};
+
+        if (selectedCardId) {
+            // Use existing card
+            payload = { credit_card: { use_saved_card: true, card_id: selectedCardId } };
+        } else {
+            // Validate new card details
+            if (!validateCardDetails()) return;
+
+            payload = {
+                credit_card: {
+                    use_saved_card: false,
+                    save_new_card: saveCard,
+                    card_name: cardName,
+                    card_number: cardNumber,
+                    expiry_date: expiryDate,
+                    cvv: cvv,
+                },
+            };
+        }
 
         try {
-            await axios.post('http://localhost:8000/checkout/', {}, { headers });
+            console.log("debugging");
+            await axios.post('http://localhost:8000/checkout/', payload, { headers });
             setSuccessMessage('Order placed successfully!');
             setCartItems([]);
             navigate('/mockbank');
@@ -105,45 +136,93 @@ const Checkout = () => {
                             </div>
                         ))}
                     </div>
+
                     <div className="payment-form">
                         <h2>Payment Details</h2>
-                        {formError && <p className="form-error">{formError}</p>}
-                        <div className="form-group">
-                            <label htmlFor="cardNumber">Card Number</label>
-                            <input
-                                id="cardNumber"
-                                type="text"
-                                maxLength="16"
-                                value={cardNumber}
-                                onChange={(e) => setCardNumber(e.target.value)}
-                                placeholder="Enter 16-digit card number"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="expiryDate">Expiry Date (MM/YY)</label>
-                            <input
-                                id="expiryDate"
-                                type="text"
-                                maxLength="5"
-                                value={expiryDate}
-                                onChange={(e) => setExpiryDate(e.target.value)}
-                                placeholder="MM/YY"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="cvv">CVV</label>
-                            <input
-                                id="cvv"
-                                type="text"
-                                maxLength="3"
-                                value={cvv}
-                                onChange={(e) => setCvv(e.target.value)}
-                                placeholder="3-digit CVV"
-                                required
-                            />
-                        </div>
+
+                        {/* Use Saved Credit Card */}
+                        {savedCards.length > 0 && (
+                            <div className="form-group">
+                                <label htmlFor="savedCards">Use a Saved Card</label>
+                                <select
+                                    id="savedCards"
+                                    value={selectedCardId}
+                                    onChange={(e) => setSelectedCardId(e.target.value)}
+                                >
+                                    <option value="">Select a card</option>
+                                    {savedCards.map((card) => (
+                                        <option key={card.id} value={card.id}>
+                                            {card.card_name} - **** **** **** {card.last4}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        {/* New Card Input */}
+                        {!selectedCardId && (
+                            <>
+                                {formError && <p className="form-error">{formError}</p>}
+                                <div className="form-group">
+                                    <label htmlFor="cardName">Name on Card</label>
+                                    <input
+                                        id="cardName"
+                                        type="text"
+                                        value={cardName}
+                                        onChange={(e) => setCardName(e.target.value)}
+                                        placeholder="Name on card"
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="cardNumber">Card Number</label>
+                                    <input
+                                        id="cardNumber"
+                                        type="text"
+                                        maxLength="16"
+                                        value={cardNumber}
+                                        onChange={(e) => setCardNumber(e.target.value)}
+                                        placeholder="Enter 16-digit card number"
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="expiryDate">Expiry Date (MM/YY)</label>
+                                    <input
+                                        id="expiryDate"
+                                        type="text"
+                                        maxLength="5"
+                                        value={expiryDate}
+                                        onChange={(e) => setExpiryDate(e.target.value)}
+                                        placeholder="MM/YY"
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="cvv">CVV</label>
+                                    <input
+                                        id="cvv"
+                                        type="text"
+                                        maxLength="3"
+                                        value={cvv}
+                                        onChange={(e) => setCvv(e.target.value)}
+                                        placeholder="3-digit CVV"
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={saveCard}
+                                            onChange={() => setSaveCard(!saveCard)}
+                                        />
+                                        Save this card for future use
+                                    </label>
+                                </div>
+                            </>
+                        )}
+
                         <button onClick={handleCheckout} className="checkout-button">
                             Place Order
                         </button>

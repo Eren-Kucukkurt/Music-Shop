@@ -10,10 +10,11 @@ from rest_framework.serializers import Serializer, CharField, EmailField
 from rest_framework.permissions import AllowAny
 ## import the cart class
 from cart.models import Cart, CartItem
-from .models import Profile
+from .models import *
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer
+from .serializers import *
+from rest_framework.permissions import IsAuthenticated
 
 class LoginView(APIView):
     
@@ -88,3 +89,49 @@ class AssignRoleView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+class CreditCardListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Fetch all saved credit cards for the logged-in user."""
+        cards = CreditCard.objects.filter(user=request.user)
+        serializer = CreditCardSerializer(cards, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Save a new credit card."""
+        card_number = request.data.get('card_number')
+        expiry_date = request.data.get('expiry_date')
+        card_name = request.data.get('card_name', 'Unnamed Card')
+        cvv = request.data.get('cvv')
+
+        if not card_number or not expiry_date or not cvv:
+            return Response({"error": "Card number, expiry date, and CVV are required."}, status=400)
+
+        try:
+            # Create and save the credit card
+            new_card = CreditCard(
+                user=request.user,
+                card_name=card_name,
+                encrypted_card_number=card_number,
+                encrypted_expiry_date=expiry_date,
+                encrypted_cvv=cvv
+            )
+            new_card.full_clean()  # Validate card details
+            new_card.save()
+
+            serializer = CreditCardSerializer(new_card)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class CreditCardListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Retrieve all credit cards for the authenticated user."""
+        credit_cards = CreditCard.objects.filter(user=request.user)
+        serializer = CreditCardSerializer(credit_cards, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
