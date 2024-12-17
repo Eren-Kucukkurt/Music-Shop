@@ -1,0 +1,19 @@
+.product-manager {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .product-manager h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .product-manager section {
+    margin-bottom: 40px;
+  }
+  
+  .product-manager h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  

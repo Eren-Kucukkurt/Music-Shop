@@ -39,8 +39,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
           <Route path="/product/:productId" element={<ProductDetails />} />
-          <Route path="/admin/add-product" element={<AdminRoute><AddProductForm /></AdminRoute>} />
-          <Route path="/admin/reviews" element={<AdminRoute><AdminReviewManager /></AdminRoute>} />
+          <Route path="/productManager/addProduct" element={<AdminRoute><AddProductForm /></AdminRoute>} />
+          <Route path="/productManager/reviews" element={<AdminRoute><AdminReviewManager /></AdminRoute>} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/mockbank" element={<MockBank />} />

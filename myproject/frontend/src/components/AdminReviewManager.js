@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AdminReviewManager.css';
 
@@ -6,6 +7,7 @@ const AdminReviewManager = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Hook to navigate back
 
   useEffect(() => {
     // Fetch all reviews from the backend
@@ -69,6 +71,15 @@ const AdminReviewManager = () => {
 
   return (
     <div className="admin-review-manager">
+      {/* Back Button */}
+      <button
+        className="btn btn-secondary"
+        onClick={() => navigate('/productManager')}
+        style={{ marginBottom: '20px' }}
+      >
+        Back to Product Manager
+      </button>
+
       <h2>Manage Reviews</h2>
       {reviews.map((review) => (
         <div key={review.id} className="review-item">

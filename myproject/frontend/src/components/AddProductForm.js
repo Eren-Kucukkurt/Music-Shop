@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './AddProductForm.css'; // Optional CSS for styling
+import { useNavigate } from 'react-router-dom';
 
 const AddProductForm = () => {
   const [formData, setFormData] = useState({
@@ -15,7 +16,7 @@ const AddProductForm = () => {
     distributor_info: '',
     image: null,
   });
-
+  const navigate = useNavigate();
   const [feedback, setFeedback] = useState(null);
 
   const handleChange = (e) => {
@@ -66,6 +67,17 @@ const AddProductForm = () => {
 
   return (
     <div className="add-product-form">
+      {/* Back Button */}
+      <button
+        className="btn btn-secondary"
+        onClick={() => navigate('/productManager')}
+        style={{ display: 'block', // Required for margin auto
+          margin: '0 auto',
+          marginBottom: '20px'
+        }}
+      >
+        Back to Product Manager
+      </button>
       <h2>Add New Product</h2>
       {feedback && (
         <div className={`feedback ${feedback.type}`}>
