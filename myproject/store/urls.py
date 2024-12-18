@@ -1,9 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProductViewSet
-from .views import ReviewViewSet
-from .views import AddProductView
-from .views import AdminReviewView
+from .views import *
 
 
 # Create a router and register the ProductViewSet with it
@@ -16,4 +13,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/add-product/', AddProductView.as_view(), name='add-product'),
     path('api/admin-reviews/', AdminReviewView.as_view(), name='admin-reviews'),
+    path('products/', ProductListView.as_view(), name='product-list'),
+    path('products/<int:pk>/update-discount/', UpdateDiscountView.as_view(), name='update-discount'),
 ]

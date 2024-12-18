@@ -15,6 +15,9 @@ from rest_framework.views import APIView
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
+from rest_framework.generics import ListAPIView, UpdateAPIView
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import serializers
 
 
 class IsPurchaser(permissions.BasePermission):
@@ -139,4 +142,65 @@ class AdminReviewView(APIView):
 
         except Review.DoesNotExist:
             return Response({"error": "Review not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class ProductListView(ListAPIView):
+    """
+    Fetch products with optional search functionality.
+    """
+    print("ProductListView")
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    #permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        print("get_queryset")
+        search_query = self.request.query_params.get('search', '')
+        return self.queryset.filter(name__icontains=search_query)
+
+
+class UpdateDiscountView(UpdateAPIView):
+    """
+    Update discount details for a specific product.
+    """
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+    from decimal import Decimal
+from rest_framework.exceptions import ValidationError
+
+def perform_update(self, serializer):
+    data = self.request.data
+
+    try:
+        # Fetch and validate discount_percentage if present
+        discount_percentage = data.get('discount_percentage', None)
+        if discount_percentage is not None:
+            discount_percentage = float(discount_percentage)
+            if discount_percentage < 0 or discount_percentage > 100:
+                raise ValidationError({'discount_percentage': 'Must be between 0 and 100.'})
+
+        # Fetch and validate price if present
+        price = data.get('price', None)
+        if price is not None:
+            price = float(price)
+            if price <= 0:
+                raise ValidationError({'price': 'Price must be greater than 0.'})
+
+        # Validate discount dates if provided
+        discount_start_date = data.get('discount_start_date')
+        discount_end_date = data.get('discount_end_date')
+        if discount_start_date and discount_end_date:
+            if discount_start_date > discount_end_date:
+                raise ValidationError({'discount_dates': 'End date must be after start date.'})
+
+        # Save only the fields that were sent in the request
+        serializer.save(
+            discount_percentage=discount_percentage if discount_percentage is not None else serializer.instance.discount_percentage,
+            discount_start_date=discount_start_date if discount_start_date is not None else serializer.instance.discount_start_date,
+            discount_end_date=discount_end_date if discount_end_date is not None else serializer.instance.discount_end_date,
+            price=price if price is not None else serializer.instance.price,
+        )
+
+    except ValueError as e:
+        raise ValidationError({'error': str(e)})
 

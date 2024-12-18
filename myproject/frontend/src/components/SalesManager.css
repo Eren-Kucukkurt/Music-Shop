@@ -1,0 +1,29 @@
+.sales-manager-dashboard {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .sales-manager-dashboard h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .sales-manager-dashboard p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+  
+  .sales-manager-dashboard button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .sales-manager-dashboard button:hover {
+    background-color: #0056b3;
+  }
+  

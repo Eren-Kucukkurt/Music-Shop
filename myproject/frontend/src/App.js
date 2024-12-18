@@ -17,7 +17,9 @@ import RoleAssignment from './components/RoleAssignment.js';
 import ProductManager from './components/ProductManager';
 import SalesManager from './components/SalesManager';
 import withRoleGuard from './hoc/withRoleGuard'; // Import the role guard HOC
+import ProductManagement from './components/ProductManagement';
 import UnauthorizedPage from './components/UnauthorizedPage'; // Page for unauthorized users
+
 
 // Wrap the components with the role guard
 const ProtectedProductManager = withRoleGuard(ProductManager, ['PRODUCT_MANAGER']);
@@ -49,6 +51,7 @@ function App() {
           <Route path="/productManager" element={<ProtectedProductManager />} />
           <Route path="/salesManager" element={<ProtectedSalesManager />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route path="/product-management" element={<ProductManagement />} />
         </Routes>
       </div>
     </Router>
