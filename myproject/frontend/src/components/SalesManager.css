@@ -26,4 +26,18 @@
   .sales-manager-dashboard button:hover {
     background-color: #0056b3;
   }
+  .sales-manager-dashboard button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .sales-manager-dashboard button:hover {
+    background-color: #218838;
+  }
   

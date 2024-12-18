@@ -12,6 +12,9 @@ const SalesManager = () => {
 
       {/* Button to navigate to Discount Management */}
       <button onClick={() => navigate('/product-management')}>Manage Products</button>
+      
+      {/* Button to navigate to Invoice Viewer */}
+      <button onClick={() => navigate('/invoice-viewer')}>View Invoices</button>
     </div>
   );
 };

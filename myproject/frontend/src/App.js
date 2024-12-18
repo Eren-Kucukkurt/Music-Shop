@@ -21,6 +21,7 @@ import ProductManagement from './components/ProductManagement';
 import UnauthorizedPage from './components/UnauthorizedPage'; // Page for unauthorized users
 import Wishlist from './components/Wishlist.js'; // Update the path if Wishlist is in a different directory
 import RequireAuth from './middleware'; // Assuming `RequireAuth` is in the middleware folder
+import InvoiceViewer from './components/InvoiceViewer';
 
 
 // Wrap the components with the role guard
@@ -55,6 +56,7 @@ function App() {
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/product-management" element={<ProductManagement />} />
+          <Route path="/invoice-viewer" element={<InvoiceViewer />} />
 
         </Routes>
       </div>

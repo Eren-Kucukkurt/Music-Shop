@@ -16,6 +16,11 @@ from users.serializers import *
 from users.utils import get_fernet
 from .tasks import *
 from rest_framework.exceptions import NotAuthenticated
+from rest_framework.permissions import IsAuthenticated
+from datetime import datetime
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from django.http import HttpResponse
 
 
 class CartViewSet(viewsets.ViewSet):
@@ -378,3 +383,58 @@ class LatestOrderView(APIView):
         except Order.DoesNotExist:
             return Response({"detail": "No orders found."}, status=404)
 
+from datetime import datetime
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def fetch_invoices(request):
+    """
+    Fetch orders between two dates.
+    """
+    start_date = request.query_params.get('start_date')
+    end_date = request.query_params.get('end_date')
+
+    if not start_date or not end_date:
+        return Response({'error': 'Start date and end date are required.'}, status=400)
+
+    try:
+        start_date = datetime.fromisoformat(start_date)
+        end_date = datetime.fromisoformat(end_date)
+    except ValueError:
+        return Response({'error': 'Invalid date format. Use YYYY-MM-DD.'}, status=400)
+
+    orders = Order.objects.filter(created_at__range=(start_date, end_date))
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def fetch_invoice_by_id(request, order_id):
+    """
+    Fetch a specific invoice by order ID.
+    """
+    try:
+        order = Order.objects.get(id=order_id)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found.'}, status=404)
+
+@api_view(['GET'])
+
+def download_invoice_pdf(request, order_id):
+    """
+    Generate and download PDF invoice for a specific order.
+    """
+    from .utils import generate_invoice_pdf
+
+    try:
+        order = Order.objects.get(id=order_id)
+        pdf_path = generate_invoice_pdf(order)
+        with open(pdf_path, 'rb') as pdf_file:
+            response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
+        os.remove(pdf_path)  # Clean up
+        return response
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found.'}, status=404)

@@ -15,4 +15,7 @@ urlpatterns = [
     path('orders/latest/', LatestOrderView.as_view(), name='latest-order'),
     path('cards/', CreditCardListCreateView.as_view(), name='credit-card-list'),
     path('credit-cards/', CreditCardListView.as_view(), name='credit-cards'),
+    path('api/cart/fetch-invoices/', fetch_invoices, name='fetch_invoices'),
+    path('api/cart/download-invoice-pdf/<int:order_id>/', download_invoice_pdf, name='download_invoice_pdf'),
+    path('api/cart/fetch-invoice/<int:order_id>/', fetch_invoice_by_id, name='fetch_invoice_by_id'),
 ]
