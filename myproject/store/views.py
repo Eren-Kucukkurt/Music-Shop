@@ -15,6 +15,9 @@ from rest_framework.views import APIView
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
+
+from .models import Wishlist
+from .serializers import WishlistSerializer
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import serializers
@@ -142,6 +145,35 @@ class AdminReviewView(APIView):
 
         except Review.DoesNotExist:
             return Response({"error": "Review not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class WishlistView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Retrieve the user's wishlist
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        serializer = WishlistSerializer(wishlist)
+        return Response(serializer.data)
+
+    def post(self, request):
+        # Add a product to the user's wishlist
+        product_id = request.data.get("product_id")
+        if not product_id:
+            return Response({"error": "Product ID is required."}, status=400)
+
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        wishlist.products.add(product_id)
+        return Response({"message": "Product added to wishlist."})
+
+    def delete(self, request):
+        # Remove a product from the user's wishlist
+        product_id = request.data.get("product_id")
+        if not product_id:
+            return Response({"error": "Product ID is required."}, status=400)
+
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        wishlist.products.remove(product_id)
+        return Response({"message": "Product removed from wishlist."})
 
 class ProductListView(ListAPIView):
     """

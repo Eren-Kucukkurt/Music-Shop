@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import *
 from django.db.models import Avg
+from decimal import Decimal
+from .models import Wishlist
 
 class ReviewSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')  # Fetch the username from the related user
@@ -35,7 +37,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 
-from decimal import Decimal
+
 
 class ProductSerializer(serializers.ModelSerializer): 
     discounted_price = serializers.SerializerMethodField()  # Dynamically calculate discounted price
@@ -78,3 +80,10 @@ class ProductSerializer(serializers.ModelSerializer):
         """
         return obj.get_discounted_price()
 
+
+class WishlistSerializer(serializers.ModelSerializer):
+    products = serializers.PrimaryKeyRelatedField(many=True, queryset=Product.objects.all())
+
+    class Meta:
+        model = Wishlist
+        fields = ['id', 'products']

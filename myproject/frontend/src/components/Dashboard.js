@@ -6,6 +6,8 @@ import './Dashboard.css';
 import { Link, useNavigate } from 'react-router-dom'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+
 
 function Dashboard() {
   const [showCategories, setShowCategories] = useState(false);
@@ -163,6 +165,16 @@ function Dashboard() {
     setShowFilterOptions(!showFilterOptions);
   };
 
+  const handleWishlistClick = () => {
+    if (isAuthenticated) {
+      navigate('/wishlist'); // If authenticated, navigate to wishlist
+    } else {
+      if (window.confirm("You need to log in to create and manage your wishlist. Do you want to log in now?")) {
+        navigate('/login', { state: { from: '/wishlist' } }); // Redirect to login page
+      }
+    }
+  };
+  
   return (
     <div className="dashboard-container">
       <aside className="sidebar">
@@ -180,6 +192,9 @@ function Dashboard() {
             <Link to="/shoppingcart" className="cart-link">
               <FontAwesomeIcon icon={faCartShopping} className="cart-icon" />
             </Link>
+            <button onClick={handleWishlistClick} className="wishlist-button">
+              <FontAwesomeIcon icon={faHeart} className="wishlist-icon" /> Wishlist
+            </button>
 
             {!isAuthenticated ? (
               <div className="login-register-container" ref={dropdownRef}>

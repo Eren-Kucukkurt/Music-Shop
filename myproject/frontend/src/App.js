@@ -19,6 +19,8 @@ import SalesManager from './components/SalesManager';
 import withRoleGuard from './hoc/withRoleGuard'; // Import the role guard HOC
 import ProductManagement from './components/ProductManagement';
 import UnauthorizedPage from './components/UnauthorizedPage'; // Page for unauthorized users
+import Wishlist from './components/Wishlist.js'; // Update the path if Wishlist is in a different directory
+import RequireAuth from './middleware'; // Assuming `RequireAuth` is in the middleware folder
 
 
 // Wrap the components with the role guard
@@ -51,7 +53,9 @@ function App() {
           <Route path="/productManager" element={<ProtectedProductManager />} />
           <Route path="/salesManager" element={<ProtectedSalesManager />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/product-management" element={<ProductManagement />} />
+
         </Routes>
       </div>
     </Router>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Review, Purchase
+from .models import Product, Review, Purchase, Wishlist
 
 
 @admin.register(Product)
@@ -27,3 +27,10 @@ class PurchaseAdmin(admin.ModelAdmin):
     list_display = ('user', 'product', 'quantity', 'purchase_date')
     list_filter = ('purchase_date',)
     search_fields = ('user__username', 'product__name', 'product__model')
+
+
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ('user',)
+    filter_horizontal = ('products',)  # This makes managing ManyToMany relationships easier in the admin
+

@@ -9,6 +9,9 @@ from django.utils.timezone import now
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from django.core.mail import send_mail
+
+
 class Product(models.Model):
     name = models.CharField(max_length=255, default="Unnamed Product")
     category = models.CharField(max_length=100, default="Uncategorized")
@@ -125,3 +128,10 @@ class Purchase(models.Model):
 
     def __str__(self):
         return f"{self.user.username} purchased {self.product.name}"
+
+class Wishlist(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="wishlist")
+    products = models.ManyToManyField('Product', related_name="wishlisted_by")
+
+    def __str__(self):
+        return f"Wishlist of {self.user.username}"

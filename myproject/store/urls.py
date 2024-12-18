@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/add-product/', AddProductView.as_view(), name='add-product'),
     path('api/admin-reviews/', AdminReviewView.as_view(), name='admin-reviews'),
+    path('api/wishlist/', WishlistView.as_view(), name='wishlist'),
     path('products/', ProductListView.as_view(), name='product-list'),
     path('products/<int:pk>/update-discount/', UpdateDiscountView.as_view(), name='update-discount'),
 ]
