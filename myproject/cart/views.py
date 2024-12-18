@@ -438,3 +438,116 @@ def download_invoice_pdf(request, order_id):
         return response
     except Order.DoesNotExist:
         return Response({'error': 'Order not found.'}, status=404)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def cancel_order(request, order_id):
+    """
+    Cancel an order if it is in the PROCESSING state.
+    """
+    try:
+        order = Order.objects.get(id=order_id, user=request.user)
+
+        if order.status != 'PROCESSING':
+            return Response({'error': 'Order cannot be canceled as it is not in the PROCESSING state.'}, status=400)
+
+        order.cancel_order()
+        return Response({'success': f'Order {order_id} canceled successfully.'})
+
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found.'}, status=404)
+    except ValueError as e:
+        return Response({'error': str(e)}, status=400)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def request_refund(request, order_item_id):
+    """
+    Request a refund for a specific order item.
+    """
+    try:
+        order_item = OrderItem.objects.get(id=order_item_id, order__user=request.user)
+
+        # Check if the refund window is still valid
+        if (timezone.now() - order_item.order.created_at).days > 30:
+            return Response({'error': 'Refund window has expired.'}, status=400)
+
+        # Get quantity and reason from the request
+        quantity = int(request.data.get('quantity', 0))
+        reason = request.data.get('reason', '')
+
+        # Validate refund quantity
+        refundable_quantity = order_item.refundable_quantity()
+        if quantity <= 0 or quantity > refundable_quantity:
+            return Response({
+                'error': f'Invalid return quantity. You can only refund up to {refundable_quantity} item(s).'
+            }, status=400)
+
+        # Create the refund request
+        refund = Refund.objects.create(
+            order_item=order_item,
+            user=request.user,
+            requested_quantity=quantity,
+            reason=reason,
+        )
+
+        return Response({'success': f'Refund request for {quantity} item(s) submitted.', 'refund_id': refund.id})
+
+    except OrderItem.DoesNotExist:
+        return Response({'error': 'Order item not found.'}, status=404)
+    except ValueError as e:
+        return Response({'error': str(e)}, status=400)
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def approve_refund(request, refund_id):
+    """
+    Approve a refund request.
+    """
+    try:
+        refund = Refund.objects.get(id=refund_id)
+        if refund.status != 'PENDING':
+            return Response({'error': 'Refund request is not pending.'}, status=400)
+
+        refund.approve()
+        return Response({'success': 'Refund approved.', 'refund_amount': refund.refund_amount})
+    except Refund.DoesNotExist:
+        return Response({'error': 'Refund not found.'}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deny_refund(request, refund_id):
+    """
+    Deny a refund request.
+    """
+    try:
+        refund = Refund.objects.get(id=refund_id)
+        if refund.status != 'PENDING':
+            return Response({'error': 'Refund request is not pending.'}, status=400)
+
+        refund.deny()
+        return Response({'success': 'Refund denied.'})
+    except Refund.DoesNotExist:
+        return Response({'error': 'Refund not found.'}, status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def fetch_refunds(request):
+    """
+    Fetch all refund requests with optional status filtering.
+    Only accessible by Sales Managers.
+    """
+    if not request.user.profile.role == 'SALES_MANAGER':
+        return Response({'error': 'You do not have permission to access this resource.'}, status=403)
+
+    status = request.query_params.get('status')  # Filter by status if provided
+    refunds = Refund.objects.all()
+
+    if status:
+        refunds = refunds.filter(status=status)
+
+    serializer = RefundSerializer(refunds, many=True)
+    return Response(serializer.data)

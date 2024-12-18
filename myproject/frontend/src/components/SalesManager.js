@@ -15,6 +15,9 @@ const SalesManager = () => {
       
       {/* Button to navigate to Invoice Viewer */}
       <button onClick={() => navigate('/invoice-viewer')}>View Invoices</button>
+
+      {/* Button to navigate to Refund Management */}
+      <button onClick={() => navigate('/refund-management')}>Manage Refunds</button>
     </div>
   );
 };

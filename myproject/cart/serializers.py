@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cart, CartItem, Order, OrderItem
+from .models import *
 
 class CartItemSerializer(serializers.ModelSerializer):
     
@@ -40,13 +40,24 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'session_id', 'items', 'created_at']
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    product_name = serializers.ReadOnlyField(source='product.name')  # Fetch the product name
+    product_name = serializers.ReadOnlyField(source='product.name')
     original_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    refunded_quantity = serializers.IntegerField(read_only=True)
+
+    # Optionally, if you want to directly include a calculated refundable quantity:
+    refundable_quantity = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'product_name', 'quantity', 'original_price', 'price']
+        fields = [
+            'id', 'product', 'product_name', 'quantity', 'original_price', 'price',
+            'refunded_quantity', 'refundable_quantity'
+        ]
+
+    def get_refundable_quantity(self, obj):
+        return obj.quantity - obj.refunded_quantity
+
 
 
 
@@ -64,3 +75,28 @@ class OrderSerializer(serializers.ModelSerializer):
         Calculate the total price for the order from all OrderItems.
         """
         return sum(item.price for item in obj.items.all())
+
+class RefundSerializer(serializers.ModelSerializer):
+    order_item = serializers.SerializerMethodField()
+    user = serializers.StringRelatedField()  # To show the username
+
+    class Meta:
+        model = Refund
+        fields = [
+            'id',
+            'order_item',
+            'user',
+            'requested_quantity',
+            'requested_at',
+            'resolved_at',
+            'status',
+            'refund_amount',
+            'reason',
+        ]
+
+    def get_order_item(self, obj):
+        """Return minimal product details for the order item."""
+        return {
+            'product_name': obj.order_item.product.name,
+            'order_id': obj.order_item.order.id,
+        }
