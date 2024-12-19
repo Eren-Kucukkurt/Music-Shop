@@ -200,6 +200,26 @@ class ProductListView(ListAPIView):
         print("get_queryset")
         search_query = self.request.query_params.get('search', '')
         return self.queryset.filter(name__icontains=search_query)
+    
+class UpdateProductView(APIView):
+    def put(self, request, pk, *args, **kwargs):
+        try:
+            product = Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Preserve the existing image if no new image is provided
+        data = request.data.copy()
+        if not data.get('image'):
+            data.pop('image', None)
+
+        serializer = ProductSerializer(product, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
 
 
 class UpdateDiscountView(UpdateAPIView):

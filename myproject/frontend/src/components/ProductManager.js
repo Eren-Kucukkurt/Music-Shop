@@ -28,11 +28,14 @@ const ProductManager = () => {
         onClick= {() => navigate('/productManager/addProduct')}
         >
         Add Product</button>
-        <button className="btn btn-secondary">Update Product</button>
+        <button className="btn btn-secondary"
+        onClick={() => navigate('/productManager/updateProduct')}
+        >Update Product</button>
         <button
-  className="btn btn-danger"
-  onClick={() => navigate('/productManager/removeProduct')}
->
+        className="btn btn-danger"
+         onClick={() => navigate('/productManager/removeProduct')}
+        >
+        
   Remove Product
 </button>
 

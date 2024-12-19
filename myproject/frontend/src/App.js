@@ -25,7 +25,7 @@ import InvoiceViewer from './components/InvoiceViewer';
 import RefundManager from './components/RefundManager.js';
 import RemoveProduct from './components/RemoveProduct.js'; // Update the path if RemoveProduct is in a different directory
 import RevenueProfitChart from './components/RevenueProfitChart.js'; // Update the path if RevenueProfitChart is in a different directory
-
+import UpdateProductForm from './components/UpdateProductForm.js'; // Update the path if UpdateProductForm is in a different directory
 
 // Wrap the components with the role guard
 const ProtectedProductManager = withRoleGuard(ProductManager, ['PRODUCT_MANAGER']);
@@ -63,6 +63,7 @@ function App() {
           <Route path="/refund-management" element={<RefundManager />} />
           <Route path="/productManager/removeProduct" element={<RemoveProduct />} />
           <Route path="/salesManager/revenue-analysis" element={<RevenueProfitChart />} />
+          <Route path= "/productManager/updateProduct" element={<UpdateProductForm />} />
 
 
         </Routes>
