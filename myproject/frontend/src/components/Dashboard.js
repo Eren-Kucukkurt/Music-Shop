@@ -8,7 +8,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
-
 function Dashboard() {
   const [showCategories, setShowCategories] = useState(false);
   const [showLoginDropdown, setShowLoginDropdown] = useState(false);
@@ -174,14 +173,30 @@ function Dashboard() {
       }
     }
   };
-  
+
   return (
     <div className="dashboard-container">
       <aside className="sidebar">
         <h3>Navigation</h3>
         <ul>
           <li><a href="/">Home</a></li>
-          <li><a href="/profile">Profile</a></li>
+          <li>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (isAuthenticated) {
+                  navigate('/profile');
+                } else {
+                  if (window.confirm("You need to log in to access your profile. Do you want to log in now?")) {
+                    navigate('/login', { state: { from: '/profile' } }); // Redirect to login with the intended page
+                  }
+                }
+              }}
+            >
+              Profile
+            </a>
+          </li>
           <li><a href="/orders">Orders</a></li>
           <li><a href="/settings">Settings</a></li>
         </ul>
@@ -242,14 +257,14 @@ function Dashboard() {
             </button>
             {showCategories && (
               <div className="categories-dropdown" ref={dropdownRef}>
-              <ul>
-                <li onClick={() => handleCategoryClick('Guitars')}>Guitars</li>
-                <li onClick={() => handleCategoryClick('Pianos')}>Pianos</li>
-                <li onClick={() => handleCategoryClick('Drums')}>Drums</li>
-                <li onClick={() => handleCategoryClick('Wind Instruments')}>Wind Instruments</li>
-                <li onClick={() => handleCategoryClick('')}>All Categories</li>
-              </ul>
-            </div>
+                <ul>
+                  <li onClick={() => handleCategoryClick('Guitars')}>Guitars</li>
+                  <li onClick={() => handleCategoryClick('Pianos')}>Pianos</li>
+                  <li onClick={() => handleCategoryClick('Drums')}>Drums</li>
+                  <li onClick={() => handleCategoryClick('Wind Instruments')}>Wind Instruments</li>
+                  <li onClick={() => handleCategoryClick('')}>All Categories</li>
+                </ul>
+              </div>
             )}
             <button onClick={toggleFilterOptions} className="filter-button">Filter</button>
             {showFilterOptions && (

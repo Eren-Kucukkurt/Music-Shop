@@ -15,6 +15,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, permissions
 
 class LoginView(APIView):
     
@@ -135,3 +136,26 @@ class CreditCardListView(APIView):
         credit_cards = CreditCard.objects.filter(user=request.user)
         serializer = CreditCardSerializer(credit_cards, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class ProfileDetailView(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+    def get_object(self):
+        return self.request.user.profile
+    
+class ProfileUpdateView(APIView):
+    def put(self, request):
+        try:
+            profile = Profile.objects.get(user=request.user)
+        except Profile.DoesNotExist:
+            return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
