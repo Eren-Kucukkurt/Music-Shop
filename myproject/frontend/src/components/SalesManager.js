@@ -18,6 +18,9 @@ const SalesManager = () => {
 
       {/* Button to navigate to Refund Management */}
       <button onClick={() => navigate('/refund-management')}>Manage Refunds</button>
+      
+      {/* Button to navigate to Revenue and Profit Analysis */}
+      <button onClick={() => navigate('/salesManager/revenue-analysis')}>Revenue and Profit Analysis</button>
     </div>
   );
 };

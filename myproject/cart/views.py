@@ -21,6 +21,10 @@ from datetime import datetime
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.http import HttpResponse
+import os
+from django.utils import timezone
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
+from django.db.models.functions import TruncDay
 
 
 class CartViewSet(viewsets.ViewSet):
@@ -408,7 +412,7 @@ def fetch_invoices(request):
         return Response({'error': 'Invalid date format. Use YYYY-MM-DD.'}, status=400)
 
     orders = Order.objects.filter(created_at__range=(start_date, end_date))
-    serializer = OrderSerializer(orders, many=True)
+    serializer = OrderSerializer(orders, many=True, context={'request': request})
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -555,3 +559,70 @@ def fetch_refunds(request):
 
     serializer = RefundSerializer(refunds, many=True)
     return Response(serializer.data)
+
+class RevenueProfitAnalysisView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        # Filter by date range and exclude canceled orders
+        order_items = OrderItem.objects.filter(
+            order__created_at__range=[start_date, end_date]
+        ).exclude(order__status="CANCELED")
+
+        # Adjust calculations for refunded quantities
+        revenue = (
+            order_items.aggregate(
+                total_revenue=Sum(
+                    ExpressionWrapper(
+                        F('price') * (F('quantity') - F('refunded_quantity')),
+                        output_field=DecimalField(),
+                    )
+                )
+            )['total_revenue']
+            or 0
+        )
+
+        total_cost = (
+            order_items.aggregate(
+                total_cost=Sum(
+                    ExpressionWrapper(
+                        F('product__cost') * (F('quantity') - F('refunded_quantity')),
+                        output_field=DecimalField(),
+                    )
+                )
+            )['total_cost']
+            or 0
+        )
+
+        profit = revenue - total_cost
+
+        # Group data by date, accounting for refunds
+        revenue_by_date = (
+            order_items.annotate(date=TruncDay('order__created_at'))
+            .values('date')
+            .annotate(
+                revenue=Sum(
+                    ExpressionWrapper(
+                        F('price') * (F('quantity') - F('refunded_quantity')),
+                        output_field=DecimalField(),
+                    )
+                ),
+                cost=Sum(
+                    ExpressionWrapper(
+                        F('product__cost') * (F('quantity') - F('refunded_quantity')),
+                        output_field=DecimalField(),
+                    )
+                ),
+                refunds=Sum(F('refunded_quantity') * F('price')),
+            )
+            .order_by('date')
+        )
+
+        return Response({
+            "total_revenue": revenue,
+            "total_profit": profit,
+            "revenue_by_date": revenue_by_date,
+        })

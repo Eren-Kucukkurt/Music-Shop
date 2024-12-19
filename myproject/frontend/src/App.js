@@ -24,6 +24,7 @@ import RequireAuth from './middleware'; // Assuming `RequireAuth` is in the midd
 import InvoiceViewer from './components/InvoiceViewer';
 import RefundManager from './components/RefundManager.js';
 import RemoveProduct from './components/RemoveProduct.js'; // Update the path if RemoveProduct is in a different directory
+import RevenueProfitChart from './components/RevenueProfitChart.js'; // Update the path if RevenueProfitChart is in a different directory
 
 
 // Wrap the components with the role guard
@@ -61,6 +62,8 @@ function App() {
           <Route path="/invoice-viewer" element={<InvoiceViewer />} />
           <Route path="/refund-management" element={<RefundManager />} />
           <Route path="/productManager/removeProduct" element={<RemoveProduct />} />
+          <Route path="/salesManager/revenue-analysis" element={<RevenueProfitChart />} />
+
 
         </Routes>
       </div>

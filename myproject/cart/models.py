@@ -36,6 +36,7 @@ class Order(models.Model):
         ('DELIVERED', 'Delivered'),
         ('CANCELED', 'Canceled'),
     ]
+
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PROCESSING')
@@ -62,17 +63,18 @@ class Order(models.Model):
 
         # Return items to stock
         for item in self.items.all():  # 'items' is the related_name in OrderItem
-            item.product.quantity_in_stock += item.quantity
-            item.product.save()
+            if item.product:
+                item.product.quantity_in_stock += item.quantity
+                item.product.save()
 
         # Update the order status
         self.status = 'CANCELED'
         self.last_status_change = now()
         self.save()
 
-
     def __str__(self):
         return f"Order {self.id} - {self.get_status_display()}"
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
@@ -84,7 +86,6 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)  # Final price after discount
     original_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
-    # New fields for returns and refunds
     refunded_quantity = models.PositiveIntegerField(default=0)  # Track refunded items
     is_return_requested = models.BooleanField(default=False)
     is_return_approved = models.BooleanField(default=False)
@@ -94,14 +95,13 @@ class OrderItem(models.Model):
         """Calculate the quantity that can still be refunded."""
         return max(0, self.quantity - self.refunded_quantity)
 
-
     def save(self, *args, **kwargs):
-        # Snapshot product details at the time of order creation
+        """Snapshot product details at the time of order creation."""
         if self.product and self._state.adding:
             self.product_name = self.product.name
             self.product_image = self.product.image
             self.product_price = self.product.price
-        # Store the original price and apply the discount if active
+
         self.original_price = self.product.price if self.product else None
         self.price = (self.product.get_discounted_price() * self.quantity) if self.product else 0
         super().save(*args, **kwargs)
@@ -112,6 +112,7 @@ class OrderItem(models.Model):
             raise ValueError("Return can only be requested for delivered items.")
         if quantity > self.refundable_quantity():
             raise ValueError("Return quantity cannot exceed the refundable quantity.")
+
         self.is_return_requested = True
         self.requested_return_quantity = quantity
         self.save()
@@ -125,19 +126,16 @@ class OrderItem(models.Model):
 
         self.is_return_requested = False
         self.is_return_approved = True
-        # Add the returned quantity back to stock
+
         if self.product:
             self.product.quantity_in_stock += self.requested_return_quantity
             self.product.save()
 
-        # Update refunded quantity
         self.refunded_quantity += self.requested_return_quantity
         self.save()
 
     def __str__(self):
         return f"{self.quantity} x {self.product_name or 'Deleted Product'} (Order {self.order.id})"
-
-
 
 
 class Refund(models.Model):
@@ -147,7 +145,7 @@ class Refund(models.Model):
         ('DENIED', 'Denied'),
     ]
 
-    order_item = models.ForeignKey('cart.OrderItem', on_delete=models.CASCADE, related_name='refunds')
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, related_name='refunds')
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # Customer requesting the refund
     requested_quantity = models.PositiveIntegerField()  # Quantity to be refunded
     requested_at = models.DateTimeField(auto_now_add=True)  # When the refund was requested
@@ -170,14 +168,13 @@ class Refund(models.Model):
         if self.requested_quantity > refundable_quantity:
             raise ValueError("Refund quantity exceeds the refundable quantity.")
 
-        # Update refund status and stock
         self.status = 'APPROVED'
         self.resolved_at = now()
         self.refund_amount = self.calculate_refund_amount()
 
-        # Update stock and refunded quantity
-        self.order_item.product.quantity_in_stock += self.requested_quantity
-        self.order_item.product.save()
+        if self.order_item.product:
+            self.order_item.product.quantity_in_stock += self.requested_quantity
+            self.order_item.product.save()
 
         self.order_item.refunded_quantity += self.requested_quantity
         self.order_item.save()

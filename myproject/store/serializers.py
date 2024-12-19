@@ -39,7 +39,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 
-class ProductSerializer(serializers.ModelSerializer): 
+class ProductSerializer(serializers.ModelSerializer):
     discounted_price = serializers.SerializerMethodField()  # Dynamically calculate discounted price
 
     class Meta:
@@ -53,6 +53,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'quantity_in_stock',
             'price',
+            'cost',  # New cost field added
             'discount_percentage',      # Added discount percentage
             'discount_start_date',      # Added start date for discount
             'discount_end_date',        # Added end date for discount
@@ -79,6 +80,7 @@ class ProductSerializer(serializers.ModelSerializer):
         Calculate the discounted price if discount is active.
         """
         return obj.get_discounted_price()
+
 
 
 class WishlistSerializer(serializers.ModelSerializer):

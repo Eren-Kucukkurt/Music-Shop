@@ -20,12 +20,11 @@ class Product(models.Model):
     description = models.TextField(null=True, blank=True)
     quantity_in_stock = models.PositiveIntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # New cost field
     warranty_status = models.CharField(max_length=100, default="No Warranty")
     distributor_info = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
-    
 
-    
     # Discount Fields
     discount_percentage = models.DecimalField(
         max_digits=5, decimal_places=2, default=0.00,
@@ -84,6 +83,7 @@ class Product(models.Model):
         else:
             self.rating = 0  # No reviews, set rating to 0
         self.save()
+
 
 
 class Review(models.Model):

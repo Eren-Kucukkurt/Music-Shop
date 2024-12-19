@@ -23,5 +23,6 @@ urlpatterns = [
     path('api/cart/approve-refund/<int:refund_id>/', approve_refund, name='approve_refund'),
     path('api/cart/deny-refund/<int:refund_id>/', deny_refund, name='deny_refund'),
     path('api/cart/refunds/', fetch_refunds, name='fetch_refunds'),
+    path('api/revenue-profit-analysis/', RevenueProfitAnalysisView.as_view(), name='revenue-profit-analysis'),
 
 ]

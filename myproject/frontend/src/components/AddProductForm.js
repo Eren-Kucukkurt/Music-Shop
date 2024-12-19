@@ -12,6 +12,7 @@ const AddProductForm = () => {
     description: '',
     quantity_in_stock: '',
     price: '',
+    cost: '', // New field for cost
     warranty_status: '',
     distributor_info: '',
     image: null,
@@ -55,6 +56,7 @@ const AddProductForm = () => {
         description: '',
         quantity_in_stock: '',
         price: '',
+        cost: '', // Reset cost
         warranty_status: '',
         distributor_info: '',
         image: null,
@@ -71,9 +73,10 @@ const AddProductForm = () => {
       <button
         className="btn btn-secondary"
         onClick={() => navigate('/productManager')}
-        style={{ display: 'block', // Required for margin auto
+        style={{
+          display: 'block', // Required for margin auto
           margin: '0 auto',
-          marginBottom: '20px'
+          marginBottom: '20px',
         }}
       >
         Back to Product Manager
@@ -135,6 +138,14 @@ const AddProductForm = () => {
           name="price"
           placeholder="Price"
           value={formData.price}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="number"
+          name="cost"
+          placeholder="Cost"
+          value={formData.cost}
           onChange={handleChange}
           required
         />
