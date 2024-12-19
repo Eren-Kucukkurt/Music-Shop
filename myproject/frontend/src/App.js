@@ -23,6 +23,7 @@ import Wishlist from './components/Wishlist.js'; // Update the path if Wishlist 
 import RequireAuth from './middleware'; // Assuming `RequireAuth` is in the middleware folder
 import InvoiceViewer from './components/InvoiceViewer';
 import RefundManager from './components/RefundManager.js';
+import RemoveProduct from './components/RemoveProduct.js'; // Update the path if RemoveProduct is in a different directory
 
 
 // Wrap the components with the role guard
@@ -59,6 +60,7 @@ function App() {
           <Route path="/product-management" element={<ProductManagement />} />
           <Route path="/invoice-viewer" element={<InvoiceViewer />} />
           <Route path="/refund-management" element={<RefundManager />} />
+          <Route path="/productManager/removeProduct" element={<RemoveProduct />} />
 
         </Routes>
       </div>

@@ -93,3 +93,11 @@
     color: #555;
   }
   
+  .order-item-image {
+    width: 50px; /* Adjust size as needed */
+    height: 50px; /* Adjust size as needed */
+    border-radius: 5px; /* Optional for rounded edges */
+    object-fit: cover; /* Ensures image fits nicely */
+    cursor: pointer; /* Indicates it's clickable */
+  }
+  

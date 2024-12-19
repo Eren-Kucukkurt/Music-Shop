@@ -29,7 +29,13 @@ const ProductManager = () => {
         >
         Add Product</button>
         <button className="btn btn-secondary">Update Product</button>
-        <button className="btn btn-danger">Delete Product</button>
+        <button
+  className="btn btn-danger"
+  onClick={() => navigate('/productManager/removeProduct')}
+>
+  Remove Product
+</button>
+
       </section>
     </div>
   );

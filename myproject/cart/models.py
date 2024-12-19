@@ -76,7 +76,10 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    product_name = models.CharField(max_length=255, null=True, blank=True)
+    product_image = models.ImageField(upload_to='order_item_images/', null=True, blank=True)
+    product_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2)  # Final price after discount
     original_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -93,9 +96,14 @@ class OrderItem(models.Model):
 
 
     def save(self, *args, **kwargs):
+        # Snapshot product details at the time of order creation
+        if self.product and self._state.adding:
+            self.product_name = self.product.name
+            self.product_image = self.product.image
+            self.product_price = self.product.price
         # Store the original price and apply the discount if active
-        self.original_price = self.product.price
-        self.price = self.product.get_discounted_price() * self.quantity
+        self.original_price = self.product.price if self.product else None
+        self.price = (self.product.get_discounted_price() * self.quantity) if self.product else 0
         super().save(*args, **kwargs)
 
     def request_return(self, quantity):
@@ -118,15 +126,18 @@ class OrderItem(models.Model):
         self.is_return_requested = False
         self.is_return_approved = True
         # Add the returned quantity back to stock
-        self.product.quantity_in_stock += self.requested_return_quantity
-        self.product.save()
+        if self.product:
+            self.product.quantity_in_stock += self.requested_return_quantity
+            self.product.save()
 
         # Update refunded quantity
         self.refunded_quantity += self.requested_return_quantity
         self.save()
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} (Order {self.order.id})"
+        return f"{self.quantity} x {self.product_name or 'Deleted Product'} (Order {self.order.id})"
+
+
 
 
 class Refund(models.Model):

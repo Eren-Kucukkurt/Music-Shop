@@ -41,22 +41,29 @@ class CartSerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.ReadOnlyField(source='product.name')
+    product_image_url = serializers.SerializerMethodField()
     original_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     refunded_quantity = serializers.IntegerField(read_only=True)
-
-    # Optionally, if you want to directly include a calculated refundable quantity:
     refundable_quantity = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderItem
         fields = [
-            'id', 'product', 'product_name', 'quantity', 'original_price', 'price',
-            'refunded_quantity', 'refundable_quantity'
+            'id', 'product', 'product_name', 'product_image_url', 'quantity', 
+            'original_price', 'price', 'refunded_quantity', 'refundable_quantity'
         ]
+
+    def get_product_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.product and obj.product.image:
+            return request.build_absolute_uri(obj.product.image.url)
+        return None
 
     def get_refundable_quantity(self, obj):
         return obj.quantity - obj.refunded_quantity
+
+
 
 
 
@@ -97,6 +104,6 @@ class RefundSerializer(serializers.ModelSerializer):
     def get_order_item(self, obj):
         """Return minimal product details for the order item."""
         return {
-            'product_name': obj.order_item.product.name,
+            'product_name': obj.order_item.product_name,
             'order_id': obj.order_item.order.id,
         }

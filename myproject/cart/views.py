@@ -301,10 +301,13 @@ class CheckoutView(APIView):
                 product = item.product
                 discounted_price = product.get_discounted_price()
 
-                # Save order item with the discounted price
+                # Save order item with the discounted price and snapshot product details
                 OrderItem.objects.create(
                     order=order,
                     product=product,
+                    product_name=product.name,
+                    product_image=product.image,
+                    product_price=product.price,
                     quantity=item.quantity,
                     price=discounted_price * item.quantity,
                 )
@@ -344,13 +347,14 @@ class CheckoutView(APIView):
             cart_items.delete()
 
             # Serialize and return the order with its items
-            serializer = OrderSerializer(order)
+            serializer = OrderSerializer(order, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Cart.DoesNotExist:
             return Response({"detail": "Cart not found"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
         
 
@@ -365,7 +369,7 @@ class UserOrdersView(APIView):
         for order in orders:
             order.update_status()
 
-        serializer = OrderSerializer(orders, many=True)
+        serializer = OrderSerializer(orders, many=True, context={'request': request})
         return Response(serializer.data)
 
 
@@ -377,7 +381,7 @@ class LatestOrderView(APIView):
             user = request.user
             order = Order.objects.filter(user=request.user).latest('created_at')
 
-            serializer = OrderSerializer(order)
+            serializer = OrderSerializer(order,context={'request': request}) 
             send_order_confirmation_email(user.email, order.id)
             return Response(serializer.data)
         except Order.DoesNotExist:
@@ -415,7 +419,7 @@ def fetch_invoice_by_id(request, order_id):
     """
     try:
         order = Order.objects.get(id=order_id)
-        serializer = OrderSerializer(order)
+        serializer = OrderSerializer(order, context={'request': request})
         return Response(serializer.data)
     except Order.DoesNotExist:
         return Response({'error': 'Order not found.'}, status=404)

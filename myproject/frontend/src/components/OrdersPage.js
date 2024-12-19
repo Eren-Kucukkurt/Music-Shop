@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import './OrdersPage.css';
 
 const OrdersPage = () => {
@@ -22,7 +23,6 @@ const OrdersPage = () => {
         items: order.items.map(item => ({
           ...item,
           price: parseFloat(item.price),
-          // Correctly reference 'refunded_quantity' (no typos) and recalculate 'refundable_quantity'
           refundable_quantity: item.quantity - (item.refunded_quantity || 0),
         })),
       }));
@@ -64,7 +64,7 @@ const OrdersPage = () => {
         { headers }
       );
       alert(response.data.success);
-      fetchOrders(); // Refresh orders after refund request
+      window.location.reload(); // Refresh the page after refund request
     } catch (error) {
       console.error('Error requesting refund:', error);
       alert(error.response?.data?.error || 'Failed to request a refund.');
@@ -116,42 +116,66 @@ const OrdersPage = () => {
                 <p><strong>Order Date:</strong> {new Date(order.created_at).toLocaleString()}</p>
                 <div>
                   <strong>Items:</strong>
-                  {order.items.map(item => (
-                    <div key={item.id} className="order-item-detail">
-                      <p>
-                        {item.quantity} x Product {item.product_name} @ ${item.price.toFixed(2)}
-                      </p>
-                      <p><strong>Refundable:</strong> {item.refundable_quantity} / {item.quantity}</p>
-                      {order.status === 'DELIVERED' && item.refundable_quantity > 0 && (
-                        <div className="refund-section">
-                          <input
-                            type="number"
-                            min="1"
-                            max={item.refundable_quantity}
-                            placeholder="Quantity"
-                            value={refundDetails[item.id]?.quantity || ''}
-                            onChange={(e) =>
-                              handleRefundChange(item.id, 'quantity', Number(e.target.value))
-                            }
-                          />
-                          <input
-                            type="text"
-                            placeholder="Reason for refund"
-                            value={refundDetails[item.id]?.reason || ''}
-                            onChange={(e) =>
-                              handleRefundChange(item.id, 'reason', e.target.value)
-                            }
-                          />
-                          <button
-                            className="refund-button"
-                            onClick={() => requestRefund(item.id)}
-                          >
-                            Request Refund
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {order.items.map(item => {
+  // Determine if the product still exists (e.g. not deleted)
+  const productExists = item.product !== null && item.product !== undefined;
+
+  return (
+    <div key={item.id} className="order-item-detail">
+      {productExists ? (
+        // If product exists, make image clickable
+        <Link to={`/product/${item.product}`} target="_blank" rel="noopener noreferrer">
+          <img
+            src={item.product_image_url || '/placeholder.png'}
+            alt={item.product_name || 'Deleted Product'}
+            className="order-item-image"
+          />
+        </Link>
+      ) : (
+        // If product is deleted, show stored image and name without linking
+        <img
+          src={item.product_image_url || '/placeholder.png'}
+          alt={item.product_name || 'Deleted Product'}
+          className="order-item-image"
+        />
+      )}
+      <p>
+        {item.quantity} x {item.product_name || 'Deleted Product'} @ ${item.price.toFixed(2)}
+      </p>
+      <p><strong>Refundable:</strong> {item.refundable_quantity} / {item.quantity}</p>
+      {order.status === 'DELIVERED' && item.refundable_quantity > 0 && (
+        <div className="refund-section">
+          <input
+            type="number"
+            min="1"
+            max={item.refundable_quantity}
+            placeholder="Quantity"
+            value={refundDetails[item.id]?.quantity || ''}
+            onChange={(e) =>
+              handleRefundChange(item.id, 'quantity', Number(e.target.value))
+            }
+          />
+          <input
+            type="text"
+            placeholder="Reason for refund"
+            value={refundDetails[item.id]?.reason || ''}
+            onChange={(e) =>
+              handleRefundChange(item.id, 'reason', e.target.value)
+            }
+          />
+          <button
+            className="refund-button"
+            onClick={() => requestRefund(item.id)}
+          >
+            Request Refund
+          </button>
+        </div>
+      )}
+    </div>
+  );
+})}
+
+
                 </div>
                 {order.status === 'PROCESSING' && (
                   <button
