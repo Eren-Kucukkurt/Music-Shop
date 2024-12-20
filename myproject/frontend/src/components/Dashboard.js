@@ -7,12 +7,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import TopBar from './TopBar';
 
-function Dashboard() {
+function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername }) {
   const [showCategories, setShowCategories] = useState(false);
   const [showLoginDropdown, setShowLoginDropdown] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Track authentication state
-  const [username, setUsername] = useState(''); // Add username state
+  //const [isAuthenticated, setIsAuthenticated] = useState(false); // Track authentication state
+  //const [username, setUsername] = useState(''); // Add username state
   const dropdownRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
@@ -103,8 +104,11 @@ function Dashboard() {
     setSearchQuery(e.target.value);
   };
 
-  const handleSearch = () => {
-    applySearchAndFilters(searchQuery, filters);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filteredProducts = applySearchAndFilters(query, filters, fullProductList);
+    setProducts(filteredProducts);
   };
 
   const applySearchAndFilters = (searchQuery, filters) => {
@@ -175,32 +179,10 @@ function Dashboard() {
   };
 
   return (
+    
+    
     <div className="dashboard-container">
-      <aside className="sidebar">
-        <h3>Navigation</h3>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                if (isAuthenticated) {
-                  navigate('/profile');
-                } else {
-                  if (window.confirm("You need to log in to access your profile. Do you want to log in now?")) {
-                    navigate('/login', { state: { from: '/profile' } }); // Redirect to login with the intended page
-                  }
-                }
-              }}
-            >
-              Profile
-            </a>
-          </li>
-          <li><a href="/orders">Orders</a></li>
-          <li><a href="/settings">Settings</a></li>
-        </ul>
-      </aside>
+
       <div className="main-content">
         <header className="header">
           <div className="cart-container">
@@ -277,6 +259,7 @@ function Dashboard() {
             )}
           </div>
         </header>
+
         <ProductListing products={products} isLoading={isLoading} />
       </div>
     </div>

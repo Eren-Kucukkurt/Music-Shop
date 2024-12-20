@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-
+import TopBar from './components/TopBar';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
@@ -34,6 +34,9 @@ const ProtectedSalesManager = withRoleGuard(SalesManager, ['SALES_MANAGER']);
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+    // Global state for authentication
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
@@ -42,8 +45,19 @@ function App() {
   return (
     <Router>
       <div className="App">
+      <TopBar
+        isAuthenticated={isAuthenticated}
+        setIsAuthenticated={setIsAuthenticated}
+        username={username}
+        setUsername={setUsername}
+      />
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={            <Dashboard
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+              username={username}
+              setUsername={setUsername}
+            />} />
           <Route path="/shoppingcart" element={<ShoppingCartComponent />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />

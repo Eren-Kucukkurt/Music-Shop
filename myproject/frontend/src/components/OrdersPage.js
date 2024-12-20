@@ -90,15 +90,7 @@ const OrdersPage = () => {
 
   return (
     <div className="orders-page-container">
-      <aside className="sidebar">
-        <h3>Navigation</h3>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/profile">Profile</a></li>
-          <li><a href="/orders">Orders</a></li>
-          <li><a href="/settings">Settings</a></li>
-        </ul>
-      </aside>
+
 
       <div className="orders-page-content">
         <h1 className="page-title">Your Orders</h1>

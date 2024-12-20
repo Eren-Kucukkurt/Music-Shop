@@ -162,7 +162,10 @@ const ProductDetails = () => {
             ) : (
               <p className="no-rating-message">No ratings yet</p>
             )}
-            <p className="product-price">Price: ${Number(product.price || 0).toFixed(2)}</p>
+            <p className="product-price"> ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(product.price)}</p>
             <p className="product-description">{product.description}</p>
             <p className="product-model">Product Model: {product.model || "Not Specified"}</p> {/* Add Model */}
             <p className="product-warranty">Warranty: {product.warranty || "No Warranty"}</p> {/* Add Warranty */}
