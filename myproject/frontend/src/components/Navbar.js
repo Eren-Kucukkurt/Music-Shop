@@ -9,7 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import WishlistHandler from './WishlistHandler'; // Import WishlistHandler
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function TopBar({ isAuthenticated, setIsAuthenticated, username, setUsername, onSearch }) {
+export default function Navbar({ isAuthenticated, setIsAuthenticated, username, setUsername, onSearch }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
