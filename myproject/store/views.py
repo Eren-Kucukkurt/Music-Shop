@@ -21,6 +21,14 @@ from .serializers import WishlistSerializer
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import serializers
+from cart.models import Cart, CartItem
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from store.models import Product
+
+
 
 
 class IsPurchaser(permissions.BasePermission):
@@ -163,30 +171,48 @@ class WishlistView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Retrieve the user's wishlist
+        """
+        Retrieve the user's wishlist with detailed product information.
+        """
         wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-        serializer = WishlistSerializer(wishlist)
+        serializer = WishlistSerializer(wishlist, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        # Add a product to the user's wishlist
+        """
+        Add a product to the user's wishlist.
+        """
         product_id = request.data.get("product_id")
         if not product_id:
             return Response({"error": "Product ID is required."}, status=400)
 
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found."}, status=404)
+
         wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-        wishlist.products.add(product_id)
-        return Response({"message": "Product added to wishlist."})
+        wishlist.products.add(product)
+        return Response({"message": f"Product '{product.name}' added to wishlist."})
 
     def delete(self, request):
-        # Remove a product from the user's wishlist
+        """
+        Remove a product from the user's wishlist.
+        """
         product_id = request.data.get("product_id")
         if not product_id:
             return Response({"error": "Product ID is required."}, status=400)
 
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found."}, status=404)
+
         wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-        wishlist.products.remove(product_id)
-        return Response({"message": "Product removed from wishlist."})
+        wishlist.products.remove(product)
+        return Response({"message": f"Product '{product.name}' removed from wishlist."})
+
+
 
 class ProductListView(ListAPIView):
     """

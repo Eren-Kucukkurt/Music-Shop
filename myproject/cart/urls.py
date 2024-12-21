@@ -3,6 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
 from users.views import CreditCardListCreateView, CreditCardListView
+from django.urls import path
 
 
 router = DefaultRouter()
@@ -24,5 +25,5 @@ urlpatterns = [
     path('api/cart/deny-refund/<int:refund_id>/', deny_refund, name='deny_refund'),
     path('api/cart/refunds/', fetch_refunds, name='fetch_refunds'),
     path('api/revenue-profit-analysis/', RevenueProfitAnalysisView.as_view(), name='revenue-profit-analysis'),
-
+    path('add-to-cart-from-wishlist/', AddToCartFromWishlistView.as_view(), name='add-to-cart-from-wishlist'),
 ]

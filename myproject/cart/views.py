@@ -25,7 +25,12 @@ import os
 from django.utils import timezone
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from django.db.models.functions import TruncDay
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Cart, CartItem
+from store.models import Product
+from rest_framework import status
 
 class CartViewSet(viewsets.ViewSet):
     
@@ -626,3 +631,32 @@ class RevenueProfitAnalysisView(APIView):
             "total_profit": profit,
             "revenue_by_date": revenue_by_date,
         })
+
+
+
+class AddToCartFromWishlistView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        product_id = request.data.get('product_id')
+        if not product_id:
+            return Response({"error": "Product ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Fetch product and check stock
+            product = Product.objects.get(id=product_id)
+            if product.quantity_in_stock <= 0:
+                return Response({"error": "Product is out of stock."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Get or create user's cart
+            cart, created = Cart.objects.get_or_create(user=request.user)
+
+            # Add product to cart
+            cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+            if not created:
+                cart_item.quantity += 1
+                cart_item.save()
+
+            return Response({"message": "Product added to cart."}, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found."}, status=status.HTTP_404_NOT_FOUND)

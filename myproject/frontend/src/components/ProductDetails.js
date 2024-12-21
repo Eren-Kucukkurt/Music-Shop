@@ -6,7 +6,7 @@ import ReviewForm from './ReviewForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as filledStar } from '@fortawesome/free-solid-svg-icons';
 import { faStarHalfAlt as halfStar, faStar as emptyStar } from '@fortawesome/free-regular-svg-icons';
-
+// KurtarmaRampasi
 const ProductDetails = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
@@ -141,6 +141,33 @@ const ProductDetails = () => {
     );
   };
 
+  const handleAddToWishlist = async () => {
+    try {
+      const accessToken = sessionStorage.getItem('access_token');
+  
+      if (!accessToken) {
+        alert("You need to log in to add items to your wishlist.");
+        return;
+      }
+  
+      const response = await axios.post(
+        'http://localhost:8000/api/wishlist/',
+        { product_id: productId },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+  
+      alert(response.data.message || "Product added to wishlist!");
+    } catch (error) {
+      console.error('Error adding product to wishlist:', error);
+      alert('Failed to add product to wishlist. Please try again.');
+    }
+  };
+  
+
   return (
     <div className="product-details-fullpage">
       {product && (
@@ -176,37 +203,49 @@ const ProductDetails = () => {
             </p>
 
             <div className="product-actions">
-            <div className="quantity-selector">
+              <div className="quantity-selector">
                 <button
-                    onClick={decreaseQuantity}
-                    className="quantity-button"
-                    disabled={quantity <= 1}
+                  onClick={decreaseQuantity}
+                  className="quantity-button"
+                  disabled={quantity <= 1}
                 >
-                    -
+                  -
                 </button>
                 <input
-                    type="number"
-                    min="1"
-                    value={quantity}
-                    readOnly
-                    className="quantity-input"
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  readOnly
+                  className="quantity-input"
                 />
                 <button
-                    onClick={increaseQuantity}
-                    className="quantity-button"
-                    disabled={quantity >= (product?.quantity_in_stock || 0)}
+                  onClick={increaseQuantity}
+                  className="quantity-button"
+                  disabled={quantity >= (product?.quantity_in_stock || 0)}
                 >
-                    +
+                  +
                 </button>
-            </div>
-              <button
-                onClick={handleAddToCart}
-                className="add-to-cart-button"
-                disabled={product.quantity_in_stock <= 0}
-              >
-                {product.quantity_in_stock > 0 ? "Add to Cart" : "Out of Stock"}
-              </button>
-            </div>
+              </div>
+
+              <div className="action-buttons">
+                <button
+                  onClick={handleAddToCart}
+                  className="add-to-cart-button"
+                  disabled={product.quantity_in_stock <= 0}
+                >
+                  {product.quantity_in_stock > 0 ? "Add to Cart" : "Out of Stock"}
+                </button>
+
+                <button
+                  onClick={handleAddToWishlist}
+                  className="add-to-wishlist-button"
+                >
+                  Add to Wishlist
+                </button>
+              </div>
+          </div>
+
+
 
             {cartMessage && (
               <div className="cart-message-container">

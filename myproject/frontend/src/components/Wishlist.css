@@ -1,41 +1,60 @@
 .wishlist-container {
     padding: 20px;
     font-family: Arial, sans-serif;
-  }
-  
-  .wishlist-grid {
+}
+
+.wishlist-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 20px;
-  }
-  
-  .wishlist-item {
+}
+
+.wishlist-item {
+    display: flex;
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
-    text-align: center;
-  }
-  
-  .wishlist-image {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.wishlist-image-container {
+    flex: 1;
+    max-width: 150px;
+    margin-right: 15px;
+}
+
+.wishlist-image {
     max-width: 100%;
     height: auto;
     border-radius: 5px;
-  }
-  
-  .remove-button {
+}
+
+.wishlist-info {
+    flex: 2;
+    text-align: left;
+    padding: 0 10px;
+}
+
+.wishlist-actions {
+    flex: 1;
+    text-align: right;
+}
+
+.remove-button {
     background-color: #f44336;
     color: white;
     border: none;
     padding: 8px;
     cursor: pointer;
     border-radius: 5px;
-  }
-  
-  .remove-button:hover {
+}
+
+.remove-button:hover {
     background-color: #d32f2f;
-  }
-  
-  .back-button {
+}
+
+.back-button {
     margin-top: 20px;
     background-color: #4caf50;
     color: white;
@@ -43,9 +62,21 @@
     padding: 10px;
     cursor: pointer;
     border-radius: 5px;
-  }
-  
-  .back-button:hover {
+}
+
+.back-button:hover {
     background-color: #388e3c;
-  }
-  
+}
+.add-to-cart-button {
+    background-color: #008cba;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.add-to-cart-button:hover {
+    background-color: #005f73;
+}

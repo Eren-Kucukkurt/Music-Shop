@@ -84,7 +84,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class WishlistSerializer(serializers.ModelSerializer):
-    products = serializers.PrimaryKeyRelatedField(many=True, queryset=Product.objects.all())
+    products = ProductSerializer(many=True)  # Use ProductSerializer for detailed product info
 
     class Meta:
         model = Wishlist
