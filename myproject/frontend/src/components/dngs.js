@@ -33,6 +33,32 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
     sessionStorage.setItem('guest_token', token);
     return token;
   };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get('http://localhost:8000/api/products/');
+        const productsData = response.data;
+        setProducts(productsData); // Original list
+        setFullProductList(productsData); // Full list for filtering
+        setFilteredProducts(productsData); // Initialize filteredProducts
+  
+        const maxPrice = Math.max(...productsData.map(product => product.price));
+        setFilters(prevFilters => ({
+          ...prevFilters,
+          priceRange: [0, maxPrice],
+        }));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchProducts();
+  }, []); // Run only once on mount
+
   useEffect(() => {
     const guestToken = sessionStorage.getItem('guest_token') || generateGuestToken();
 
@@ -69,19 +95,6 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
-
-  useEffect(() => {
-
-
-    const queryFromNavbar = location.state?.searchQuery || '';
-    if (queryFromNavbar) {
-      console.log('Query from Navbar:', queryFromNavbar);
-      console.log('Filters:', filters);
-      setSearchQuery(queryFromNavbar); // Store the query locally
-      applySearchAndFilters(queryFromNavbar, filters); // Apply the query immediately
-    }
-
   }, [location.state?.searchQuery]);
 
   const fetchAllProducts = async () => {
@@ -91,7 +104,6 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
       const productsData = response.data;
       setProducts(productsData);
       setFullProductList(productsData);
-      setFilteredProducts(productsData);
   
       const calculatedMaxPrice = Math.max(...productsData.map(product => product.price));
       setMaxPrice(calculatedMaxPrice);
