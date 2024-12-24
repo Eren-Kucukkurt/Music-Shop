@@ -12,8 +12,24 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function Navbar({ isAuthenticated, setIsAuthenticated, username, setUsername, onSearch }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      // If already on the Dashboard, push the query state without reloading
+      if (window.location.pathname === '/') {
+        navigate('.', { state: { searchQuery } }); // Use relative navigation to update the state
+      } else {
+        navigate('/', { state: { searchQuery } }); // Navigate to Dashboard with search query
+      }
+    }
+
+  };
 
   const token = sessionStorage.getItem('access_token');
   setIsAuthenticated(!!token);
@@ -31,16 +47,6 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
       return;
     }
     setIsDrawerOpen(open);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleSearchSubmit = () => {
-    if (onSearch) {
-      onSearch(searchQuery); // Pass the search query to the parent
-    }
   };
 
   const handleMenuClick = (event) => {
@@ -161,14 +167,31 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
               value={searchQuery}
               onChange={handleSearchChange}
               onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
-              placeholder="Search for products..."
+              placeholder="Find your companion..."
               variant="outlined"
               sx={{
                 width: '100%',
                 '& .MuiOutlinedInput-root': {
                   height: 48,
-                  borderRadius: 4,
+                  borderRadius: 5,
                   backgroundColor: '#fff',
+                  borderBlockColor: '#ffffff',
+                  border: 'none',
+
+                  '& fieldset': {
+                    borderColor: 'none', // Set border color to white
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'none', // Ensure the border remains white on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'none', // Ensure the border remains white when focused
+                  },
+                  '& .MuiInputBase-input': {
+                    border: 'none', // Removes the inner input border
+                    boxShadow: 'none', // Ensures no shadow
+                  },
+                  
                 },
               }}
             />
