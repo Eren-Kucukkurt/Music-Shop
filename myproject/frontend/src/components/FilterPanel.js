@@ -33,6 +33,7 @@ export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFi
   return (
     <div className="filter-panel">
       {/* Sort By Section */}
+      <div className="filter-header-text">Filters</div>
       <div className="filter-section">
         <h4 className="filter-title">Sort By</h4>
         <select
@@ -78,13 +79,15 @@ export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFi
             onChange={handleInStockChange}
             checked={localFilters.inStock}
           />
-          In Stock Only
+         <span>In Stock Only</span>
+
         </label>
         <div className="filter-actions">
           <button onClick={applyFilters} className="apply-filters-button">Apply</button>
           <button onClick={resetFilters} className="reset-button">Reset</button>
         </div>
       </div>
+      <div className="categories-header-text">Categories</div>
     </div>
   );
 }

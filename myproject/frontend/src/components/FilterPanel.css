@@ -65,15 +65,52 @@
   flex-direction: column; /* Stack buttons vertically */
   gap: 8px;
 }
+.filter-header-text {
+  font-size: 20px; /* Slightly larger text size */
+  font-weight: bold; /* Bold text */
+  color: black; /* Black text color */
+  text-align: left; /* Center align the text */
+  margin-bottom: 8px; /* Space below the text */
+  position: relative; /* For positioning the underline */
+}
+
+.filter-header-text::after {
+  content: ""; /* Pseudo-element for the underline */
+  display: block;
+  width: calc(100%); /* Leave small spaces on the sides */
+  height: 2px; /* Thickness of the underline */
+  background-color: #7b7a7a; /* Light gray underline color */
+  margin: 8px auto 0; /* Space around the underline */
+}
+
+.categories-header-text {
+  font-size: 20px; /* Slightly larger text size */
+  font-weight: bold; /* Bold text */
+  color: black; /* Black text color */
+  text-align: left; /* Center align the text */
+  margin-bottom: 8px; /* Space below the text */
+  position: relative; /* For positioning the underline */
+}
+
+.categories-header-text::after {
+  content: ""; /* Pseudo-element for the underline */
+  display: block;
+  width: calc(100%); /* Leave small spaces on the sides */
+  height: 2px; /* Thickness of the underline */
+  background-color: #7b7a7a; /* Light gray underline color */
+  margin: 8px auto 0; /* Space around the underline */
+}
+
 
 .apply-filters-button,
 .reset-button {
-  padding: 8px;
-  font-size: 14px;
+  padding: 12px; /* Unified padding for consistent size */
+  font-size: 16px; /* Same font size for text */
   border: none;
-  border-radius: 4px;
+  border-radius: 6px; /* Rounded corners for both buttons */
   cursor: pointer;
-  width: 100%;
+  width: 100%; /* Ensure both buttons are the same width */
+  box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
 .apply-filters-button {

@@ -198,7 +198,15 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
 
   return (
     <div className="dashboard-container">
-
+       
+      {showFilterOptions && (
+        <FilterPanel
+          filters={filters}
+          maxPrice={maxPrice}
+          onApplyFilters={applyFilters}
+          resetFilters={resetFilters}
+        />
+      )}
       <div className="main-content">
         <header className="header">
           <div className="cart-container">
@@ -244,6 +252,7 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
             <button onClick={handleToggleCategories} className="categories-btn">
               Categories
             </button>
+            <button onClick={toggleFilterOptions} className="filter-button">Filters and Categories</button>
             {showCategories && (
               <div className="categories-dropdown" ref={dropdownRef}>
                 <ul>
@@ -255,15 +264,7 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
                 </ul>
               </div>
             )}
-            <button onClick={toggleFilterOptions} className="filter-button">Filter</button>
-            {showFilterOptions && (
-              <FilterPanel
-                filters={filters}
-                maxPrice={maxPrice}
-                onApplyFilters={applyFilters}
-                resetFilters={resetFilters}
-              />
-            )}
+          
           </div>
         </header>
         <ProductListing products={filteredProducts} isLoading={isLoading} />
