@@ -77,8 +77,14 @@
 }
 
 .apply-filters-button {
-  background-color: #2168BA;
-  color: #fff;
+  background-color: #2168BA !important; /* Set background to the desired color */
+  color: #fff; /* Keep the text color white for contrast */
+  padding: 8px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%; /* Ensure the button spans the full width if needed */
 }
 
 .reset-button {
