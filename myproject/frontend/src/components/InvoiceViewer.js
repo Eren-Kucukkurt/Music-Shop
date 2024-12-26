@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './InvoiceViewer.css';
 
 const InvoiceViewer = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [invoices, setInvoices] = useState([]);
   const [orderId, setOrderId] = useState('');
+  const [loading, setLoading] = useState(false); // State for loading message
 
   const fetchInvoices = async () => {
+    setLoading(true); // Show loading message
     try {
       const token = sessionStorage.getItem('access_token');
       const response = await axios.get('http://localhost:8000/api/cart/fetch-invoices/', {
@@ -17,21 +20,43 @@ const InvoiceViewer = () => {
       setInvoices(response.data);
     } catch (error) {
       console.error('Error fetching invoices:', error);
+    } finally {
+      setLoading(false); // Hide loading message
     }
   };
 
   const fetchInvoiceById = async () => {
     if (!orderId) return;
+    setLoading(true); // Show loading message
     try {
-      console.log('Fetching invoice by ID:', orderId);  
       const token = sessionStorage.getItem('access_token');
       const response = await axios.get(`http://localhost:8000/api/cart/fetch-invoice/${orderId}/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log('Fetched invoice:', response.data);
-      setInvoices([response.data]); // Overwrite invoices to show only the searched one
+      setInvoices([response.data]);
     } catch (error) {
       console.error('Error fetching invoice by ID:', error);
+    } finally {
+      setLoading(false); // Hide loading message
+    }
+  };
+
+  const fetchAllInvoices = async () => {
+    setLoading(true); // Show loading message
+    try {
+      const token = sessionStorage.getItem('access_token');
+      const response = await axios.get('http://localhost:8000/api/cart/fetch-invoices/', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          start_date: '1900-01-01', // Start from an arbitrarily early date
+          end_date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+        },
+      });
+      setInvoices(response.data);
+    } catch (error) {
+      console.error('Error fetching all invoices:', error);
+    } finally {
+      setLoading(false); // Hide loading message
     }
   };
 
@@ -40,7 +65,7 @@ const InvoiceViewer = () => {
       const token = sessionStorage.getItem('access_token');
       const response = await axios.get(`http://localhost:8000/api/cart/download-invoice-pdf/${orderId}/`, {
         headers: { Authorization: `Bearer ${token}` },
-        responseType: 'blob', // Important for file downloads
+        responseType: 'blob',
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -100,43 +125,61 @@ const InvoiceViewer = () => {
   };
 
   return (
-    <div>
+    <div className="invoice-viewer-container">
       <h1>Invoice Viewer</h1>
-      <div>
+      <div className="filters-container">
         <input
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          placeholder="Start Date"
+          className="date-input"
         />
         <input
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
-          placeholder="End Date"
+          className="date-input"
         />
-        <button onClick={fetchInvoices}>Fetch Invoices</button>
+        <button className="primary-button" onClick={fetchInvoices}>
+          Fetch Invoices
+        </button>
+        <button className="primary-button" onClick={fetchAllInvoices}>
+          View All Invoices
+        </button>
       </div>
 
-      <div>
+      <div className="filters-container">
         <input
           type="text"
           value={orderId}
           onChange={(e) => setOrderId(e.target.value)}
+          className="search-input"
           placeholder="Search by Order ID"
         />
-        <button onClick={fetchInvoiceById}>Search Invoice</button>
+        <button className="primary-button" onClick={fetchInvoiceById}>
+          Search Invoice
+        </button>
       </div>
 
+      {loading && <p className="loading-message">Fetching invoices, please wait...</p>} {/* Loading Message */}
+
       {invoices.length > 0 && (
-        <div>
+        <div className="invoices-container">
           <h2>Invoices</h2>
-          <ul>
+          <ul className="invoice-list">
             {invoices.map((invoice) => (
-              <li key={invoice.id}>
-                Invoice #{invoice.id} - ${invoice.total_price}
-                <button onClick={() => downloadInvoice(invoice.id)}>Download PDF</button>
-                <button onClick={() => printInvoice(invoice)}>Print</button>
+              <li key={invoice.id} className="invoice-item">
+                <span>
+                  Invoice #{invoice.id} - ${invoice.total_price}
+                </span>
+                <div className="invoice-actions">
+                  <button className="secondary-button" onClick={() => downloadInvoice(invoice.id)}>
+                    Download PDF
+                  </button>
+                  <button className="secondary-button" onClick={() => printInvoice(invoice)}>
+                    Print
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

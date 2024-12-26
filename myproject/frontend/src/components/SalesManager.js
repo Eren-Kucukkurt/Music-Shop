@@ -1,26 +1,41 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import './SalesManager.css';
+import RevenueProfitChart from './RevenueProfitChart';
+import RefundManager from './RefundManager';
+import InvoiceViewer from './InvoiceViewer';
+import ProductManagement from './ProductManagement';
 
 const SalesManager = () => {
-  const navigate = useNavigate();
+  const [activeComponent, setActiveComponent] = useState('ProductManagement');
+
+  const renderComponent = () => {
+    switch (activeComponent) {
+      case 'ProductManagement':
+        return <ProductManagement />;
+      case 'InvoiceViewer':
+        return <InvoiceViewer />;
+      case 'RefundManager':
+        return <RefundManager />;
+      case 'RevenueProfitChart':
+        return <RevenueProfitChart />;
+      default:
+        return <ProductManagement />;
+    }
+  };
 
   return (
-    <div>
-      <h1>Sales Manager Dashboard</h1>
-      <p>Welcome to the Sales Manager's dashboard.</p>
+    <div className="sales-manager-dashboard">
+      {/* Sidebar */}
+      <div className="sidebar1">
+        <h2>Sales Manager Dashboard</h2>
+        <button onClick={() => setActiveComponent('ProductManagement')}>Manage Products</button>
+        <button onClick={() => setActiveComponent('InvoiceViewer')}>View Invoices</button>
+        <button onClick={() => setActiveComponent('RefundManager')}>Manage Refunds</button>
+        <button onClick={() => setActiveComponent('RevenueProfitChart')}>Revenue and Profit Analysis</button>
+      </div>
 
-      {/* Button to navigate to Discount Management */}
-      <button onClick={() => navigate('/product-management')}>Manage Products</button>
-      
-      {/* Button to navigate to Invoice Viewer */}
-      <button onClick={() => navigate('/invoice-viewer')}>View Invoices</button>
-
-      {/* Button to navigate to Refund Management */}
-      <button onClick={() => navigate('/refund-management')}>Manage Refunds</button>
-      
-      {/* Button to navigate to Revenue and Profit Analysis */}
-      <button onClick={() => navigate('/salesManager/revenue-analysis')}>Revenue and Profit Analysis</button>
+      {/* Main Content Area */}
+      <div className="content">{renderComponent()}</div>
     </div>
   );
 };

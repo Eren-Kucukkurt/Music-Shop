@@ -114,49 +114,65 @@ const ProductManagement = () => {
   ))}
 </ul>
 
-
-      {/* Discount Form */}
-      {selectedProduct && (
-        <div className="discount-form">
-          <h2>Set Discount or Update Price for {selectedProduct.name}</h2>
-
+{/* Discount Form */}
+{selectedProduct && (
+  <div className="discount-form">
+    <h2 className="form-header">Set Discount or Update Price for "{selectedProduct.name}"</h2>
+    <div className="form-content">
+      <div className="form-row">
+        <div className="form-group">
+          <label>New Price</label>
           <input
             type="number"
-            placeholder="New Price"
+            placeholder="Enter new price"
             value={discountDetails.price || ''}
             onChange={(e) =>
               setDiscountDetails({ ...discountDetails, price: e.target.value })
             }
           />
+        </div>
+        <div className="form-group">
+          <label>Discount Percentage</label>
           <input
             type="number"
-            placeholder="Discount Percentage"
+            placeholder="Enter discount percentage"
             value={discountDetails.discount_percentage || ''}
             onChange={(e) =>
               setDiscountDetails({ ...discountDetails, discount_percentage: e.target.value })
             }
           />
+        </div>
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label>Start Date</label>
           <input
             type="date"
-            placeholder="Start Date"
             value={discountDetails.discount_start_date || ''}
             onChange={(e) =>
               setDiscountDetails({ ...discountDetails, discount_start_date: e.target.value })
             }
           />
+        </div>
+        <div className="form-group">
+          <label>End Date</label>
           <input
             type="date"
-            placeholder="End Date"
             value={discountDetails.discount_end_date || ''}
             onChange={(e) =>
               setDiscountDetails({ ...discountDetails, discount_end_date: e.target.value })
             }
           />
-
-          <button onClick={handleProductUpdate}>Update</button>
-          <button onClick={() => setSelectedProduct(null)}>Cancel</button>
         </div>
-      )}
+      </div>
+    </div>
+    <div className="form-actions">
+      <button className="update-btn" onClick={handleProductUpdate}>Update</button>
+      <button className="cancel-btn" onClick={() => setSelectedProduct(null)}>Cancel</button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

@@ -1,15 +1,78 @@
-.print-button {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 12px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  
-  .print-button:hover {
-    background-color: #0056b3;
-  }
-  
+.invoice-viewer-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+.filters-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.date-input,
+.search-input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex: 1;
+}
+
+.primary-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background-color: #0056b3;
+}
+
+.invoices-container {
+  margin-top: 20px;
+}
+
+.invoice-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.invoice-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.invoice-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.secondary-button {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background-color: #218838;
+}
+
+.loading-message {
+  color: #007bff;
+  font-size: 1.2rem;
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: center;
+}
