@@ -1,7 +1,7 @@
 import React from 'react';
 import './FilterPanel.css';
 
-export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFilters }) {
+export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFilters, onCategorySelect }) {
   const [localFilters, setLocalFilters] = React.useState(filters);
 
   const handleSortChange = (e) => {
@@ -30,9 +30,12 @@ export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFi
     onApplyFilters(localFilters);
   };
 
+
+
   return (
     <div className="filter-panel">
       {/* Sort By Section */}
+      <div className="filter-header-text">Filters</div>
       <div className="filter-section">
         <h4 className="filter-title">Sort By</h4>
         <select
@@ -71,18 +74,31 @@ export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFi
 
       {/* Stock Status and Buttons Section */}
       <div className="filter-section">
-        <h4 className="filter-title">Stock Status</h4>
+      <h4 className="filter-title">Stock Status</h4>
         <label className="stock-checkbox">
-          <input
-            type="checkbox"
-            onChange={handleInStockChange}
-            checked={localFilters.inStock}
-          />
+          <div className="checkbox-container">
+            <input
+              type="checkbox"
+              onChange={handleInStockChange}
+              checked={localFilters.inStock}
+            />
+            
+          </div>
           In Stock Only
         </label>
         <div className="filter-actions">
           <button onClick={applyFilters} className="apply-filters-button">Apply</button>
           <button onClick={resetFilters} className="reset-button">Reset</button>
+        </div>
+      </div>
+      <div className="filter-section">
+        <h4>Categories</h4>
+        <div className="category-buttons">
+          <button onClick={() => onCategorySelect('Guitar')}>Guitars</button>
+          <button onClick={() => onCategorySelect('Piano')}>Pianos</button>
+          <button onClick={() => onCategorySelect('Upright Piano')}>Upright Pianos</button>
+          <button onClick={() => onCategorySelect('Electric Guitar')}>Electric Guitars</button>
+          <button onClick={() => onCategorySelect('')}>All Categories</button>
         </div>
       </div>
     </div>

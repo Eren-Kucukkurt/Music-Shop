@@ -113,11 +113,14 @@ export default function ShoppingCartComponent() {
   const totalPrice = cartItems.reduce((sum, item) => sum + item.total_price, 0);
 
   if (loading) {
-    return <div>Loading your cart...</div>;
+    return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+    Loading your cart...
+  </Typography>;;
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}> {error}
+  </Typography>;
   }
 
   

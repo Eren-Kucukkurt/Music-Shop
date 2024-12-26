@@ -1,83 +1,152 @@
 .filter-panel {
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    gap: 16px; /* Space between sections */
-    justify-content: space-between;
-    width: 100%; /* Ensure it takes full container width */
-    max-width: 900px; /* Adjust as needed */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .filter-section {
-    flex: 1; /* Each section gets equal width */
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* Space between elements within a section */
-  }
-  
-  .filter-title {
-    font-size: 16px;
-    font-weight: bold;
-    color: #000; /* Make titles black */
-    margin-bottom: 4px;
-  }
-  
-  .filter-dropdown,
-  .price-input {
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  .price-range-container {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .price-input {
-    flex: 1;
-  }
-  
-  .stock-checkbox {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: #000; /* Make checkbox text black */
-  }
-  
-  .stock-checkbox input {
-    margin-right: 8px;
-  }
-  
-  .filter-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  
-  .apply-filters-button,
-  .reset-button {
-    flex: 1;
-    padding: 8px;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .apply-filters-button {
-    background-color: #007bff;
-    color: #fff;
-  }
-  
-  .reset-button {
-    background-color: #dc3545;
-    color: #fff;
-  }
-  
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column; /* Stack sections vertically */
+  gap: 16px; /* Space between sections */
+  width: 100%; /* Ensure it takes full container width */
+  max-width: 400px; /* Adjust to a narrower width for vertical layout */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filter-section {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically within a section */
+  gap: 12px; /* Space between elements within a section */
+}
+
+.filter-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000; /* Make titles black */
+  margin-bottom: 4px;
+}
+
+.filter-dropdown,
+.price-input {
+  width: 100%; /* Take full width of the section */
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.price-range-container {
+  display: flex;
+  flex-direction: column; /* Stack min and max inputs vertically */
+  gap: 8px;
+}
+
+.price-input {
+  flex: none; /* Remove flexible sizing */
+}
+.stock-checkbox {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #000; /* Make checkbox text black */
+  word-break: break-word; /* Ensure text breaks within container */
+  overflow: hidden; /* Prevent text from overflowing */
+  flex-wrap: wrap; /* Allow text to wrap to the next line if needed */
+  gap: 8px; /* Space between checkbox and label text */
+  width: 100%; /* Ensure it doesn't exceed the container width */
+}
+
+
+.stock-checkbox input {
+  margin-right: 8px;
+}
+
+.filter-actions {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  gap: 8px;
+}
+.filter-header-text {
+  font-size: 20px; /* Slightly larger text size */
+  font-weight: bold; /* Bold text */
+  color: black; /* Black text color */
+  text-align: left; /* Center align the text */
+  margin-bottom: 8px; /* Space below the text */
+  position: relative; /* For positioning the underline */
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;  /* Space between checkbox and text */
+}
+
+.stock-checkbox {
+  cursor: pointer;
+}
+
+.stock-checkbox input[type="checkbox"] {
+  margin: 0;  /* Remove default margins */
+}
+
+.filter-header-text::after {
+  content: ""; /* Pseudo-element for the underline */
+  display: block;
+  width: calc(100%); /* Leave small spaces on the sides */
+  height: 2px; /* Thickness of the underline */
+  background-color: #7b7a7a; /* Light gray underline color */
+  margin: 8px auto 0; /* Space around the underline */
+}
+
+.categories-header-text {
+  font-size: 20px; /* Slightly larger text size */
+  font-weight: bold; /* Bold text */
+  color: black; /* Black text color */
+  text-align: left; /* Center align the text */
+  margin-bottom: 8px; /* Space below the text */
+  position: relative; /* For positioning the underline */
+}
+
+.categories-header-text::after {
+  content: ""; /* Pseudo-element for the underline */
+  display: block;
+  width: calc(100%); /* Leave small spaces on the sides */
+  height: 2px; /* Thickness of the underline */
+  background-color: #7b7a7a; /* Light gray underline color */
+  margin: 8px auto 0; /* Space around the underline */
+}
+
+
+.apply-filters-button,
+.reset-button {
+  padding: 12px; /* Unified padding for consistent size */
+  font-size: 16px; /* Same font size for text */
+  border: none;
+  border-radius: 6px; /* Rounded corners for both buttons */
+  cursor: pointer;
+  width: 100%; /* Ensure both buttons are the same width */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+.apply-filters-button {
+  background-color: #2168BA !important; /* Set background to the desired color */
+  color: #fff; /* Keep the text color white for contrast */
+  padding: 8px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%; /* Ensure the button spans the full width if needed */
+}
+
+.category-buttons {
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap to the next line */
+  gap: 5px; /* Space between buttons */
+  color: #2168BA;
+  border-radius: 4px;
+}
+
+.reset-button {
+  background-color: #dc3545;
+  color: #fff;
+}

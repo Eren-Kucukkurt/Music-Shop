@@ -1,8 +1,25 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
 .dashboard-container {
   display: flex;
+  position: relative; /* Relative to allow proper positioning of children */
   height: 100vh; /* Full viewport height */
 }
+.filter-panel {
+  position: relative; /* Fix the filter panel to the left of the viewport */
+  top: 0;
+  left: 0;
+  height: 100vh; /* Full height */
+  width: 250px; /* Set a fixed width */
+  background-color: #f9f9f9; /* Match existing style */
+  border-right: 1px solid #ddd; /* Add a divider on the right */
+  padding: 16px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+  overflow-y: auto; /* Enable scrolling if content exceeds viewport height */
+  z-index: 1; /* Ensure it's below the sidebar */
+}
+
 
 .cart-container {
   display: flex; /* Use flexbox for alignment */
@@ -70,6 +87,9 @@
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto; /* Allow scrolling if the content exceeds viewport height */
+  z-index: 2; /* Place above the filter panel */
+  display: none; /* Initially hidden */
+
 }
 
 .sidebar h3 {
@@ -95,16 +115,17 @@
 }
 
 .main-content {
-  flex: 1; /* Take up remaining space */
-  margin-left: 200px; /* Leave space for the sidebar */
+  flex: 1; /* Take up the remaining space */
+  margin-left: relative; /* Adjust for the filter panel */
   padding: 20px;
+  overflow-y: auto; /* Enable scrolling if content exceeds viewport height */
 }
 
 .header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background-color: #4370c3; /* Header color */
+  background-color: #2168BA; /* Header color */
   padding: 15px;
   color: white;
   border-radius: 5px;
@@ -117,7 +138,31 @@
   margin-top: 10px; /* Space above the header actions */
   gap: 10px; /* Space between each action item */
 }
+.filter-button {
+  background-color: white !important; /* White background */
+  color: #0056b3 !important; /* Blue text */
+  border: 2px solid #0056b3; /* Add a blue border */
+  padding: 8px 12px; /* Padding inside the button */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+  font-size: 16px; /* Font size */
+  white-space: nowrap; /* Prevent text from wrapping */
+  display: inline-block; /* Ensure the button grows horizontally */
 
+  font-weight: bold; /* Bold text for emphasis */
+  transition: background-color 0.3s, color 0.3s, transform 0.2s; /* Smooth transitions */
+}
+.filter-button:hover {
+  background-color: #9ebff4 !important; /* Blue background */
+  color: white; /* White text */
+  transform: translateY(-1px); /* Subtle "lift" effect */
+}
+
+.filter-button:active {
+  background-color: #111111  !important; /* Darker blue */
+  color: rgb(0, 0, 0); /* Keep text white */
+  transform: translateY(1px); /* "Press" effect */
+}
 
 /* Style the buttons consistently */
 .btn, .cart-btn, .categories-btn {
@@ -225,7 +270,7 @@
 
 /* Style for buttons consistently */
 .filter-button, .search-button, .apply-filters-button {
-  background-color: #bc8f3c; /* Consistent button color */
+  background-color: #0056b3; /* Consistent button color */
   color: white;
   border: none;
   padding: 8px 12px; /* Padding inside the button */
@@ -237,13 +282,13 @@
 
 /* Hover effect for buttons */
 .filter-button:hover, .search-button:hover, .apply-filters-button:hover {
-  background-color: #9c7a33; /* Slightly darker shade on hover */
+  background-color: #000000; /* Slightly darker shade on hover */
   transform: translateY(-1px); /* Subtle "lift" effect on hover */
 }
 
 /* Active effect for button click */
 .filter-button:active, .search-button:active, .apply-filters-button:active {
-  background-color: #6a5323; /* Darker shade on click */
+  background-color: #cad8df; /* Darker shade on click */
   transform: translateY(1px); /* "Press" effect */
 }
 .filter-options h4 {
@@ -387,4 +432,12 @@
   background-color: #4370c3;
   color: white;
   border: 1px solid #4370c3;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+.shop-heading {
+  font-family: "Open Sans", serif;
+  font-size: 2rem; /* Adjust the size as needed */
+  font-weight: bold; /* Optional for styling */
+  color: #fff; /* Optional for text color */
 }

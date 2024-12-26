@@ -6,6 +6,7 @@ import ReviewForm from './ReviewForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as filledStar } from '@fortawesome/free-solid-svg-icons';
 import { faStarHalfAlt as halfStar, faStar as emptyStar } from '@fortawesome/free-regular-svg-icons';
+import {  Typography } from '@mui/material';
 // KurtarmaRampasi
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -119,8 +120,12 @@ const ProductDetails = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return  <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+  Loading...
+</Typography>;
+  if (error) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+  Loading...
+</Typography>;
   const rating = parseFloat(product.rating) || 0;
 
   const renderStars = (rating) => {
@@ -189,7 +194,10 @@ const ProductDetails = () => {
             ) : (
               <p className="no-rating-message">No ratings yet</p>
             )}
-            <p className="product-price">Price: ${Number(product.price || 0).toFixed(2)}</p>
+            <p className="product-price"> ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(product.price)}</p>
             <p className="product-description">{product.description}</p>
             <p className="product-model">Product Model: {product.model || "Not Specified"}</p> {/* Add Model */}
             <p className="product-warranty">Warranty: {product.warranty || "No Warranty"}</p> {/* Add Warranty */}

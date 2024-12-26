@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Typography } from '@mui/material';
 import './Wishlist.css';
 
 const Wishlist = () => {
@@ -65,15 +66,21 @@ const Wishlist = () => {
   };
 
   if (error) {
-    return <p className="error-message">{error}</p>;
+    return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+    {error}
+  </Typography>;
   }
 
   if (!wishlist) {
-    return <p>Loading wishlist...</p>;
+    return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+      Loading wishlist...
+    </Typography>;
   }
 
   if (wishlist.products.length === 0) {
-    return <p>Your wishlist is empty!</p>;
+    return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+      Your wishlist is empty.
+    </Typography>;
   }
 
   return (
