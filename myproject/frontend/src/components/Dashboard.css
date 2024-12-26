@@ -140,8 +140,8 @@
 }
 .filter-button {
   background-color: white !important; /* White background */
-  color: #0056b3 !important; /* Blue text */
-  border: 2px solid #0056b3; /* Add a blue border */
+  color: #2168BA !important; /* Blue text */
+  border: 2px solid #2168BA; /* Add a blue border */
   padding: 8px 12px; /* Padding inside the button */
   border-radius: 5px; /* Rounded corners */
   cursor: pointer;

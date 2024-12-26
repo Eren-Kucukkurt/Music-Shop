@@ -74,17 +74,17 @@
   input[type="text"]:focus,
   input[type="email"]:focus,
   textarea:focus {
-    border-color: #007bff;
+    border-color: #2168BA;
     outline: none;
   }
   
   /* Button styling */
   button {
-    background-color: #007bff;
+    background-color: #2168BA;
     color: white;
     border: none;
     padding: 12px;
-    border-radius: 4px;
+    border-radius: 4px !important;
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;

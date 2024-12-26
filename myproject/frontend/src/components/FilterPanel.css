@@ -116,24 +116,26 @@
 }
 
 
-.apply-filters-button,
+
 .reset-button {
   padding: 12px; /* Unified padding for consistent size */
   font-size: 16px; /* Same font size for text */
-  border: none;
+  border: 1px solid #2168BA !important; /* Border for both buttons */
   border-radius: 6px; /* Rounded corners for both buttons */
   cursor: pointer;
   width: 100%; /* Ensure both buttons are the same width */
   box-sizing: border-box; /* Include padding and border in width calculation */
+  color: #2168BA !important;  /* Consistent button color */
+  background-color: white !important; /* White text color for contrast */
 }
 
 .apply-filters-button {
   background-color: #2168BA !important; /* Set background to the desired color */
-  color: #fff; /* Keep the text color white for contrast */
+  color: #fff !important; /* Keep the text color white for contrast */
   padding: 8px;
   font-size: 14px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
   width: 100%; /* Ensure the button spans the full width if needed */
 }
@@ -142,11 +144,7 @@
   display: flex;
   flex-wrap: wrap; /* Allow buttons to wrap to the next line */
   gap: 5px; /* Space between buttons */
-  color: #2168BA;
-  border-radius: 4px;
+  color: #2168BA !important; /* Consistent button color */
+  border-radius: 5px !important;
 }
 
-.reset-button {
-  background-color: #dc3545;
-  color: #fff;
-}
