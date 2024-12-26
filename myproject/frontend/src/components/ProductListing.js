@@ -75,18 +75,31 @@ export default function ProductListing({ products, isLoading }) {
                   '&:hover': { transform: 'scale(1.05)' },
                 }}
               >
-                {/* Product Image */}
-                <CardMedia
-                  component="img"
-                  alt={product.name}
-                  image={product.image || 'https://via.placeholder.com/300'}
+                {/* Fixed Image Container */}
+                <Box
                   sx={{
-                    height: '250px', // Increased height for the image
-                    objectFit: 'contain',
+                    height: '250px', // Fixed height for the image box
+                    width: '100%', // Spans the full card width
+                    display: 'flex', // Flexbox for centering the image
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#ffffff', // Optional background color for empty areas
+                    overflow: 'hidden', // Ensure image stays contained
                     borderRadius: 1,
-                    backgroundColor: '#f0f0f0',
                   }}
-                />
+                >
+                  <img
+                    src={product.image || 'https://via.placeholder.com/300'}
+                    alt={product.name}
+                    style={{
+                      maxHeight: '100%', // Scale down to fit the container's height
+                      maxWidth: '100%', // Scale down to fit the container's width
+                      objectFit: 'contain', // Maintain aspect ratio
+                    }}
+                  />
+                </Box>
+
+                {/* Out of Stock Overlay */}
                 {product.quantity_in_stock <= 0 && (
                   <Box
                     sx={{
@@ -95,7 +108,7 @@ export default function ProductListing({ products, isLoading }) {
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                      backgroundColor: 'rgb(255, 255, 255)',
                       color: 'white',
                       display: 'flex',
                       justifyContent: 'center',
@@ -109,17 +122,22 @@ export default function ProductListing({ products, isLoading }) {
                   </Box>
                 )}
 
+                {/* Product Details */}
                 <CardContent sx={{ flexGrow: 1 }}>
                   {/* Product Name */}
                   <Typography
                     variant="h6"
                     component="div"
-                    noWrap
                     sx={{
                       fontSize: '1.2rem',
                       fontWeight: 'bold',
                       textAlign: 'left',
                       marginBottom: 1,
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: 2, // Limit to 2 lines
+                      overflow: 'hidden', // Hide overflow text
+                      height: '3.2em', // Fixed height for 2 lines of text
                     }}
                   >
                     {product.name}
@@ -156,6 +174,7 @@ export default function ProductListing({ products, isLoading }) {
                   </Typography>
                 </CardContent>
               </Card>
+
               </Link>
             </Grid>
           );

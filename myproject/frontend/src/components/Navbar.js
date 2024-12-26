@@ -8,39 +8,43 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SearchIcon from '@mui/icons-material/Search';
 import WishlistHandler from './WishlistHandler'; // Import WishlistHandler
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export default function Navbar({ isAuthenticated, setIsAuthenticated, username, setUsername, onSearch }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-
+  
   const handleSearchChange = (e) => {
+    //console.log('search:', e.target.value);
     setSearchQuery(e.target.value);
   };
-
+  
   const handleSearchSubmit = () => {
-    if (searchQuery.trim()) {
-      // If already on the Dashboard, push the query state without reloading
-      if (window.location.pathname === '/') {
-        navigate('.', { state: { searchQuery } }); // Use relative navigation to update the state
-      } else {
-        navigate('/', { state: { searchQuery } }); // Navigate to Dashboard with search query
+    // Allow empty searchQuery to reset products
+    //console.log('query:', searchQuery);
+    if (window.location.pathname === '/') {
+      navigate('.', { state: { searchQuery } }); // Use relative navigation to update the state
+    } else {
+      navigate('/', { state: { searchQuery } }); // Navigate to Dashboard with search query
+    }
+  };
+  
+  const token = sessionStorage.getItem('access_token');
+
+  useEffect(() => {
+
+    setIsAuthenticated(!!token); // Update state after render
+  
+    if (token) {
+      const storedUsername = sessionStorage.getItem('username');
+      if (storedUsername) {
+        setUsername(storedUsername);
       }
     }
-
-  };
-
-  const token = sessionStorage.getItem('access_token');
-  setIsAuthenticated(!!token);
-
-  // Update username if authenticated
-  if (token) {
-    const storedUsername = sessionStorage.getItem('username');
-    if (storedUsername) {
-      setUsername(storedUsername);
-    }
-  }
+  }, []); // Empty dependency array ensures this runs once after the component mounts
+  
 
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {

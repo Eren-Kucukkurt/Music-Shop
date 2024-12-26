@@ -4,9 +4,7 @@ import FilterPanel from './FilterPanel';
 import axios from 'axios';
 import './Dashboard.css';
 import { Link, useNavigate } from 'react-router-dom'; 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
-import { faHeart } from '@fortawesome/free-solid-svg-icons';
+
 import { useLocation } from 'react-router-dom';
 
 
@@ -33,30 +31,32 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
     sessionStorage.setItem('guest_token', token);
     return token;
   };
+
   useEffect(() => {
-    const guestToken = sessionStorage.getItem('guest_token') || generateGuestToken();
+    // Fetch products and handle query changes
+    const fetchInitialData = async () => {
+      const guestToken = sessionStorage.getItem('guest_token') || generateGuestToken();
 
-    // Check if the user is authenticated
-    const token = sessionStorage.getItem('access_token');
-    setIsAuthenticated(!!token);
+      // Check if the user is authenticated
+      const token = sessionStorage.getItem('access_token');
+      setIsAuthenticated(!!token);
 
-    // Retrieve username if authenticated
-    if (token) {
-      const storedUsername = sessionStorage.getItem('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
+      // Retrieve username if authenticated
+      if (token) {
+        const storedUsername = sessionStorage.getItem('username');
+        if (storedUsername) {
+          setUsername(storedUsername);
+        }
       }
-    }
 
-    fetchAllProducts();
+      fetchAllProducts();
 
-    const queryFromNavbar = location.state?.searchQuery || '';
-    if (queryFromNavbar) {
-      console.log('Query from Navbar:', queryFromNavbar);
-      console.log('Filters:', filters);
+      const queryFromNavbar = location.state?.searchQuery ?? ''; // Handle undefined as an empty string
       setSearchQuery(queryFromNavbar); // Store the query locally
       applySearchAndFilters(queryFromNavbar, filters); // Apply the query immediately
-    }
+    };
+
+    fetchInitialData();
 
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -72,17 +72,12 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
   }, []);
 
   useEffect(() => {
-
-
-    const queryFromNavbar = location.state?.searchQuery || '';
-    if (queryFromNavbar) {
-      console.log('Query from Navbar:', queryFromNavbar);
-      console.log('Filters:', filters);
-      setSearchQuery(queryFromNavbar); // Store the query locally
-      applySearchAndFilters(queryFromNavbar, filters); // Apply the query immediately
-    }
-
+    // Handle changes in the query from the Navbar
+    const queryFromNavbar = location.state?.searchQuery ?? ''; // Handle undefined as an empty string
+    setSearchQuery(queryFromNavbar); // Store the query locally
+    applySearchAndFilters(queryFromNavbar, filters); // Apply the query immediately
   }, [location.state?.searchQuery]);
+
 
   const fetchAllProducts = async () => {
     setIsLoading(true);
@@ -106,30 +101,19 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('access_token');
-    sessionStorage.removeItem('refresh_token');
-    sessionStorage.removeItem('username'); // Clear username
-    setIsAuthenticated(false);
-    setUsername(''); // Reset username
-    window.location.reload();
-  };
 
-  const handleToggleCategories = () => {
-    setShowCategories(!showCategories);
-  };
 
   const applyFilters = (newFilters) => {
     setFilters(newFilters);
     applySearchAndFilters(searchQuery, newFilters);
-    setShowFilterOptions(false);
+    //setShowFilterOptions(false);
   };
 
   const applySearchAndFilters = (searchQuery, filters) => {
-    console.log('Search Query inside apply function:', searchQuery);
+    //console.log('Search Query inside apply function:', searchQuery);
     let updatedProducts = [...fullProductList];
 
-    if (searchQuery) {
+    if (searchQuery.trim() !== '') {
       updatedProducts = updatedProducts.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -137,7 +121,7 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
     }
 
     if (filters.category) {
-      updatedProducts = updatedProducts.filter((product) => product.category === filters.category);
+      updatedProducts = updatedProducts.filter(product => product.category === filters.category);
     }
 
     updatedProducts = updatedProducts.filter(
@@ -157,18 +141,16 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
     } else if (filters.priceSort === 'popularityLow') {
       updatedProducts.sort((a, b) => a.popularity - b.popularity);
     }
-    
-    console.log('Filtered Products:', updatedProducts);
 
+    //console.log('Filtered Products:', updatedProducts);
     setFilteredProducts(updatedProducts);
-
   };
 
   const resetFilters = () => {
     const defaultFilters = { priceSort: '', priceRange: [0, maxPrice], inStock: false };
     setFilters(defaultFilters);
     applySearchAndFilters(searchQuery, defaultFilters);
-    setShowFilterOptions(false);
+    //setShowFilterOptions(false);
   };
 
   const handleCategoryClick = (category) => {
@@ -178,23 +160,13 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
     setShowCategories(false);
   };
 
-  const toggleLoginDropdown = () => {
-    setShowLoginDropdown(!showLoginDropdown);
-  };
+
 
   const toggleFilterOptions = () => {
     setShowFilterOptions(!showFilterOptions);
   };
 
-  const handleWishlistClick = () => {
-    if (isAuthenticated) {
-      navigate('/wishlist'); // If authenticated, navigate to wishlist
-    } else {
-      if (window.confirm("You need to log in to create and manage your wishlist. Do you want to log in now?")) {
-        navigate('/login', { state: { from: '/wishlist' } }); // Redirect to login page
-      }
-    }
-  };
+
 
   return (
     <div className="dashboard-container">
@@ -205,6 +177,7 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
           maxPrice={maxPrice}
           onApplyFilters={applyFilters}
           resetFilters={resetFilters}
+          onCategorySelect={handleCategoryClick} 
         />
       )}
       <div className="main-content">
@@ -223,7 +196,7 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
                   <li onClick={() => handleCategoryClick('Guitars')}>Guitars</li>
                   <li onClick={() => handleCategoryClick('Pianos')}>Pianos</li>
                   <li onClick={() => handleCategoryClick('Drums')}>Drums</li>
-                  <li onClick={() => handleCategoryClick('Wind Instruments')}>Wind Instruments</li>
+                  <li onClick={() => handleCategoryClick('Electric Guitars')}>Wind Instruments</li>
                   <li onClick={() => handleCategoryClick('')}>All Categories</li>
                 </ul>
               </div>

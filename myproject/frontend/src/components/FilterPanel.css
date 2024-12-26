@@ -74,6 +74,20 @@
   position: relative; /* For positioning the underline */
 }
 
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;  /* Space between checkbox and text */
+}
+
+.stock-checkbox {
+  cursor: pointer;
+}
+
+.stock-checkbox input[type="checkbox"] {
+  margin: 0;  /* Remove default margins */
+}
+
 .filter-header-text::after {
   content: ""; /* Pseudo-element for the underline */
   display: block;
@@ -122,6 +136,14 @@
   border-radius: 4px;
   cursor: pointer;
   width: 100%; /* Ensure the button spans the full width if needed */
+}
+
+.category-buttons {
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap to the next line */
+  gap: 5px; /* Space between buttons */
+  color: #2168BA;
+  border-radius: 4px;
 }
 
 .reset-button {
