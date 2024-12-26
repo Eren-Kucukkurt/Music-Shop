@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
 .dashboard-container {
   display: flex;
   position: relative; /* Relative to allow proper positioning of children */
@@ -430,4 +432,12 @@
   background-color: #4370c3;
   color: white;
   border: 1px solid #4370c3;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+.shop-heading {
+  font-family: "Open Sans", serif;
+  font-size: 2rem; /* Adjust the size as needed */
+  font-weight: bold; /* Optional for styling */
+  color: #fff; /* Optional for text color */
 }

@@ -6,6 +6,7 @@ import ReviewForm from './ReviewForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as filledStar } from '@fortawesome/free-solid-svg-icons';
 import { faStarHalfAlt as halfStar, faStar as emptyStar } from '@fortawesome/free-regular-svg-icons';
+import {  Typography } from '@mui/material';
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -119,8 +120,12 @@ const ProductDetails = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return  <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+  Loading...
+</Typography>;
+  if (error) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+  Loading...
+</Typography>;
   const rating = parseFloat(product.rating) || 0;
 
   const renderStars = (rating) => {

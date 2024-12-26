@@ -209,49 +209,13 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
       )}
       <div className="main-content">
         <header className="header">
-          <div className="cart-container">
-            <Link to="/shoppingcart" className="cart-link">
-              <FontAwesomeIcon icon={faCartShopping} className="cart-icon" />
-            </Link>
-            <button onClick={handleWishlistClick} className="wishlist-button">
-              <FontAwesomeIcon icon={faHeart} className="wishlist-icon" /> Wishlist
-            </button>
 
-            {!isAuthenticated ? (
-              <div className="login-register-container" ref={dropdownRef}>
-                <FontAwesomeIcon
-                  icon={faUser}
-                  onClick={toggleLoginDropdown}
-                  className="user-icon"
-                />
-                <span className="login-register-text" onClick={toggleLoginDropdown}>
-                  Login or Register
-                </span>
-                {showLoginDropdown && (
-                  <div className="login-dropdown">
-                    <Link to="/login" className="dropdown-link">Login</Link>
-                    <Link to="/register" className="dropdown-link">Register</Link>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="logout-container">
-                <FontAwesomeIcon icon={faUser} className="user-icon" />
-                <button onClick={handleLogout} className="logout-button">
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-
-          <h2>Sekans Music Shop</h2>
+        <h2 className="shop-heading">Find Your Sequence</h2>
           <p className="welcome-message">
             Welcome{username ? `, ${username}!` : '!'}
           </p>
           <div className="header-actions">
-            <button onClick={handleToggleCategories} className="categories-btn">
-              Categories
-            </button>
+
             <button onClick={toggleFilterOptions} className="filter-button">Filters and Categories</button>
             {showCategories && (
               <div className="categories-dropdown" ref={dropdownRef}>

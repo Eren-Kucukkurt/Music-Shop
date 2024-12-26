@@ -167,7 +167,7 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
               value={searchQuery}
               onChange={handleSearchChange}
               onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
-              placeholder="Find your companion..."
+              placeholder="Find your sequence..."
               variant="outlined"
               sx={{
                 width: '100%',
