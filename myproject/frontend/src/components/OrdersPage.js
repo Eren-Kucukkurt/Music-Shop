@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { Typography } from '@mui/material';
 import './OrdersPage.css';
 
 const OrdersPage = () => {
@@ -85,7 +86,9 @@ const OrdersPage = () => {
     fetchOrders();
   }, []);
 
-  if (loading) return <p>Loading orders...</p>;
+  if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+  Loading orders...
+</Typography>;
   if (error) return <p className="error-message">{error}</p>;
 
   return (

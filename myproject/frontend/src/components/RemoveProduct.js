@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Typography } from '@mui/material';
 import './RemoveProduct.css';
 
 const RemoveProduct = () => {
@@ -44,7 +45,9 @@ const RemoveProduct = () => {
     fetchProducts();
   }, [search]);
 
-  if (loading) return <p>Loading products...</p>;
+  if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+  Loading products...
+</Typography>;
   if (error) return <p className="error-message">{error}</p>;
 
   return (

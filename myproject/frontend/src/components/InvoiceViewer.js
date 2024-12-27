@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Typography } from '@mui/material';
 import './InvoiceViewer.css';
 
 const InvoiceViewer = () => {
@@ -161,7 +162,9 @@ const InvoiceViewer = () => {
         </button>
       </div>
 
-      {loading && <p className="loading-message">Fetching invoices, please wait...</p>} {/* Loading Message */}
+      {loading && <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+    Fetching invoices please wait...
+  </Typography>} {/* Loading Message */}
 
       {invoices.length > 0 && (
         <div className="invoices-container">

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Typography } from '@mui/material';
 import './RefundManager.css';
 
 const RefundManager = () => {
@@ -61,7 +62,9 @@ const RefundManager = () => {
     fetchRefunds();
   }, []);
 
-  if (loading) return <p>Loading refund requests...</p>;
+  if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+  Loading refund requests...
+</Typography>;
   if (error) return <p className="error-message">{error}</p>;
 
   return (

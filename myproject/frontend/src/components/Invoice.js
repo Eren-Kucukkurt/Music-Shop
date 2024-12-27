@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Typography } from '@mui/material';
 import axios from 'axios';
 import './Invoice.css'; // Optional for styling
 
@@ -30,7 +31,9 @@ const Invoice = () => {
     fetchLatestOrder();
   }, []);
 
-  if (loading) return <p>Loading your invoice...</p>;
+  if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+  Loading your invoice...
+</Typography>;;
   if (error) return <p className="error-message">{error}</p>;
 
   return (
