@@ -28,6 +28,7 @@ import RevenueProfitChart from './components/RevenueProfitChart.js'; // Update t
 import UpdateProductForm from './components/UpdateProductForm.js'; // Update the path if UpdateProductForm is in a different directory
 import ProfilePage from './components/ProfilePage.js';
 
+
 // Wrap the components with the role guard
 const ProtectedProductManager = withRoleGuard(ProductManager, ['PRODUCT_MANAGER']);
 const ProtectedSalesManager = withRoleGuard(SalesManager, ['SALES_MANAGER']);
@@ -84,6 +85,7 @@ function App() {
 
         </Routes>
       </div>
+      
     </Router>
   );
 }

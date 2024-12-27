@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as filledStar } from '@fortawesome/free-solid-svg-icons';
 import { faStarHalfAlt as halfStar, faStar as emptyStar } from '@fortawesome/free-regular-svg-icons';
 import {  Typography } from '@mui/material';
+import Footer from './Footer';
 // KurtarmaRampasi
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -301,6 +302,7 @@ const ProductDetails = () => {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 };
