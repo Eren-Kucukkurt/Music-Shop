@@ -4,7 +4,7 @@ import FilterPanel from './FilterPanel';
 import axios from 'axios';
 import './Dashboard.css';
 import { Link, useNavigate } from 'react-router-dom'; 
-
+import Footer from './Footer'; // Import Footer
 import { useLocation } from 'react-router-dom';
 
 
@@ -170,6 +170,7 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
 
   return (
     <div className="dashboard-container">
+      
        
       {showFilterOptions && (
         <FilterPanel
@@ -205,7 +206,9 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
           </div>
         </header>
         <ProductListing products={filteredProducts} isLoading={isLoading} />
+        <Footer /> 
       </div>
+    
     </div>
   );
 }

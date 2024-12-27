@@ -1,0 +1,33 @@
+.footer {
+    background-color: #2168BA; /* Footer background color */
+    color: white; /* Footer text color */
+    padding: 20px; /* Padding inside the footer */
+    text-align: center; /* Center-align text */
+    width: 100%; /* Make it span full width */
+    box-sizing: border-box; /* Include padding in width */
+    margin-top: 20px; /* Space between footer and content above */
+  }
+  
+  
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .footer-links {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .footer-link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .footer-link:hover {
+    text-decoration: underline;
+  }
+  

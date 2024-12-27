@@ -3,7 +3,7 @@
 
 .dashboard-container {
   display: flex;
-  position: relative; /* Relative to allow proper positioning of children */
+  position: column; /* Relative to allow proper positioning of children */
   height: 100vh; /* Full viewport height */
 }
 .filter-panel {

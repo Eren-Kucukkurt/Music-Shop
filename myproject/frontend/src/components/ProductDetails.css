@@ -6,10 +6,12 @@
   background-color: transparent;
   width: 100vw;
   min-height: 100vh;
+  flex-direction: column;
 }
 
 .product-details {
   display: flex;
+  flex: 1;
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
@@ -19,6 +21,13 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   gap: 40px;
+}
+footer {
+  background-color: #2168BA; /* Example footer background */
+  color: white;
+  text-align: center;
+  padding: 20px;
+  width: 100%; /* Ensure full width */
 }
 .star-rating {
   display: inline-flex;
