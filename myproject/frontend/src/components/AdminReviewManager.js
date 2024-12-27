@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Typography } from '@mui/material';
 import './AdminReviewManager.css';
 
 const AdminReviewManager = () => {
@@ -66,7 +67,9 @@ const AdminReviewManager = () => {
     }
   };
 
-  if (loading) return <p>Loading reviews...</p>;
+  if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+  Loading reviews...
+</Typography>;;
   if (error) return <p>{error}</p>;
 
   return (

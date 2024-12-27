@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Typography } from '@mui/material';
 import axios from 'axios';
 import './Checkout.css'; // Import a dedicated CSS file
 
@@ -114,7 +115,9 @@ const Checkout = () => {
         }
     };
 
-    if (loading) return <p className="loader">Loading your cart...</p>;
+    if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+    Loading...
+  </Typography>;
     if (error) return <p className="error-message">{error}</p>;
 
     return (

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Minus, Plus} from 'lucide-react';
 import axios from 'axios';
 import {Typography,Row,Col, Button,Space} from 'antd';
+import { Typography as TypoMui }  from '@mui/material';
 import {DeleteOutlined} from '@ant-design/icons';
 
 export default function ShoppingCartComponent() {
@@ -113,14 +114,12 @@ export default function ShoppingCartComponent() {
   const totalPrice = cartItems.reduce((sum, item) => sum + item.total_price, 0);
 
   if (loading) {
-    return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
-    Loading your cart...
-  </Typography>;;
+    return <TypoMui variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}> Loading your cart... </TypoMui>;
   }
 
   if (error) {
-    return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}> {error}
-  </Typography>;
+    return <TypoMui variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}> {error}
+  </TypoMui>;
   }
 
   
@@ -182,7 +181,11 @@ export default function ShoppingCartComponent() {
                 </div>
                 </Col>
                 <Col span={4}style={{padding:"10px 15px"}}>
-                <Typography.Title level={5}>${item.price ? (item.price*item.quantity).toFixed(2) : '0.00'}</Typography.Title>
+
+                <Typography.Title level={5}>$ {new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(item.price*item.quantity)} </Typography.Title>
                 </Col>
                 <Col span={4}style={{padding:"10px 15px"}}>
                 <Button
@@ -197,7 +200,10 @@ export default function ShoppingCartComponent() {
               ))}
     </>
     <Space direction="vertical" style={{float:"right"}}>
-    <Typography.Title  level={3}>Total Price: ${totalPrice.toFixed(2)}</Typography.Title>
+    <Typography.Title  level={3}>Total Price: $ {new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(totalPrice)}</Typography.Title>
     <Button variant='outline'onClick={() => navigate('/checkout')} style={{borderColor:"black",float:"right"}}>Checkout</Button>
     </Space> </>):(<Typography.Title level={3}>Your cart is empty</Typography.Title>)}
     </div>

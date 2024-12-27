@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Typography } from '@mui/material';
 import './RevenueProfitChart.css';
 
 const RevenueProfitChart = () => {
@@ -59,7 +60,9 @@ const RevenueProfitChart = () => {
     <div className="revenue-profit-chart">
       <h1>Revenue, Profit, and Refund Analysis</h1>
       {loading ? (
-        <p>Loading data...</p>
+        <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
+        Loading data...
+      </Typography>
       ) : error ? (
         <p className="error-message">{error}</p>
       ) : (
