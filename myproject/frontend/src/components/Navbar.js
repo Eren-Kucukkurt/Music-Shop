@@ -274,47 +274,106 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
 
       {/* Drawer */}
       <Drawer
-        anchor="left"
-        open={isDrawerOpen}
-        onClose={toggleDrawer(false)}
-        sx={{ zIndex: (theme) => theme.zIndex.appBar - 1 }}
-      >
-        <Box
-          sx={{
-            width: 250,
-          }}
-          role="presentation"
-          onClick={toggleDrawer(false)}
-          onKeyDown={toggleDrawer(false)}
-        >
-          <List>
-            <ListItem button onClick={() => navigate('/')}>
-              <ListItemIcon>
-                <HomeIcon />
-              </ListItemIcon>
-              <ListItemText primary="Home" />
-            </ListItem>
-            <ListItem button onClick={() => handleNavigation('/profile')}>
-              <ListItemIcon>
-                <AccountCircleIcon />
-              </ListItemIcon>
-              <ListItemText primary="Profile" />
-            </ListItem>
-            <ListItem button onClick={() => navigate('/orders')}>
-              <ListItemIcon>
-                <ShoppingCartIcon />
-              </ListItemIcon>
-              <ListItemText primary="Orders" />
-            </ListItem>
-            <ListItem button onClick={() => navigate('/settings')}>
-              <ListItemIcon>
-                <SettingsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Settings" />
-            </ListItem>
-          </List>
-        </Box>
-      </Drawer>
+  anchor="left"
+  open={isDrawerOpen}
+  onClose={toggleDrawer(false)}
+  sx={{
+    zIndex: (theme) => theme.zIndex.drawer,
+    '& .MuiDrawer-paper': {
+      width: 300, // Wider drawer
+      height: '100vh', // Full height
+      boxSizing: 'border-box',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+  }}
+>
+  {/* Drawer Header with Button and Logo */}
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      padding: '8px 16px',
+      borderBottom: '1px solid #ddd', // Divider
+      height: '80px', // Match AppBar height
+      backgroundColor: '#2168BA', // Match AppBar background color
+    }}
+  >
+    {/* Close Button */}
+    <IconButton
+      onClick={toggleDrawer(false)}
+      sx={{
+        color: 'white',
+      }}
+    >
+      <MenuIcon />
+    </IconButton>
+
+    {/* Logo */}
+    <Box
+      component={Link}
+      to="/"
+      sx={{
+        height: '100%',
+        width: 'auto',
+        textDecoration: 'none',
+        color: 'inherit',
+        marginLeft: '16px', // Add spacing between button and logo
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <img
+        src="/sequence-music-high-resolution-logo.png"
+        alt="Logo"
+        style={{
+          height: '100%',
+          width: 'auto',
+          objectFit: 'contain',
+        }}
+      />
+    </Box>
+  </Box>
+
+  {/* Drawer Content */}
+  <Box
+    sx={{
+      flexGrow: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'start',
+      alignItems: 'start',
+    }}
+  >
+    <List>
+      <ListItem button onClick={() => navigate('/')}>
+        <ListItemIcon>
+          <HomeIcon />
+        </ListItemIcon>
+        <ListItemText primary="Home" />
+      </ListItem>
+      <ListItem button onClick={() => handleNavigation('/profile')}>
+        <ListItemIcon>
+          <AccountCircleIcon />
+        </ListItemIcon>
+        <ListItemText primary="Profile" />
+      </ListItem>
+      <ListItem button onClick={() => navigate('/orders')}>
+        <ListItemIcon>
+          <ShoppingCartIcon />
+        </ListItemIcon>
+        <ListItemText primary="Orders" />
+      </ListItem>
+      <ListItem button onClick={() => navigate('/settings')}>
+        <ListItemIcon>
+          <SettingsIcon />
+        </ListItemIcon>
+        <ListItemText primary="Settings" />
+      </ListItem>
+    </List>
+  </Box>
+</Drawer>
+
     </>
   );
 }

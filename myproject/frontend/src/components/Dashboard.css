@@ -5,6 +5,7 @@
   display: flex;
   position: column; /* Relative to allow proper positioning of children */
   height: 100vh; /* Full viewport height */
+  
 }
 .filter-panel {
   position: relative; /* Fix the filter panel to the left of the viewport */
@@ -116,6 +117,7 @@
 
 .main-content {
   flex: 1; /* Take up the remaining space */
+  flex-grow: 1;
   margin-left: relative; /* Adjust for the filter panel */
   padding: 20px;
   overflow-y: auto; /* Enable scrolling if content exceeds viewport height */
@@ -131,6 +133,8 @@
   border-radius: 5px;
   position: relative; /* Needed for dropdown */
 }
+
+
 
 .header-actions {
   display: flex;

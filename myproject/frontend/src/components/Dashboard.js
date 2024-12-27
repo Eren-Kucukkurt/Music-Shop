@@ -169,6 +169,7 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
 
 
   return (
+    <div>
     <div className="dashboard-container">
       
        
@@ -206,9 +207,12 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
           </div>
         </header>
         <ProductListing products={filteredProducts} isLoading={isLoading} />
-        <Footer /> 
+
       </div>
-    
+     
+
+    </div>
+    <Footer /> 
     </div>
   );
 }

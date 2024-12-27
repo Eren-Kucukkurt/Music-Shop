@@ -22,13 +22,7 @@
   padding: 20px;
   gap: 40px;
 }
-footer {
-  background-color: #2168BA; /* Example footer background */
-  color: white;
-  text-align: center;
-  padding: 20px;
-  width: 100%; /* Ensure full width */
-}
+
 .star-rating {
   display: inline-flex;
   align-items: center;

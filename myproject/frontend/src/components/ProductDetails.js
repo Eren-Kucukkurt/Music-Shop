@@ -175,6 +175,7 @@ const ProductDetails = () => {
   
 
   return (
+    <div>
     <div className="product-details-fullpage">
       {product && (
         <div className="product-details">
@@ -302,7 +303,9 @@ const ProductDetails = () => {
           </div>
         </div>
       )}
-      <Footer />
+     
+    </div>
+    <Footer />
     </div>
   );
 };
