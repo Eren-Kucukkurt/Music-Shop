@@ -4,6 +4,7 @@
     padding: 20px; /* Padding inside the footer */
     text-align: center; /* Center-align text */
     width: 100%; /* Make it span full width */
+
     box-sizing: border-box; /* Include padding in width */
     margin-top: auto; /* Space between footer and content above */
     bottom: 0; /* Stick to the bottom */
@@ -33,3 +34,19 @@
     text-decoration: underline;
   }
   
+  .footer-socials {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px; /* Add space between links and social icons */
+  }
+  
+  .footer-social-icon {
+    width: 24px; /* Icon size */
+    height: 24px;
+    color: white; /* Icon color */
+    transition: color 0.3s ease; /* Smooth hover transition */
+  }
+  
+  .footer-social-icon:hover {
+    color: #d9d9d9; /* Slightly lighter color on hover */
+  }
