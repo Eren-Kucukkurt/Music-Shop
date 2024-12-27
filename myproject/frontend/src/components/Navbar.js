@@ -9,6 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import WishlistHandler from './WishlistHandler'; // Import WishlistHandler
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import axios from 'axios';
 
 export default function Navbar({ isAuthenticated, setIsAuthenticated, username, setUsername, onSearch }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -90,6 +91,41 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
       }
     }
   };
+
+  const fetchUserProfile = async () => {
+    try {
+      const token = sessionStorage.getItem('access_token'); // Fetch token from sessionStorage
+      if (!token) {
+        // If no token, user is not logged in
+        return { loggedIn: false };
+      }
+  
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+  
+      // Make API call to fetch the user profile
+      const response = await axios.get('http://localhost:8000/api/profile/', { headers });
+  
+      //console.log('response:', response); // Debugging to verify structure
+  
+      // Extract role and return it along with loggedIn status
+      return {
+        loggedIn: true,
+        role: response.data.role, // Ensure `role` field is used from the response data
+      };
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+  
+      // Handle specific HTTP errors (e.g., 401 Unauthorized)
+      if (error.response && error.response.status === 401) {
+        return { loggedIn: false }; // Token might be invalid or expired
+      }
+  
+      return { loggedIn: false };
+    }
+  };
+  
 
   return (
     <>
@@ -334,44 +370,84 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
       />
     </Box>
   </Box>
+{/* Drawer Content */}
+<Box
+  sx={{
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'start',
+    alignItems: 'start', // Ensures proper alignment of content
+  }}
+>
+  <List sx={{ width: '100%' }}> {/* Ensure List spans the full width */}
+    <ListItem
+      button
+      onClick={() => navigate('/')}
+      sx={{ width: '100%' }} // Make ListItem span full width
+    >
+      <ListItemIcon>
+        <HomeIcon />
+      </ListItemIcon>
+      <ListItemText primary="Home" />
+    </ListItem>
 
-  {/* Drawer Content */}
-  <Box
-    sx={{
-      flexGrow: 1,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'start',
-      alignItems: 'start',
-    }}
-  >
-    <List>
-      <ListItem button onClick={() => navigate('/')}>
-        <ListItemIcon>
-          <HomeIcon />
-        </ListItemIcon>
-        <ListItemText primary="Home" />
-      </ListItem>
-      <ListItem button onClick={() => handleNavigation('/profile')}>
-        <ListItemIcon>
-          <AccountCircleIcon />
-        </ListItemIcon>
-        <ListItemText primary="Profile" />
-      </ListItem>
-      <ListItem button onClick={() => navigate('/orders')}>
-        <ListItemIcon>
-          <ShoppingCartIcon />
-        </ListItemIcon>
-        <ListItemText primary="Orders" />
-      </ListItem>
-      <ListItem button onClick={() => navigate('/settings')}>
-        <ListItemIcon>
-          <SettingsIcon />
-        </ListItemIcon>
-        <ListItemText primary="Settings" />
-      </ListItem>
-    </List>
-  </Box>
+    <ListItem
+      button
+      onClick={() => handleNavigation('/profile')}
+      sx={{ width: '100%' }} // Make ListItem span full width
+    >
+      <ListItemIcon>
+        <AccountCircleIcon />
+      </ListItemIcon>
+      <ListItemText primary="Profile" />
+    </ListItem>
+
+    <ListItem
+      button
+      onClick={() => navigate('/orders')}
+      sx={{ width: '100%' }} // Make ListItem span full width
+    >
+      <ListItemIcon>
+        <ShoppingCartIcon />
+      </ListItemIcon>
+      <ListItemText primary="Orders" />
+    </ListItem>
+
+    <ListItem
+      button
+      onClick={async () => {
+        try {
+          const result = await fetchUserProfile();
+
+          if (!result.loggedIn) {
+            if (window.confirm('You need to log in to access this page. Do you want to log in now?')) {
+              navigate('/login');
+            }
+          } else if (result.role === 'SALES_MANAGER') {
+            navigate('/salesManager');
+          } else if (result.role === 'PRODUCT_MANAGER') {
+            navigate('/productManager');
+          } else if (result.role === 'CUSTOMER') {
+            alert('You are not authorized to access this page.');
+          } else {
+            console.error('Unknown role:', result.role);
+            alert('Unexpected role detected. Please contact support.');
+          }
+        } catch (error) {
+          console.error('Error handling Settings button click:', error);
+          alert('An error occurred while trying to access this page. Please try again.');
+        }
+      }}
+      sx={{ width: '100%' }} // Make ListItem span full width
+    >
+      <ListItemIcon>
+        <SettingsIcon />
+      </ListItemIcon>
+      <ListItemText primary="Settings" />
+    </ListItem>
+  </List>
+</Box>
 </Drawer>
 
     </>

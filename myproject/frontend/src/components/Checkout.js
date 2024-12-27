@@ -105,7 +105,7 @@ const Checkout = () => {
         }
 
         try {
-            console.log("debugging");
+            //console.log("debugging");
             await axios.post('http://localhost:8000/checkout/', payload, { headers });
             setSuccessMessage('Order placed successfully!');
             setCartItems([]);
@@ -133,9 +133,15 @@ const Checkout = () => {
                         {cartItems.map((item) => (
                             <div key={item.id} className="cart-item">
                                 <p>
-                                    <strong>{item.quantity} x {item.productName}</strong> @ ${item.price.toFixed(2)}
+                                    <strong>{item.quantity} x {item.productName}</strong> @ ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(item.price)}
                                 </p>
-                                <p>Total: ${item.totalPrice.toFixed(2)}</p>
+                                <p>Total: ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(item.totalPrice)}</p>
                             </div>
                         ))}
                     </div>

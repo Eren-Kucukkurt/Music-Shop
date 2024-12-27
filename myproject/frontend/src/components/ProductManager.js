@@ -1,45 +1,61 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import './ProductManager.css';
+import AddProductForm from './AddProductForm';
+import RemoveProduct from './RemoveProduct';
+import UpdateProductForm from './UpdateProductForm';
+import AdminReviewManager from './AdminReviewManager';
+import { useNavigate } from 'react-router-dom';
 
 const ProductManager = () => {
-  const navigate = useNavigate(); // Hook to programmatically navigate
+  const [activeComponent, setActiveComponent] = useState('AddProductForm');
+  const navigate = useNavigate();
+
+  const renderComponent = () => {
+    switch (activeComponent) {
+      case 'AddProductForm':
+        return <AddProductForm />;
+      case 'RemoveProduct':
+        return <RemoveProduct />;
+      case 'UpdateProductForm':
+        return <UpdateProductForm />;
+      case 'AdminReviewManager':
+        return <AdminReviewManager />;
+      default:
+        return <AddProductForm />;
+    }
+  };
 
   return (
-    <div className="product-manager">
-      <h1>Product Manager Dashboard</h1>
+    <div className="product-manager-dashboard">
+      {/* Sidebar */}
+      <div className="sidebar1">
+        <h2>Product Manager Dashboard</h2>
+        <button onClick={() => setActiveComponent('AddProductForm')}>Add Products</button>
+        <button onClick={() => setActiveComponent('RemoveProduct')}>Remove Products</button>
+        <button onClick={() => setActiveComponent('UpdateProductForm')}>Update Products</button>
+        <button onClick={() => setActiveComponent('AdminReviewManager')}>Manage Reviews</button>
 
-      {/* Button to navigate to Review Management */}
-      <section>
-        <h2>Review Management</h2>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate('/productManager/reviews')}
-        >
-          Go to Review Management
-        </button>
-      </section>
+        {/* Back to Store Button */}
+        <div style={{ marginTop: 'auto', marginTop: '20px' }}>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              marginTop: '20px',
+              padding: '10px 20px',
+              backgroundColor: '#1ABC9C',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+            }}
+          >
+            Back to Store
+          </button>
+        </div>
+      </div>
 
-      {/* Placeholder for future functionalities */}
-      <section>
-        <h2>Product Management</h2>
-        <button 
-        className="btn btn-primary"
-        onClick= {() => navigate('/productManager/addProduct')}
-        >
-        Add Product</button>
-        <button className="btn btn-secondary"
-        onClick={() => navigate('/productManager/updateProduct')}
-        >Update Product</button>
-        <button
-        className="btn btn-danger"
-         onClick={() => navigate('/productManager/removeProduct')}
-        >
-        
-  Remove Product
-</button>
-
-      </section>
+      {/* Main Content Area */}
+      <div className="content">{renderComponent()}</div>
     </div>
   );
 };

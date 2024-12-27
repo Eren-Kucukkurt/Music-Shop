@@ -64,12 +64,14 @@ const RemoveProduct = () => {
       <div className="product-list">
         {products.map((product) => (
           <div key={product.id} className="product-card">
-            <img
-              src={product.image || '/placeholder.png'}
-              alt={product.name}
-              className="product-image"
-            />
-            <p>{product.name}</p>
+            <div className="product-image-wrapper">
+              <img
+                src={product.image || '/placeholder.png'}
+                alt={product.name}
+                className="product-image"
+              />
+            </div>
+            <p className="product-name">{product.name}</p>
             <button
               className="delete-button"
               onClick={() => deleteProduct(product.id)}

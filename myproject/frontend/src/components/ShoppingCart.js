@@ -150,7 +150,10 @@ export default function ShoppingCartComponent() {
                 <Typography.Title level={5}>{item.product}</Typography.Title>
                 </Col>
                 <Col span={4}style={{padding:"10px 15px"}}>
-                <Typography.Title level={5}>${item.price ? item.price.toFixed(2) : '0.00'}</Typography.Title>
+                <Typography.Title level={5}>${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(item.price)}</Typography.Title>
                 </Col>
                 <Col span={4}style={{padding:"10px 15px"}}>
 

@@ -104,7 +104,10 @@ const OrdersPage = () => {
             {orders.map(order => (
               <div key={order.id} className="order-card">
                 <p><strong>Order ID:</strong> {order.id}</p>
-                <p><strong>Total Price:</strong> ${order.total_price.toFixed(2)}</p>
+                <p><strong>Total Price:</strong> ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(order.total_price)}</p>
                 <p><strong>Status:</strong> {order.status}</p>
                 <p><strong>Order Date:</strong> {new Date(order.created_at).toLocaleString()}</p>
                 <div>
@@ -130,7 +133,10 @@ const OrdersPage = () => {
                           />
                         )}
                         <p>
-                          {item.quantity} x {item.product_name || 'Deleted Product'} @ ${item.price.toFixed(2)}
+                          {item.quantity} x {item.product_name || 'Deleted Product'} @ ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(item.price)}
                         </p>
                         <p><strong>Refundable:</strong> {item.refundable_quantity} / {item.quantity}</p>
                         {order.status === 'DELIVERED' && item.refundable_quantity > 0 && (

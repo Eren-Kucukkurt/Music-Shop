@@ -95,24 +95,27 @@ const ProductManagement = () => {
       <ul className="product-list">
   {products.map((product) => (
     <li key={product.id} className="product-card">
-    <div className="product-image-wrapper">
-      <img
-        src={product.image}
-        alt={product.name}
-        className="product-image"
-      />
-    </div>
-    <div className="product-info">
-      <p className="product-name">{product.name}</p>
-      <p className="product-price">{product.price} USD</p>
-      <button onClick={() => setSelectedProduct(product)}>
-        Set Discount / Update Price
-      </button>
-    </div>
-  </li>
-  
+      <div className="product-image-wrapper">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="product-image"
+        />
+      </div>
+      <div className="product-info">
+        <p className="product-name">{product.name}</p>
+        <p className="product-price">${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(product.price)}</p>
+        <button onClick={() => setSelectedProduct(product)}>
+          Set Discount / Update Price
+        </button>
+      </div>
+    </li>
   ))}
 </ul>
+
 
 {/* Discount Form */}
 {selectedProduct && (

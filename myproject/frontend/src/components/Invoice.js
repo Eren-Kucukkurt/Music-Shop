@@ -33,7 +33,7 @@ const Invoice = () => {
 
   if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
   Loading your invoice...
-</Typography>;;
+</Typography>;
   if (error) return <p className="error-message">{error}</p>;
 
   return (
@@ -50,12 +50,18 @@ const Invoice = () => {
         <ul>
           {order.items.map((item) => (
             <li key={item.id}>
-              {item.quantity} x {item.product_name} @ ${parseFloat(item.price).toFixed(2)} each
+              {item.quantity} x {item.product_name} @ ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(item.price)} each
             </li>
           ))}
         </ul>
 
-        <h3>Total: ${parseFloat(order.total_price).toFixed(2)}</h3>
+        <h3>Total: ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(order.total_price)}</h3>
       </div>
 
       <button className="return-button" onClick={() => navigate('/')}>

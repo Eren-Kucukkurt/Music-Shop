@@ -69,9 +69,18 @@ const RevenueProfitChart = () => {
         <>
           {/* Summary Section */}
           <div className="summary-section">
-            <p><strong>Total Revenue:</strong> ${totalRevenue.toFixed(2)}</p>
-            <p><strong>Total Profit:</strong> ${totalProfit.toFixed(2)}</p>
-            <p><strong>Total Refunds:</strong> ${totalRefunds.toFixed(2)}</p>
+            <p><strong>Total Revenue:</strong> ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(totalRevenue)}</p>
+            <p><strong>Total Profit:</strong> ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(totalProfit)}</p>
+            <p><strong>Total Refunds:</strong> ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(totalRefunds)}</p>
           </div>
 
           {/* Date Range Picker */}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -28,64 +28,82 @@ import RevenueProfitChart from './components/RevenueProfitChart.js'; // Update t
 import UpdateProductForm from './components/UpdateProductForm.js'; // Update the path if UpdateProductForm is in a different directory
 import ProfilePage from './components/ProfilePage.js';
 
-
 // Wrap the components with the role guard
 const ProtectedProductManager = withRoleGuard(ProductManager, ['PRODUCT_MANAGER']);
 const ProtectedSalesManager = withRoleGuard(SalesManager, ['SALES_MANAGER']);
 
+function AppContent({ isAuthenticated, setIsAuthenticated, username, setUsername, handleLoginSuccess }) {
+  const NoNavbarRoutes = ['/productManager', '/salesManager', '/productManager/reviews', '/productManager/addProduct', '/productManager/removeProduct', '/productManager/updateProduct', '/salesManager/revenue-analysis'];
+  const location = useLocation(); // Get the current location
+  const shouldShowNavbar = !NoNavbarRoutes.includes(location.pathname);
+
+  return (
+    <div className="App">
+      {shouldShowNavbar && (
+        <Navbar
+          isAuthenticated={isAuthenticated}
+          setIsAuthenticated={setIsAuthenticated}
+          username={username}
+          setUsername={setUsername}
+        />
+      )}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Dashboard
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+              username={username}
+              setUsername={setUsername}
+            />
+          }
+        />
+        <Route path="/shoppingcart" element={<ShoppingCartComponent />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+        <Route path="/product/:productId" element={<ProductDetails />} />
+        <Route path="/productManager/addProduct" element={<AdminRoute><AddProductForm /></AdminRoute>} />
+        <Route path="/productManager/reviews" element={<AdminRoute><AdminReviewManager /></AdminRoute>} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/mockbank" element={<MockBank />} />
+        <Route path="/invoice" element={<Invoice />} />
+        <Route path="/assign-role" element={<RoleAssignment />} />
+        <Route path="/productManager" element={<ProtectedProductManager />} />
+        <Route path="/salesManager" element={<ProtectedSalesManager />} />
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/product-management" element={<ProductManagement />} />
+        <Route path="/invoice-viewer" element={<InvoiceViewer />} />
+        <Route path="/refund-management" element={<RefundManager />} />
+        <Route path="/productManager/removeProduct" element={<RemoveProduct />} />
+        <Route path="/salesManager/revenue-analysis" element={<RevenueProfitChart />} />
+        <Route path="/productManager/updateProduct" element={<UpdateProductForm />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Routes>
+    </div>
+  );
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-    // Global state for authentication
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
   };
- 
+
   return (
     <Router>
-      <div className="App">
-      <Navbar
+      <AppContent
         isAuthenticated={isAuthenticated}
         setIsAuthenticated={setIsAuthenticated}
         username={username}
         setUsername={setUsername}
+        handleLoginSuccess={handleLoginSuccess}
       />
-        <Routes>
-          <Route path="/" element={            <Dashboard
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-              username={username}
-              setUsername={setUsername}
-            />} />
-          <Route path="/shoppingcart" element={<ShoppingCartComponent />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-          <Route path="/product/:productId" element={<ProductDetails />} />
-          <Route path="/productManager/addProduct" element={<AdminRoute><AddProductForm /></AdminRoute>} />
-          <Route path="/productManager/reviews" element={<AdminRoute><AdminReviewManager /></AdminRoute>} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/mockbank" element={<MockBank />} />
-          <Route path="/invoice" element={<Invoice />} />
-          <Route path="/assign-role" element={<RoleAssignment />} />
-          <Route path="/productManager" element={<ProtectedProductManager />} />
-          <Route path="/salesManager" element={<ProtectedSalesManager />} />
-          <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/product-management" element={<ProductManagement />} />
-          <Route path="/invoice-viewer" element={<InvoiceViewer />} />
-          <Route path="/refund-management" element={<RefundManager />} />
-          <Route path="/productManager/removeProduct" element={<RemoveProduct />} />
-          <Route path="/salesManager/revenue-analysis" element={<RevenueProfitChart />} />
-          <Route path= "/productManager/updateProduct" element={<UpdateProductForm />} />
-          <Route path="/profile" element={<ProfilePage />} />
-
-
-        </Routes>
-      </div>
-      
     </Router>
   );
 }

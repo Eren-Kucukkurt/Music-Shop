@@ -100,7 +100,11 @@ const AdminReviewManager = () => {
                 <strong>Model:</strong> {review.product_details.model} |{' '}
                 <strong>Category:</strong> {review.product_details.category}
               </p>
-              <p><strong>Price:</strong> ${review.product_details.price.toFixed(2)}</p>
+              
+              <p><strong>Price:</strong> ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(review.product_details.price)}</p>
             </div>
           )}
 
