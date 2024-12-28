@@ -131,9 +131,11 @@ const ProductDetails = () => {
 
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating); // Number of full stars
-    const hasHalfStar = rating % 1 >= 0.5; // Determine if there's a half star
+    const fractionalPart = Math.round((rating % 1) * 10) / 10; // Round fractional part to avoid precision issues
+    const hasHalfStar = fractionalPart === 0.5; // Determine if there's a half star
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0); // Calculate remaining empty stars
-
+  
+    //console.log({ rating, fullStars, hasHalfStar, emptyStars }); 
     return (
       <div className="star-rating">
         {[...Array(fullStars)].map((_, index) => (

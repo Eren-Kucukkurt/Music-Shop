@@ -15,9 +15,11 @@ export default function ProductListing({ products, isLoading }) {
   }
 
   const renderStars = (rating) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    const fullStars = Math.floor(rating); // Number of full stars
+    const fractionalPart = Math.round((rating % 1) * 10) / 10; // Round fractional part to avoid precision issues
+    const hasHalfStar = fractionalPart === 0.5; // Determine if there's a half star
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0); // Calculate remaining empty stars
+  
 
     return (
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
