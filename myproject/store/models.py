@@ -39,11 +39,23 @@ class Product(models.Model):
     total_sale = models.PositiveIntegerField(default=0)
     popularity = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
+    @property
+    def discounted_price(self):
+        """
+        Property to calculate and return the discounted price if the discount is active.
+        """
+        now = timezone.now()
+        if self.is_discount_active and self.discount_start_date and self.discount_end_date:
+            if self.discount_start_date <= now <= self.discount_end_date:
+                return self.price - (self.price * (self.discount_percentage / 100))
+        return self.price  # Return original price if no discount is active
+
     def get_discounted_price(self):
         """
         Calculate and return the discounted price if the discount is active.
         """
         now = timezone.now()
+        #print(self.is_discount_active)
         if self.is_discount_active and self.discount_start_date and self.discount_end_date:
             if self.discount_start_date <= now <= self.discount_end_date:
                 return self.price - (self.price * (self.discount_percentage / 100))

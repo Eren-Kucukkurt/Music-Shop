@@ -196,10 +196,54 @@ const ProductDetails = () => {
             ) : (
               <p className="no-rating-message">No ratings yet</p>
             )}
-            <p className="product-price"> ${new Intl.NumberFormat('en-US', {
+            <div className="product-price">
+              {product.is_discount_active ? (
+                <>
+                  {/* Original Price - Struck-through */}
+                  <span
+                    style={{
+                      textDecoration: 'line-through',
+                      color: '#aaa',
+                      fontSize: '1.4rem',
+                      marginRight: '8px',
+                    }}
+                  >
+                    ${new Intl.NumberFormat('en-US', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
-                    }).format(product.price)}</p>
+                    }).format(product.price)}
+                  </span>
+                  {/* Discounted Price */}
+                  <span
+                    style={{
+                      color: '#333',
+                      fontSize: '1.8rem',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(product.discounted_price)}
+                  </span>
+                </>
+              ) : (
+                // Regular Price
+                <span
+                  style={{
+                    color: '#333',
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  ${new Intl.NumberFormat('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(product.price)}
+                </span>
+              )}
+            </div>
+
             <p className="product-description">{product.description}</p>
             <p className="product-model">Product Model: {product.model || "Not Specified"}</p> {/* Add Model */}
             <p className="product-warranty">Warranty: {product.warranty || "No Warranty"}</p> {/* Add Warranty */}

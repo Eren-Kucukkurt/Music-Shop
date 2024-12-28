@@ -15,10 +15,19 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'product_image', 'quantity', 'price', 'total_price', 'is_at_max_stock', 'stock_quantity']
 
     def get_price(self, obj):
-        return obj.product.price  # Ensure product has a price
+        if obj.product.is_discount_active: 
+            return obj.product.discounted_price  # Ensure product has a price
+        else:
+            return obj.product.price  # Ensure product has a price
 
     def get_total_price(self, obj):
-        return obj.quantity * obj.product.price  # Quantity * price
+        
+        if obj.product.is_discount_active: 
+            return obj.quantity * obj.product.discounted_price  # Ensure product has a price
+        else:
+            return obj.quantity * obj.product.price  # Quantity * price
+        
+        
 
     def get_is_at_max_stock(self, obj):
         return obj.quantity >= obj.product.quantity_in_stock

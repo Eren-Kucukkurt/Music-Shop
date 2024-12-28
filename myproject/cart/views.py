@@ -416,7 +416,7 @@ def fetch_invoices(request):
     except ValueError:
         return Response({'error': 'Invalid date format. Use YYYY-MM-DD.'}, status=400)
 
-    orders = Order.objects.filter(created_at__range=(start_date, end_date))
+    orders = Order.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date)
     serializer = OrderSerializer(orders, many=True, context={'request': request})
     return Response(serializer.data)
 

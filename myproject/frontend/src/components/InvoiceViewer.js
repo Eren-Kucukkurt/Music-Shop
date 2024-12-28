@@ -53,6 +53,7 @@ const InvoiceViewer = () => {
           end_date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
         },
       });
+      //console.log(new Date().toISOString().split('T')[0]);
       setInvoices(response.data);
     } catch (error) {
       console.error('Error fetching all invoices:', error);
@@ -109,12 +110,18 @@ const InvoiceViewer = () => {
             ${invoice.items
               .map(
                 (item) =>
-                  `<li>${item.quantity} x ${item.product_name} @ $${parseFloat(item.price).toFixed(2)} each</li>`
+                  `<li>${item.quantity} x ${item.product_name} @ $${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(parseFloat(item.price))} each</li>`
               )
               .join('')}
           </ul>
 
-          <h3>Total: $${parseFloat(invoice.total_price).toFixed(2)}</h3>
+          <h3>Total: $${new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(parseFloat(invoice.total_price))}</h3>
         </body>
       </html>
     `;
@@ -173,7 +180,10 @@ const InvoiceViewer = () => {
             {invoices.map((invoice) => (
               <li key={invoice.id} className="invoice-item">
                 <span>
-                  Invoice #{invoice.id} - ${invoice.total_price}
+                  Invoice #{invoice.id} - ${new Intl.NumberFormat('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(parseFloat(invoice.total_price))}
                 </span>
                 <div className="invoice-actions">
                   <button className="secondary-button" onClick={() => downloadInvoice(invoice.id)}>

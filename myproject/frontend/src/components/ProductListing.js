@@ -167,10 +167,48 @@ export default function ProductListing({ products, isLoading }) {
                       color: '#333',
                     }}
                   >
-                    ${new Intl.NumberFormat('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(product.price)}
+                    {product.is_discount_active ? (
+                      <>
+                        {/* Original Price (Struck-through, smaller, gray) */}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            textDecoration: 'line-through', // Strike-through
+                            color: '#615e5e', // Gray tone
+                            fontSize: '1rem', // Smaller size
+                            marginRight: 1,
+                          }}
+                          component="span"
+                        >
+                          ${new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(product.price)}
+                        </Typography>
+                        {/* Discounted Price */}
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            color: '#333', // Main color
+                            fontWeight: 'bold', // Emphasized
+                          }}
+                          component="span"
+                        >
+                          ${new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(product.discounted_price)}
+                        </Typography>
+                      </>
+                    ) : (
+                      // Regular Price (No discount active)
+                      <>
+                        ${new Intl.NumberFormat('en-US', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(product.price)}
+                      </>
+                    )}
                   </Typography>
                 </CardContent>
               </Card>
