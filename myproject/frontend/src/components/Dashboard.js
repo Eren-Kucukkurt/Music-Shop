@@ -78,6 +78,13 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
     applySearchAndFilters(queryFromNavbar, filters); // Apply the query immediately
   }, [location.state?.searchQuery]);
 
+    // Wait for products to load before applying filters
+  useEffect(() => {
+    if (fullProductList.length > 0) {
+      applySearchAndFilters(searchQuery, filters);
+    }
+  }, [fullProductList, searchQuery, filters]);
+
 
   const fetchAllProducts = async () => {
     setIsLoading(true);
@@ -110,6 +117,8 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
   };
 
   const applySearchAndFilters = (searchQuery, filters) => {
+
+    //if (!fullProductList.length) return; // Wait until products are fetched
     //console.log('Search Query inside apply function:', searchQuery);
     let updatedProducts = [...fullProductList];
 
