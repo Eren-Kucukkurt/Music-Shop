@@ -112,13 +112,9 @@ function Login({ onLoginSuccess }) {
           <button type="submit" className="btn btn-primary w-100 mb-3">Login</button>
         </form>
         <div className="text-center">
-          <p className="mb-2">Don't have an account?</p>
-          <button
-            onClick={() => navigate('/register')}
-            className="btn btn-primary w-100"
-          >
-            Register
-          </button>
+          <p className="register-prompt">Don't have an account? 
+            <span className="register-link" onClick={() => navigate('/register')}> Register</span>
+          </p>
         </div>
       </div>
     </div>

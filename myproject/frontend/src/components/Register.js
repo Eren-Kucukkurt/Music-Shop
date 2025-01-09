@@ -70,13 +70,9 @@ function Register() {
         </form>
         {message && <p className="mt-3 text-center">{message}</p>}
         <div className="text-center">
-          <p className="mb-2">Already have an account?</p>
-          <button
-            onClick={() => navigate('/login')}
-            className="btn btn-primary w-100"
-          >
-            Login
-          </button>
+          <p className="register-prompt">Already have an account?
+            <span className="register-link" onClick={() => navigate('/login')}> Login</span>
+          </p>
         </div>
       </div>
     </div>

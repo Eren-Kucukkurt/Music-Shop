@@ -12,5 +12,15 @@
     border-color: #007bff;
   }
   
+  .register-prompt {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .register-link {
+    color: #007bff;
+    font-weight: bold;
+    cursor: pointer;
+  }
   
   
