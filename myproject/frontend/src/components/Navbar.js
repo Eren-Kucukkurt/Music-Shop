@@ -16,6 +16,8 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [userRole, setUserRole] = useState(null); // New state to store user role
+
   
   const handleSearchChange = (e) => {
     //console.log('search:', e.target.value);
@@ -35,16 +37,19 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
   const token = sessionStorage.getItem('access_token');
 
   useEffect(() => {
-
-    setIsAuthenticated(!!token); // Update state after render
-  
+    setIsAuthenticated(!!token);
     if (token) {
       const storedUsername = sessionStorage.getItem('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
-      }
+      if (storedUsername) setUsername(storedUsername);
+  
+      // Fetch the user profile and set the user role
+      fetchUserProfile().then((result) => {
+        if (result.loggedIn) {
+          setUserRole(result.role); // Set the role if the user is logged in
+        }
+      });
     }
-  }, []); // Empty dependency array ensures this runs once after the component mounts
+  }, []);
   
 
   const toggleDrawer = (open) => (event) => {
@@ -414,38 +419,21 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
       <ListItemText primary="Orders" />
     </ListItem>
 
-    <ListItem
-      button
-      onClick={async () => {
-        try {
-          const result = await fetchUserProfile();
-
-          if (!result.loggedIn) {
-            if (window.confirm('You need to log in to access this page. Do you want to log in now?')) {
-              navigate('/login');
-            }
-          } else if (result.role === 'SALES_MANAGER') {
-            navigate('/salesManager');
-          } else if (result.role === 'PRODUCT_MANAGER') {
-            navigate('/productManager');
-          } else if (result.role === 'CUSTOMER') {
-            alert('You are not authorized to access this page.');
-          } else {
-            console.error('Unknown role:', result.role);
-            alert('Unexpected role detected. Please contact support.');
-          }
-        } catch (error) {
-          console.error('Error handling Settings button click:', error);
-          alert('An error occurred while trying to access this page. Please try again.');
+    {/* Conditionally render Settings based on user role */}
+    {userRole && (userRole === 'SALES_MANAGER' || userRole === 'PRODUCT_MANAGER') && (
+      <ListItem
+        button
+        onClick={() =>
+          navigate(`/${userRole === 'SALES_MANAGER' ? 'salesManager' : 'productManager'}`)
         }
-      }}
-      sx={{ width: '100%' }} // Make ListItem span full width
-    >
-      <ListItemIcon>
-        <SettingsIcon />
-      </ListItemIcon>
-      <ListItemText primary="Settings" />
-    </ListItem>
+      >
+        <ListItemIcon>
+          <SettingsIcon />
+        </ListItemIcon>
+        <ListItemText primary="Manager Dashboard" />
+      </ListItem>
+    )}
+
   </List>
 </Box>
 </Drawer>
