@@ -19,6 +19,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from background_task import background
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.urls import reverse
 
 
 class Product(models.Model):
@@ -49,6 +50,9 @@ class Product(models.Model):
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     total_sale = models.PositiveIntegerField(default=0)
     popularity = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def get_absolute_url(self):
+        return reverse('product-detail', args=[str(self.id)])
 
     @property
     def discounted_price(self):
@@ -113,25 +117,49 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import os
 
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils.html import format_html
+import os
+
+# Utility to send the discount email with a "Go to Product" button
 def send_discount_email(user_email, product):
-    subject = f"Discount Alert: {product.name}!"
-    message = (
-        f"Great News!\n\n"
-        f"The product '{product.name}' is now available at a discounted price!\n\n"
-        f"Original Price: ${product.price:.2f}\n"
-        f"Discounted Price: ${product.get_discounted_price():.2f}\n"
-        f"Discount Percentage: {product.discount_percentage:.2f}%\n\n"
-        f"Don't miss out on this offer!"
+    subject = f"Great News! {product.name} is Now on Discount!"
+    
+    # Construct the plain text message with product details
+    message = f"""
+    Hi there,
+
+    We're excited to let you know that one of your favorite products from your wishlist is now on discount!
+
+    🛍️ Product: {product.name}
+    💸 Original Price: ${product.price:.2f}
+    🔥 Discounted Price: ${product.get_discounted_price():.2f}
+    📉 Discount: {product.discount_percentage:.2f}%
+
+    Product Description:
+    {product.description}
+
+    Thank you for shopping with us!
+
+    Best regards,  
+    🎸 The Music Shop Team  
+    """
+
+    # Create and send the email
+    email = EmailMessage(
+        subject,
+        message,
+        'musicshop308@gmail.com',
+        [user_email]
     )
 
-    email = EmailMessage(subject, message, 'musicshop308@gmail.com', [user_email])
-
-    # Attach the product image if it exists
+    # Attach the product image
     if product.image:
-        image_path = os.path.join(settings.MEDIA_ROOT, product.image.name)
-        email.attach_file(image_path)
+        email.attach_file(product.image.path)
 
     email.send()
+
 
 
 
