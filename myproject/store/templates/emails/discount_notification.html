@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discount Alert!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        .header {
+            text-align: center;
+        }
+        .header img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+        }
+        .details {
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            {% if image_url %}
+                <img src="{{ image_url }}" alt="Product Image">
+            {% endif %}
+            <h2>Great News!</h2>
+            <p>The product <strong>{{ product_name }}</strong> is now available at a discounted price!</p>
+        </div>
+
+        <div class="details">
+            <p><strong>Original Price:</strong> {{ original_price }}</p>
+            <p><strong>Discounted Price:</strong> {{ discounted_price }}</p>
+            <p><strong>Discount Percentage:</strong> {{ discount_percentage }}</p>
+        </div>
+
+        <div class="footer">
+            <a href="http://localhost:3000/product/{{ product_id }}" class="button">View Product</a>
+        </div>
+    </div>
+</body>
+</html>

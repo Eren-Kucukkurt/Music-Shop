@@ -12,6 +12,15 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.mail import send_mail
 
 
+from django.db import models
+from django.utils import timezone
+from decimal import Decimal
+from django.core.validators import MinValueValidator, MaxValueValidator
+from background_task import background
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+
+
 class Product(models.Model):
     name = models.CharField(max_length=255, default="Unnamed Product")
     category = models.CharField(max_length=100, default="Uncategorized")
@@ -20,14 +29,16 @@ class Product(models.Model):
     description = models.TextField(null=True, blank=True)
     quantity_in_stock = models.PositiveIntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # New cost field
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Cost field
     warranty_status = models.CharField(max_length=100, default="No Warranty")
     distributor_info = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
 
     # Discount Fields
     discount_percentage = models.DecimalField(
-        max_digits=5, decimal_places=2, default=0.00,
+        max_digits=5,
+        decimal_places=2,
+        default=0.00,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
     discount_start_date = models.DateTimeField(null=True, blank=True)
@@ -48,27 +59,27 @@ class Product(models.Model):
         if self.is_discount_active and self.discount_start_date and self.discount_end_date:
             if self.discount_start_date <= now <= self.discount_end_date:
                 return self.price - (self.price * (self.discount_percentage / 100))
-        return self.price  # Return original price if no discount is active
+        return self.price
 
     def get_discounted_price(self):
         """
         Calculate and return the discounted price if the discount is active.
         """
         now = timezone.now()
-        #print(self.is_discount_active)
         if self.is_discount_active and self.discount_start_date and self.discount_end_date:
             if self.discount_start_date <= now <= self.discount_end_date:
                 return self.price - (self.price * (self.discount_percentage / 100))
-        return self.price  # Return original price if no discount is active
+        return self.price
 
     def save(self, *args, **kwargs):
         """
         Auto-toggle `is_discount_active` based on discount fields.
+        Notify wishlist users if a new discount is activated.
         """
-        weight_sales = Decimal("0.7")
-        weight_rating = Decimal("0.3")
-        self.popularity = (Decimal(self.total_sale) * weight_sales) + (Decimal(self.rating) * weight_rating)
+        previous_discount_status = self.is_discount_active
         now = timezone.now()
+
+        # Determine if the discount should be active
         if (
             self.discount_percentage > 0
             and self.discount_start_date
@@ -78,23 +89,54 @@ class Product(models.Model):
             self.is_discount_active = True
         else:
             self.is_discount_active = False
+
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.name} ({self.model})"
+        # Trigger email notification only if a new discount is activated
+        if self.is_discount_active:
+            notify_wishlist_users(self.id)
 
-    def update_rating(self):
-        """
-        Update the product's rating based on approved reviews.
-        """
-        reviews = Review.objects.filter(product=self)
-        if reviews.exists():
-            # Calculate the average rating
-            average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
-            self.rating = average_rating or 0  # Default to 0 if no reviews
-        else:
-            self.rating = 0  # No reviews, set rating to 0
-        self.save()
+
+# Background task to notify wishlist users
+@background(schedule=1)
+def notify_wishlist_users(product_id):
+    from .models import Product, Wishlist
+
+    product = Product.objects.get(id=product_id)
+    wishlists = Wishlist.objects.filter(products=product)
+
+    for wishlist in wishlists:
+        user_email = wishlist.user.email
+        send_discount_email(user_email, product)
+
+from django.core.mail import EmailMessage
+from django.conf import settings
+import os
+
+def send_discount_email(user_email, product):
+    subject = f"Discount Alert: {product.name}!"
+    message = (
+        f"Great News!\n\n"
+        f"The product '{product.name}' is now available at a discounted price!\n\n"
+        f"Original Price: ${product.price:.2f}\n"
+        f"Discounted Price: ${product.get_discounted_price():.2f}\n"
+        f"Discount Percentage: {product.discount_percentage:.2f}%\n\n"
+        f"Don't miss out on this offer!"
+    )
+
+    email = EmailMessage(subject, message, 'musicshop308@gmail.com', [user_email])
+
+    # Attach the product image if it exists
+    if product.image:
+        image_path = os.path.join(settings.MEDIA_ROOT, product.image.name)
+        email.attach_file(image_path)
+
+    email.send()
+
+
+
+
+
 
 
 
