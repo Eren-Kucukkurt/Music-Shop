@@ -18,7 +18,7 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
   const [products, setProducts] = useState([]);
   const [fullProductList, setFullProductList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [showFilterOptions, setShowFilterOptions] = useState(true);
+  const [showFilterOptions, setShowFilterOptions] = useState(false);
   const [maxPrice, setMaxPrice] = useState(1000);
   const [filters, setFilters] = useState({ priceSort: '', priceRange: [0, 1000], inStock: false });
   const [searchQuery, setSearchQuery] = useState('');
