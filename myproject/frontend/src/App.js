@@ -27,6 +27,7 @@ import RemoveProduct from './components/RemoveProduct.js'; // Update the path if
 import RevenueProfitChart from './components/RevenueProfitChart.js'; // Update the path if RevenueProfitChart is in a different directory
 import UpdateProductForm from './components/UpdateProductForm.js'; // Update the path if UpdateProductForm is in a different directory
 import ProfilePage from './components/ProfilePage.js';
+import AddCategory from './components/AddCategory.js'; // Update the path if AddCategory is in a different directory
 
 // Wrap the components with the role guard
 const ProtectedProductManager = withRoleGuard(ProductManager, ['PRODUCT_MANAGER']);
@@ -81,6 +82,7 @@ function AppContent({ isAuthenticated, setIsAuthenticated, username, setUsername
         <Route path="/salesManager/revenue-analysis" element={<RevenueProfitChart />} />
         <Route path="/productManager/updateProduct" element={<UpdateProductForm />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/productManager/addCategory" element={<AddCategory />} />
       </Routes>
     </div>
   );

@@ -74,14 +74,8 @@ const AdminReviewManager = () => {
 
   return (
     <div className="admin-review-manager">
-      {/* Back Button */}
-      <button
-        className="btn btn-secondary"
-        onClick={() => navigate('/productManager')}
-        style={{ marginBottom: '20px' }}
-      >
-        Back to Product Manager
-      </button>
+      {/* Back Button Deleted*/}
+
 
       <h2>Manage Reviews</h2>
       {reviews.map((review) => (

@@ -69,18 +69,9 @@ const AddProductForm = () => {
 
   return (
     <div className="add-product-form">
-      {/* Back Button */}
-      <button
-        className="btn btn-secondary"
-        onClick={() => navigate('/productManager')}
-        style={{
-          display: 'block', // Required for margin auto
-          margin: '0 auto',
-          marginBottom: '20px',
-        }}
-      >
-        Back to Product Manager
-      </button>
+      
+      {/* Back Button Deleted */}
+
       <h2>Add New Product</h2>
       {feedback && (
         <div className={`feedback ${feedback.type}`}>

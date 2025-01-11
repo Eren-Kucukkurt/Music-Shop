@@ -6,6 +6,7 @@ import UpdateProductForm from './UpdateProductForm';
 import AdminReviewManager from './AdminReviewManager';
 import { useNavigate } from 'react-router-dom';
 import InvoiceViewer from './InvoiceViewer';
+import AddCategory from './AddCategory';  // Add this import
 
 
 const ProductManager = () => {
@@ -22,6 +23,8 @@ const ProductManager = () => {
         return <UpdateProductForm />;
       case 'AdminReviewManager':
         return <AdminReviewManager />;
+      case 'AddCategory':        // Add this case
+        return <AddCategory />;
       case 'InvoiceViewer': 
         return <InvoiceViewer />;
       default:
@@ -38,6 +41,7 @@ const ProductManager = () => {
         <button onClick={() => setActiveComponent('RemoveProduct')}>Remove Products</button>
         <button onClick={() => setActiveComponent('UpdateProductForm')}>Update Products</button>
         <button onClick={() => setActiveComponent('AdminReviewManager')}>Manage Reviews</button>
+        <button onClick={() => setActiveComponent('AddCategory')}>Add Category</button>  {/* Add this button */}
         <button onClick={() => setActiveComponent('InvoiceViewer')}>View Invoices</button>
 
         {/* Back to Store Button */}
