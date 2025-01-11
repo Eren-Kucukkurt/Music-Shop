@@ -5,26 +5,28 @@ from decimal import Decimal
 from django.db.models import Avg
 from decimal import Decimal
 from django.utils.timezone import now
-
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
-
 from django.core.mail import send_mail
-
-
-from django.db import models
-from django.utils import timezone
 from decimal import Decimal
-from django.core.validators import MinValueValidator, MaxValueValidator
 from background_task import background
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.conf import settings
+from django.utils.html import format_html
+import os
 
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
 
 class Product(models.Model):
     name = models.CharField(max_length=255, default="Unnamed Product")
-    category = models.CharField(max_length=100, default="Uncategorized")
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
     model = models.CharField(max_length=100, default="Unknown Model")
     serial_number = models.CharField(max_length=100, unique=True, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -113,14 +115,7 @@ def notify_wishlist_users(product_id):
         user_email = wishlist.user.email
         send_discount_email(user_email, product)
 
-from django.core.mail import EmailMessage
-from django.conf import settings
-import os
 
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
-from django.utils.html import format_html
-import os
 
 # Utility to send the discount email with a "Go to Product" button
 def send_discount_email(user_email, product):
@@ -159,14 +154,6 @@ def send_discount_email(user_email, product):
         email.attach_file(product.image.path)
 
     email.send()
-
-
-
-
-
-
-
-
 
 class Review(models.Model):
     product = models.ForeignKey('Product', related_name='reviews', on_delete=models.CASCADE)
