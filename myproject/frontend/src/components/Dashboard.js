@@ -32,6 +32,8 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
     return token;
   };
 
+  const [categories, setCategories] = useState([]); // Add categories state
+
   useEffect(() => {
     // Fetch products and handle query changes
     const fetchInitialData = async () => {
@@ -129,9 +131,13 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
       );
     }
 
-    if (filters.category) {
-      updatedProducts = updatedProducts.filter(product => product.category === filters.category);
-    }
+  // Convert category filter value to number for comparison since HTML select returns string
+  if (filters.category) {
+    updatedProducts = updatedProducts.filter(product => 
+      product.category === parseInt(filters.category)
+    );
+  }
+
 
     updatedProducts = updatedProducts.filter(
       product => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
@@ -174,21 +180,34 @@ function Dashboard({ isAuthenticated, setIsAuthenticated, username, setUsername,
   const toggleFilterOptions = () => {
     setShowFilterOptions(!showFilterOptions);
   };
+  
+  // Add this useEffect to fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/categories/');
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
 
+    fetchCategories();
+  }, []);
 
 
   return (
     <div>
     <div className="dashboard-container">
       
-       
-      {showFilterOptions && (
+    {showFilterOptions && (
         <FilterPanel
           filters={filters}
           maxPrice={maxPrice}
           onApplyFilters={applyFilters}
           resetFilters={resetFilters}
-          onCategorySelect={handleCategoryClick} 
+          onCategorySelect={handleCategoryClick}
+          categories={categories} // Pass categories to FilterPanel
         />
       )}
       <div className="main-content">

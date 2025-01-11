@@ -4,6 +4,13 @@ from django.db.models import Avg
 from decimal import Decimal
 from .models import Wishlist
 
+from .models import Category
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
+
 class ReviewSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')  # Fetch the username from the related user
     product_details = serializers.SerializerMethodField()  # Add a custom field for product details

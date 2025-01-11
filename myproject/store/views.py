@@ -28,8 +28,85 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from store.models import Product
 
+from .models import Category
+from .serializers import CategorySerializer
 
+from .models import Category
+from .serializers import CategorySerializer
 
+class CategoryView(APIView):
+    """
+    API endpoint to get all categories and manage categories.
+    """
+    def get(self, request):
+        """
+        Retrieve all product categories.
+        """
+        try:
+            categories = Category.objects.all()
+            serializer = CategorySerializer(categories, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(
+                {"error": "Failed to fetch categories."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def post(self, request):
+        """
+        Create a new category.
+        """
+        name = request.data.get("name")
+        if not name:
+            return Response(
+                {"error": "Category name is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            category = Category.objects.create(name=name)
+            serializer = CategorySerializer(category)
+            return Response(
+                {
+                    "message": f"Category '{name}' created successfully.",
+                    "category": serializer.data
+                },
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            return Response(
+                {"error": "Failed to create category."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def delete(self, request):
+        """
+        Delete a category.
+        """
+        category_id = request.data.get("category_id")
+        if not category_id:
+            return Response(
+                {"error": "Category ID is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            category = Category.objects.get(id=category_id)
+            category.delete()
+            return Response(
+                {"message": f"Category '{category.name}' deleted successfully."},
+                status=status.HTTP_200_OK
+            )
+        except Category.DoesNotExist:
+            return Response(
+                {"error": "Category not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {"error": "Failed to delete category."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class IsPurchaser(permissions.BasePermission):
     """

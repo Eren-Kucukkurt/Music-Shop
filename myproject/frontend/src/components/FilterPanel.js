@@ -1,7 +1,7 @@
 import React from 'react';
 import './FilterPanel.css';
 
-export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFilters, onCategorySelect }) {
+export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFilters, onCategorySelect, categories }) {
   const [localFilters, setLocalFilters] = React.useState(filters);
 
   const handleSortChange = (e) => {
@@ -93,13 +93,22 @@ export default function FilterPanel({ filters, maxPrice, onApplyFilters, resetFi
       </div>
       <div className="filter-section">
         <h4>Categories</h4>
-        <div className="category-buttons">
-          <button onClick={() => onCategorySelect('Guitar')}>Guitars</button>
-          <button onClick={() => onCategorySelect('Piano')}>Pianos</button>
-          <button onClick={() => onCategorySelect('Upright Piano')}>Upright Pianos</button>
-          <button onClick={() => onCategorySelect('Electric Guitar')}>Electric Guitars</button>
-          <button onClick={() => onCategorySelect('')}>All Categories</button>
-        </div>
+        <select 
+  className="filter-dropdown"
+  value={localFilters.category || ''}
+  onChange={(e) => {
+    setLocalFilters({ ...localFilters, category: e.target.value });
+    onCategorySelect(e.target.value);
+  }}
+>
+  <option value="">All Categories</option>
+  {categories.map((category) => (
+    // Change this to use category.name as the value instead of category.id
+    <option key={category.id} value={category.id}>
+      {category.name}
+    </option>
+  ))}
+</select>
       </div>
     </div>
   );
