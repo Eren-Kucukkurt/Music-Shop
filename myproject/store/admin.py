@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Review, Purchase, Wishlist, Category
+from .models import *
 
 
 # Category Admin
@@ -45,3 +45,4 @@ class PurchaseAdmin(admin.ModelAdmin):
 class WishlistAdmin(admin.ModelAdmin):
     list_display = ('user',)
     filter_horizontal = ('products',)  # This makes managing ManyToMany relationships easier in the admin
+

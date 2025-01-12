@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/cart/refunds/', fetch_refunds, name='fetch_refunds'),
     path('api/revenue-profit-analysis/', RevenueProfitAnalysisView.as_view(), name='revenue-profit-analysis'),
     path('add-to-cart-from-wishlist/', AddToCartFromWishlistView.as_view(), name='add-to-cart-from-wishlist'),
+    path('api/deliveries/', DeliveryListView.as_view(), name='delivery-list'),
 ]

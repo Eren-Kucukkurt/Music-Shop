@@ -47,9 +47,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    discounted_price = serializers.SerializerMethodField()  # Dynamically calculate discounted price
-        # Add this field to get category name
+    discounted_price = serializers.SerializerMethodField()
     category_name = serializers.CharField(source='category.name', read_only=True)
+    image_url = serializers.SerializerMethodField()  # New field for absolute URL
 
     class Meta:
         model = Product
@@ -63,18 +63,18 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'quantity_in_stock',
             'price',
-            'cost',  # New cost field added
-            'discount_percentage',      # Added discount percentage
-            'discount_start_date',      # Added start date for discount
-            'discount_end_date',        # Added end date for discount
-            'is_discount_active',       # Added status for discount activation
+            'cost',
+            'discount_percentage',
+            'discount_start_date',
+            'discount_end_date',
+            'is_discount_active',
             'warranty_status',
             'distributor_info',
-            'image',
-            'rating',  # Ensure rating is included
+            'image_url',  # Use image_url instead of raw image field
+            'rating',
             'total_sale',
             'popularity',
-            'discounted_price',         # Dynamically calculated field
+            'discounted_price',
         ]
 
     def to_representation(self, instance):
@@ -90,6 +90,16 @@ class ProductSerializer(serializers.ModelSerializer):
         Calculate the discounted price if discount is active.
         """
         return obj.get_discounted_price()
+
+    def get_image_url(self, obj):
+        """
+        Build the absolute URL for the product image.
+        """
+        request = self.context.get('request')
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return None
+
 
 
 

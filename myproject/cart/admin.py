@@ -2,7 +2,8 @@
 
 # Register your models here.
 from django.contrib import admin
-from .models import Cart, CartItem , Order, OrderItem
+from .models import *
+from .models import Cart, CartItem, Order, OrderItem, Delivery
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
@@ -22,3 +23,9 @@ class OrderAdmin(admin.ModelAdmin):
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'order', 'product', 'quantity', 'price')
     search_fields = ('order__id', 'product__name')
+
+@admin.register(Delivery)
+class DeliveryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'order', 'customer_name', 'status', 'created_at')
+    list_filter = ('status',)
+    search_fields = ('customer_name', 'order__id')

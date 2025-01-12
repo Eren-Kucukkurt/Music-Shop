@@ -306,6 +306,7 @@ class CheckoutView(APIView):
             )
 
             # Create OrderItems and deduct stock
+            product_ids = []
             for item in cart_items:
                 product = item.product
                 discounted_price = product.get_discounted_price()
@@ -324,6 +325,9 @@ class CheckoutView(APIView):
                 # Deduct product stock
                 product.quantity_in_stock -= item.quantity
                 product.save()
+
+                # Track product IDs for the delivery
+                product_ids.append(product.id)
 
                 # Create Purchase entry
                 Purchase.objects.create(
@@ -355,6 +359,17 @@ class CheckoutView(APIView):
             # Clear the cart
             cart_items.delete()
 
+            # Automatically create a delivery entry
+            profile = user.profile
+            delivery = Delivery.objects.create(
+                order=order,
+                customer_name=f"{profile.first_name} {profile.last_name}",
+                delivery_address=profile.home_address,
+                status='PENDING',
+            )
+            # Link products to the delivery
+            delivery.products.set(Product.objects.filter(id__in=product_ids))
+
             # Serialize and return the order with its items
             serializer = OrderSerializer(order, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -364,8 +379,8 @@ class CheckoutView(APIView):
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
         
+
 
 class UserOrdersView(APIView):
     permission_classes = [IsAuthenticated]
@@ -660,3 +675,30 @@ class AddToCartFromWishlistView(APIView):
             return Response({"message": "Product added to cart."}, status=status.HTTP_200_OK)
         except Product.DoesNotExist:
             return Response({"error": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+class DeliveryListView(APIView):
+    def get(self, request):
+        """
+        Retrieve all deliveries with product details and customer information.
+        """
+        deliveries = Delivery.objects.all()
+        serializer = DeliverySerializer(deliveries, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        """
+        Update the delivery status or address.
+        """
+        try:
+            delivery = Delivery.objects.get(pk=pk)
+        except Delivery.DoesNotExist:
+            return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = DeliverySerializer(delivery, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
