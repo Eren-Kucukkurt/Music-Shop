@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Typography } from '@mui/material';
 import axios from 'axios';
-import './Checkout.css'; // Import a dedicated CSS file
+import './Checkout.css';
+import Footer from './Footer'; // Import Footer
 
 const Checkout = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -36,20 +37,20 @@ const Checkout = () => {
             try {
                 const [cartResponse, cardsResponse] = await Promise.all([
                     axios.get('http://localhost:8000/cart/', { headers }),
-                    axios.get('http://localhost:8000/credit-cards/', { headers })
+                    axios.get('http://localhost:8000/credit-cards/', { headers }),
                 ]);
 
-                const items = cartResponse.data.items.map(item => ({
+                const items = cartResponse.data.items.map((item) => ({
                     id: item.id,
                     productId: item.product.id,
-                    productName: item.product, // Use product name directly
+                    productName: item.product,
                     quantity: item.quantity,
                     price: parseFloat(item.price),
                     totalPrice: parseFloat(item.total_price),
                 }));
 
                 setCartItems(items);
-                setSavedCards(cardsResponse.data); // Load saved credit cards
+                setSavedCards(cardsResponse.data);
                 setLoading(false);
             } catch (err) {
                 setError('Failed to load data.');
@@ -86,10 +87,8 @@ const Checkout = () => {
         let payload = {};
 
         if (selectedCardId) {
-            // Use existing card
             payload = { credit_card: { use_saved_card: true, card_id: selectedCardId } };
         } else {
-            // Validate new card details
             if (!validateCardDetails()) return;
 
             payload = {
@@ -105,7 +104,6 @@ const Checkout = () => {
         }
 
         try {
-            //console.log("debugging");
             await axios.post('http://localhost:8000/checkout/', payload, { headers });
             setSuccessMessage('Order placed successfully!');
             setCartItems([]);
@@ -115,40 +113,37 @@ const Checkout = () => {
         }
     };
 
-    if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
-    Loading...
-  </Typography>;
+    if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>Loading...</Typography>;
     if (error) return <p className="error-message">{error}</p>;
 
     return (
+
         <div className="checkout-container">
-            <h1>Checkout</h1>
+            <h1>&nbsp;</h1>
             {successMessage && <p className="success-message">{successMessage}</p>}
             {cartItems.length === 0 ? (
                 <p>Your cart is empty.</p>
             ) : (
                 <div className="checkout-content">
-                    <div className="cart-summary">
-                        <h2>Cart Summary</h2>
-                        {cartItems.map((item) => (
-                            <div key={item.id} className="cart-item">
-                                <p>
-                                    <strong>{item.quantity} x {item.productName}</strong> @ ${new Intl.NumberFormat('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(item.price)}
-                                </p>
-                                <p>Total: ${new Intl.NumberFormat('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(item.totalPrice)}</p>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="payment-form">
+                {/* Cart Summary Section */}
+                <div className="cart-summary">
+                <h1>Checkout</h1>
+                    <h2>Cart Summary</h2>
+                    {cartItems.map((item) => (
+                        <div key={item.id} className="cart-item">
+                            <p>
+                                <strong>{item.quantity} x {item.productName}</strong> @ ${item.price.toFixed(2)}
+                            </p>
+                            <p>Total: ${item.totalPrice.toFixed(2)}</p>
+                        </div>
+                    ))}
+                </div>
+            
+                {/* Payment Details Section */}
+                <div className="payment-box">
+                    <div className="payment-details">
                         <h2>Payment Details</h2>
-
+            
                         {/* Use Saved Credit Card */}
                         {savedCards.length > 0 && (
                             <div className="form-group">
@@ -167,11 +162,10 @@ const Checkout = () => {
                                 </select>
                             </div>
                         )}
-
+            
                         {/* New Card Input */}
                         {!selectedCardId && (
                             <>
-                                {formError && <p className="form-error">{formError}</p>}
                                 <div className="form-group">
                                     <label htmlFor="cardName">Name on Card</label>
                                     <input
@@ -180,7 +174,6 @@ const Checkout = () => {
                                         value={cardName}
                                         onChange={(e) => setCardName(e.target.value)}
                                         placeholder="Name on card"
-                                        required
                                     />
                                 </div>
                                 <div className="form-group">
@@ -191,35 +184,34 @@ const Checkout = () => {
                                         maxLength="16"
                                         value={cardNumber}
                                         onChange={(e) => setCardNumber(e.target.value)}
-                                        placeholder="Enter 16-digit card number"
-                                        required
+                                        placeholder="16-digit card number"
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="expiryDate">Expiry Date (MM/YY)</label>
-                                    <input
-                                        id="expiryDate"
-                                        type="text"
-                                        maxLength="5"
-                                        value={expiryDate}
-                                        onChange={(e) => setExpiryDate(e.target.value)}
-                                        placeholder="MM/YY"
-                                        required
-                                    />
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label htmlFor="expiryDate">Expiry Date (MM/YY)</label>
+                                        <input
+                                            id="expiryDate"
+                                            type="text"
+                                            maxLength="5"
+                                            value={expiryDate}
+                                            onChange={(e) => setExpiryDate(e.target.value)}
+                                            placeholder="MM/YY"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="cvv">CVV</label>
+                                        <input
+                                            id="cvv"
+                                            type="text"
+                                            maxLength="3"
+                                            value={cvv}
+                                            onChange={(e) => setCvv(e.target.value)}
+                                            placeholder="3-digit CVV"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="cvv">CVV</label>
-                                    <input
-                                        id="cvv"
-                                        type="text"
-                                        maxLength="3"
-                                        value={cvv}
-                                        onChange={(e) => setCvv(e.target.value)}
-                                        placeholder="3-digit CVV"
-                                        required
-                                    />
-                                </div>
-                                <div className="form-group">
+                                <div className="form-group save-card-option">
                                     <label>
                                         <input
                                             type="checkbox"
@@ -231,15 +223,31 @@ const Checkout = () => {
                                 </div>
                             </>
                         )}
-
+                    </div>
+                    <div className="card-preview-container">
+                        <div className="card-preview">
+                            <div className="credit-card">
+                                <p className="card-name">{cardName || 'Name on Card'}</p>
+                                <p className="card-number">{cardNumber || '**** **** **** ****'}</p>
+                                <p className="card-expiry">{expiryDate || 'MM/YY'}</p>
+                            </div>
+                        </div>
                         <button onClick={handleCheckout} className="checkout-button">
                             Place Order
                         </button>
                     </div>
-                </div>
-            )}
-        </div>
-    );
-};
 
+                </div>
+                <Footer />
+            </div>
+
+            )}
+
+        </div>
+
+
+
+    );
+    
+};
 export default Checkout;
