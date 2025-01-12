@@ -38,7 +38,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         return {
             "name": obj.product.name,
             "model": obj.product.model,
-            "category": obj.product.category,
+            "category": obj.product.category.name if obj.product.category else "Uncategorized",
             "price": float(obj.product.price),  # Convert Decimal to float
         }
 

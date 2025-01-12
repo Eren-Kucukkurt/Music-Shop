@@ -76,12 +76,27 @@ class Product(models.Model):
             if self.discount_start_date <= now <= self.discount_end_date:
                 return self.price - (self.price * (self.discount_percentage / 100))
         return self.price
+    def update_rating(self):
+        """
+        Update the product's rating based on approved reviews.
+        """
+        reviews = Review.objects.filter(product=self)
+        if reviews.exists():
+            # Calculate the average rating
+            average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+            self.rating = average_rating or 0  # Default to 0 if no reviews
+        else:
+            self.rating = 0  # No reviews, set rating to 0
+        self.save()
 
     def save(self, *args, **kwargs):
         """
         Auto-toggle `is_discount_active` based on discount fields.
         Notify wishlist users if a new discount is activated.
         """
+        weight_sales = Decimal("0.7")
+        weight_rating = Decimal("0.3")
+        self.popularity = (Decimal(self.total_sale) * weight_sales) + (Decimal(self.rating) * weight_rating)
         previous_discount_status = self.is_discount_active
         now = timezone.now()
 
