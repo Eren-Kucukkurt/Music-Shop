@@ -85,8 +85,9 @@ const ProfilePage = () => {
           id="tax_id"
           name="tax_id"
           value={profile.tax_id}
-          onChange={handleChange}
+          readOnly
         />
+
 
         <label htmlFor="home_address">Home Address</label>
         <textarea

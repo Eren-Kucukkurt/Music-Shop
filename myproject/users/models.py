@@ -7,6 +7,13 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from cryptography.fernet import Fernet
 from .utils import get_fernet
+from django.utils.crypto import get_random_string
+
+from django.utils.crypto import get_random_string
+
+def generate_tax_id():
+    """Generates a unique 10-digit Tax ID."""
+    return get_random_string(length=10, allowed_chars='0123456789')
 
 class Profile(models.Model):
     ROLE_CHOICES = [
@@ -17,7 +24,7 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='CUSTOMER')
-    tax_id = models.CharField(max_length=20, null=True, blank=True)
+    tax_id = models.CharField(max_length=20, unique=True, default=generate_tax_id)
     home_address = models.TextField(null=True, blank=True)
     first_name = models.CharField(max_length=50, null=True, blank=True)
     last_name = models.CharField(max_length=50, null=True, blank=True)
@@ -26,12 +33,15 @@ class Profile(models.Model):
         return f"{self.user.username} - {self.get_role_display()}"
 
 
+    def save(self, *args, **kwargs):
+        if not self.tax_id:
+            # Generate a random 10-digit Tax ID if it doesn't exist
+            self.tax_id = get_random_string(length=10, allowed_chars='0123456789')
+        super().save(*args, **kwargs)
 
-from django.db import models
-from django.contrib.auth.models import User
-from cryptography.fernet import Fernet
-from django.core.exceptions import ValidationError
-import re
+    def __str__(self):
+        return f"{self.user.username} - {self.get_role_display()}"
+
 
 def get_fernet():
     """Retrieve the Fernet instance using the secret key."""

@@ -16,6 +16,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics, permissions
+from django.utils.crypto import get_random_string
 
 class LoginView(APIView):
     
@@ -33,20 +34,32 @@ class LoginView(APIView):
         else:
             return Response({"error": "Invalid credentials"}, status=400)
 
+
 class RegisterSerializer(Serializer):
     username = CharField(max_length=150)
     password = CharField(write_only=True, required=True)
     email = EmailField(required=True)
 
     def create(self, validated_data):
+        # Create the user
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password']
         )
-        # Always assign the CUSTOMER role to new users
-        Profile.objects.create(user=user, role='CUSTOMER')
+
+        # Generate a unique 10-digit Tax ID
+        tax_id = get_random_string(length=10, allowed_chars='0123456789')
+
+        # Create the user's profile with the generated Tax ID
+        Profile.objects.create(
+            user=user,
+            role='CUSTOMER',
+            tax_id=tax_id
+        )
+
         return user
+
 
 # Registration View
 class RegisterView(APIView):

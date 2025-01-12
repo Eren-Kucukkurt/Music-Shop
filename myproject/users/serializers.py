@@ -12,10 +12,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return data
     
+# users/serializers.py
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['first_name', 'last_name', 'role', 'tax_id', 'home_address']
+        read_only_fields = ['tax_id']
+
 
 
 
