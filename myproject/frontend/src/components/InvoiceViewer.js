@@ -113,7 +113,7 @@ const InvoiceViewer = () => {
                   `<li>${item.quantity} x ${item.product_name} @ $${new Intl.NumberFormat('en-US', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
-                    }).format(parseFloat(item.price))} each</li>`
+                    }).format(parseFloat(item.price/item.quantity))} each</li>`
               )
               .join('')}
           </ul>

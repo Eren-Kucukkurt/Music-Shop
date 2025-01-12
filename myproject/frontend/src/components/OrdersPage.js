@@ -136,7 +136,7 @@ const OrdersPage = () => {
                           {item.quantity} x {item.product_name || 'Deleted Product'} @ ${new Intl.NumberFormat('en-US', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
-                    }).format(item.price)}
+                    }).format(item.price / item.quantity)} each
                         </p>
                         <p><strong>Refundable:</strong> {item.refundable_quantity} / {item.quantity}</p>
                         {order.status === 'DELIVERED' && item.refundable_quantity > 0 && (

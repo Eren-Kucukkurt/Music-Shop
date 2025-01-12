@@ -53,7 +53,7 @@ const Invoice = () => {
               {item.quantity} x {item.product_name} @ ${new Intl.NumberFormat('en-US', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
-                    }).format(item.price)} each
+                    }).format(item.price / item.quantity)} each
             </li>
           ))}
         </ul>

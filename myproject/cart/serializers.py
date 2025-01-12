@@ -3,7 +3,7 @@ from .models import *
 
 class CartItemSerializer(serializers.ModelSerializer):
     
-    product = serializers.StringRelatedField()  # Serialize product as a string (e.g., name)
+    product = serializers.CharField(source='product.name')
     product_image = serializers.SerializerMethodField()  # Add product image
     price = serializers.SerializerMethodField()  # Add product price
     total_price = serializers.SerializerMethodField()  # Add total price (quantity * price)
