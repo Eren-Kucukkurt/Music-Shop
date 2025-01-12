@@ -128,15 +128,30 @@ const Checkout = () => {
                 {/* Cart Summary Section */}
                 <div className="cart-summary">
                 <h1>Checkout</h1>
-                    <h2></h2>
-                    {cartItems.map((item) => (
-                        <div key={item.id} className="cart-item">
-                            <p>
-                                <strong>{item.quantity} x {item.productName}</strong> @ ${item.price.toFixed(2)}
-                            </p>
-                            <h5><p>Total: ${item.totalPrice.toFixed(2)}</p></h5>
-                        </div>
-                    ))}
+
+                <div style={{ height: '20px' }}></div>
+                <h2></h2>
+                {cartItems.map((item) => (
+                <div key={item.id} className="cart-item">
+                    <p>
+                        <strong>{item.quantity} x {item.productName}</strong>  &nbsp;&nbsp;-&nbsp;${new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        }).format(item.price)}
+                    </p>
+                    <h7><p>Subtotal: ${new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        }).format(item.totalPrice)}</p></h7>
+                </div>
+                ))}
+                <div style={{ height: '40px' }}></div>
+                <div className="cart-total">
+                    <h3>Total: ${new Intl.NumberFormat('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }).format(cartItems.reduce((sum, item) => sum + item.totalPrice, 0))}</h3>
+                </div>
                 </div>
             
                 {/* Payment Details Section */}
@@ -218,7 +233,7 @@ const Checkout = () => {
                                             checked={saveCard}
                                             onChange={() => setSaveCard(!saveCard)}
                                         />
-                                        Save this card for future use
+                                        &nbsp;&nbsp;&nbsp;Save this card for future use
                                     </label>
                                 </div>
                             </>
