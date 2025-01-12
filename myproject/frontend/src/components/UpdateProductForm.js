@@ -8,6 +8,7 @@ const UpdateProductForm = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [formData, setFormData] = useState({});
   const [feedback, setFeedback] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   const token = sessionStorage.getItem('access_token');
   const headers = { Authorization: `Bearer ${token}` };
@@ -24,6 +25,19 @@ const UpdateProductForm = () => {
       }
     };
     fetchProducts();
+  }, []);
+
+  // Add this new useEffect to fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/categories/');
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -47,7 +61,7 @@ const UpdateProductForm = () => {
     setSelectedProduct(product);
     setFormData({
       name: product.name,
-      category: product.category,
+      category: product.category, // Keep this as ID
       model: product.model,
       serial_number: product.serial_number,
       description: product.description,
@@ -167,15 +181,20 @@ const UpdateProductForm = () => {
           />
 
           <label htmlFor="category">Category</label>
-          <input
+          <select
             id="category"
-            type="text"
             name="category"
-            placeholder="Category"
             value={formData.category}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="" disabled>Select Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
 
           <label htmlFor="model">Model</label>
           <input

@@ -55,3 +55,33 @@
     color: #721c24;
   }
   
+
+  select {
+    /* Your existing select styles */
+    padding: 10px;
+    border: 1px solid #bcbbbb;
+    border-radius: 4px;
+    font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease-in-out;
+  }
+  
+  /* Style for the placeholder option */
+  select option[value=""] {
+    color: #727272;
+  }
+  
+  /* Style for actual options */
+  select option:not([value=""]) {
+    color: black;
+  }
+  
+  /* Style for select element itself based on whether a value is selected */
+  select:required:invalid {
+    color: #8a8a8a;
+  }
+  
+  select:required:valid {
+    color: black;
+  }

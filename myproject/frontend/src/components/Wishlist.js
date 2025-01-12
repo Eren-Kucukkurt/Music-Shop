@@ -95,7 +95,7 @@ const Wishlist = () => {
             </div>
             <div className="wishlist-info">
               <h2>{product.name || 'Unnamed Product'}</h2>
-              <p>Category: {product.category || 'Uncategorized'}</p>
+              <p>Category: {product.category_name || 'Uncategorized'}</p>
               <p>Stock: {product.quantity_in_stock ?? 'Unknown'}</p>
               {product.is_discount_active && (
                 <>

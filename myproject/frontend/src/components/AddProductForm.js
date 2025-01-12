@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AddProductForm.css'; // Optional CSS for styling
 import { useNavigate } from 'react-router-dom';
 
 const AddProductForm = () => {
+
+  const [categories, setCategories] = useState([]);
+
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -17,6 +20,22 @@ const AddProductForm = () => {
     distributor_info: '',
     image: null,
   });
+
+  // Fetch categories when component mounts
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/categories/');
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState(null);
 
@@ -87,14 +106,19 @@ const AddProductForm = () => {
           onChange={handleChange}
           required
         />
-        <input
-          type="text"
+        <select
           name="category"
-          placeholder="Category"
           value={formData.category}
           onChange={handleChange}
           required
-        />
+        >
+          <option value="" disabled selected>Select Category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
         <input
           type="text"
           name="model"

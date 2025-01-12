@@ -48,6 +48,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     discounted_price = serializers.SerializerMethodField()  # Dynamically calculate discounted price
+        # Add this field to get category name
+    category_name = serializers.CharField(source='category.name', read_only=True)
 
     class Meta:
         model = Product
@@ -55,6 +57,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'category',
+            'category_name',
             'model',
             'serial_number',
             'description',

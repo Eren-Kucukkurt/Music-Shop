@@ -92,7 +92,7 @@ const AdminReviewManager = () => {
               <p><strong>Product:</strong> {review.product_details.name}</p>
               <p>
                 <strong>Model:</strong> {review.product_details.model} |{' '}
-                <strong>Category:</strong> {review.product_details.category}
+                <strong>Category:</strong> {review.product_details.category_name}
               </p>
               
               <p><strong>Price:</strong> ${new Intl.NumberFormat('en-US', {
