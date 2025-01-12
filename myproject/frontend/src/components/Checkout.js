@@ -19,6 +19,7 @@ const Checkout = () => {
     const [cardName, setCardName] = useState('');
     const [formError, setFormError] = useState('');
     const navigate = useNavigate();
+    const [homeAddress, setHomeAddress] = useState('');
 
     const accessToken = sessionStorage.getItem('access_token');
     const headers = {
@@ -35,9 +36,10 @@ const Checkout = () => {
 
         const fetchData = async () => {
             try {
-                const [cartResponse, cardsResponse] = await Promise.all([
+                const [cartResponse, cardsResponse, profileResponse] = await Promise.all([
                     axios.get('http://localhost:8000/cart/', { headers }),
                     axios.get('http://localhost:8000/credit-cards/', { headers }),
+                    axios.get('http://localhost:8000/api/profile/', { headers }),
                 ]);
 
                 const items = cartResponse.data.items.map((item) => ({
@@ -51,6 +53,7 @@ const Checkout = () => {
 
                 setCartItems(items);
                 setSavedCards(cardsResponse.data);
+                setHomeAddress(profileResponse.data.home_address || '');
                 setLoading(false);
             } catch (err) {
                 setError('Failed to load data.');
@@ -84,13 +87,15 @@ const Checkout = () => {
     };
 
     const handleCheckout = async () => {
-        let payload = {};
-
+        let payload = {
+            home_address: homeAddress // Add this line
+        };
+    
         if (selectedCardId) {
-            payload = { credit_card: { use_saved_card: true, card_id: selectedCardId } };
+            payload.credit_card = { use_saved_card: true, card_id: selectedCardId };
         } else {
             if (!validateCardDetails()) return;
-
+    
             payload = {
                 credit_card: {
                     use_saved_card: false,
@@ -102,8 +107,12 @@ const Checkout = () => {
                 },
             };
         }
-
+    
         try {
+            // Update profile with new address
+            await axios.put('http://localhost:8000/api/profile/', { home_address: homeAddress }, { headers });
+            
+            // Process checkout
             await axios.post('http://localhost:8000/checkout/', payload, { headers });
             setSuccessMessage('Order placed successfully!');
             setCartItems([]);
@@ -153,7 +162,7 @@ const Checkout = () => {
                     }).format(cartItems.reduce((sum, item) => sum + item.totalPrice, 0))}</h3>
                 </div>
                 </div>
-            
+
                 {/* Payment Details Section */}
                 <div className="payment-box">
                     <div className="payment-details">
@@ -247,6 +256,24 @@ const Checkout = () => {
                                 <p className="card-expiry">{expiryDate || 'MM/YY'}</p>
                             </div>
                         </div>
+
+                        {/* Delivery Address Section */}
+                        <div className="delivery-address">
+                            <h1>Delivery Address</h1>
+                            <div className="form-group">
+
+                                <textarea
+                                    id="homeAddress"
+                                    value={homeAddress}
+                                    onChange={(e) => setHomeAddress(e.target.value)}
+                                    placeholder="Enter your delivery address"
+                                    rows="4"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/*checkout button*/}
                         <button onClick={handleCheckout} className="checkout-button">
                             Place Order
                         </button>

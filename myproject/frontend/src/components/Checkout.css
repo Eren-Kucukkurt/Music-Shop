@@ -123,3 +123,49 @@
     position: absolute; /* Make it the positioning context */
   
 }
+
+/* New Delivery Address Section */
+.delivery-address {
+  flex: 1;
+  max-width: 45%;
+  min-width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.delivery-address h1 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+}
+
+.delivery-address textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  transition: border-color 0.3s ease;
+}
+
+.delivery-address textarea:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.delivery-address label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+

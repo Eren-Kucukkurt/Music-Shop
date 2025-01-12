@@ -4,6 +4,7 @@ import './ProfilePage.css';
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
+    id: '',
     first_name: '',
     last_name: '',
     role: '',
@@ -56,6 +57,18 @@ const ProfilePage = () => {
       <h2>Your Profile</h2>
       {feedback && <div className={`feedback ${feedback.type}`}>{feedback.message}</div>}
       <form onSubmit={handleSubmit}>
+      
+        <label htmlFor="profile_id">ID</label>
+        <input
+            type="text"
+            id="profile_id"
+            name="id"
+            value={profile.id || 'N/A'}
+            readOnly
+            className="read-only-field"
+        />
+
+        
         <label htmlFor="first_name">First Name</label>
         <input
           type="text"
