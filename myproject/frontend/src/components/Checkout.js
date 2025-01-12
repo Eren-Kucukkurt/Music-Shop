@@ -236,16 +236,18 @@ const Checkout = () => {
                             Place Order
                         </button>
                     </div>
+                      
 
                 </div>
-                <Footer />
-            </div>
+
+                         <Footer />
+   
+
+                </div>
 
             )}
 
         </div>
-
-
 
     );
     
