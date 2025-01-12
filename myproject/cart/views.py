@@ -532,7 +532,7 @@ def request_refund(request, order_item_id):
 @permission_classes([IsAuthenticated])
 def approve_refund(request, refund_id):
     """
-    Approve a refund request.
+    Approve a refund request and notify the user via email.
     """
     try:
         refund = Refund.objects.get(id=refund_id)
@@ -540,10 +540,13 @@ def approve_refund(request, refund_id):
             return Response({'error': 'Refund request is not pending.'}, status=400)
 
         refund.approve()
+
+        # Trigger email notification in the background
+        send_refund_approval_email(refund.id)
+
         return Response({'success': 'Refund approved.', 'refund_amount': refund.refund_amount})
     except Refund.DoesNotExist:
         return Response({'error': 'Refund not found.'}, status=404)
-
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

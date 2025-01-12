@@ -1,0 +1,14 @@
+Hi {{ customer_name }},
+
+We are pleased to inform you that your refund request for the product "{{ product_name }}" has been approved.
+
+Order ID: {{ order_id }}
+Requested Quantity: {{ requested_quantity }}
+Refund Amount: {{ refund_amount }}
+
+The refunded amount will be credited to your original payment method within 5-7 business days.
+
+Thank you for shopping with us!
+
+Best regards,  
+The Music Shop Team 🎸

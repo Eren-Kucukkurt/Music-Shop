@@ -2,6 +2,10 @@ from django.core.mail import EmailMessage
 from .utils import generate_invoice_pdf
 import os
 from background_task import background
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from .models import Refund
+
 
 @background(schedule=1)
 def send_order_confirmation_email(user_email, order_id):
@@ -24,3 +28,37 @@ def send_order_confirmation_email(user_email, order_id):
 
     # Clean up the temporary PDF file
     os.remove(pdf_path)
+@background(schedule=1)
+def send_refund_approval_email(refund_id):
+    """
+    Background task to send a refund approval email.
+    """
+    try:
+        refund = Refund.objects.get(id=refund_id)
+        user_email = refund.user.email
+
+        # Email subject and context
+        subject = f"Refund Approved - Order #{refund.order_item.order.id}"
+        context = {
+            'customer_name': f"{refund.user.profile.first_name} {refund.user.profile.last_name}",
+            'product_name': refund.order_item.product_name,
+            'order_id': refund.order_item.order.id,
+            'requested_quantity': refund.requested_quantity,
+            'refund_amount': f"${refund.refund_amount:.2f}",
+        }
+
+        # Render email templates
+        text_content = render_to_string('emails/refund_approval.txt', context)
+        html_content = render_to_string('emails/refund_approval.html', context)
+
+        # Create and send the email
+        email = EmailMultiAlternatives(
+            subject,
+            text_content,
+            'musicshop308@gmail.com',
+            [user_email]
+        )
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+    except Refund.DoesNotExist:
+        print(f"Refund with ID {refund_id} not found.")
