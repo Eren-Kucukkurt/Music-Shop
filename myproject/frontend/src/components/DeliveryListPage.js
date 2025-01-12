@@ -29,108 +29,80 @@ const DeliveryListPage = () => {
     fetchDeliveries();
   }, []);
 
-  if (loading) return <p>Loading deliveries...</p>;
+  if (loading) return <p className="loading-message">Loading deliveries...</p>;
   if (error) return <p className="error-message">{error}</p>;
 
   return (
     <div className="delivery-list-container">
-      <h1>Delivery List</h1>
+      <h1 className="page-title">Delivery List</h1>
       {deliveries.length === 0 ? (
-        <p>No deliveries found.</p>
+        <p className="no-deliveries-message">No deliveries found.</p>
       ) : (
         deliveries.map((delivery) => (
           <div key={delivery.id} className="delivery-card">
-            {/* Delivery ID */}
-            <p>
-              <strong>Delivery ID:</strong> {delivery.id}
-            </p>
+            <div className="delivery-header">
+              <h2>Delivery #{delivery.id}</h2>
+              <span className={`status-badge status-${delivery.status.toLowerCase()}`}>
+                {delivery.status}
+              </span>
+            </div>
 
-            {/* Customer ID (fetched from order.user.id if available) */}
             <p>
-              <strong>Customer ID:</strong>{' '}
-              {delivery.customer_id ? delivery.customer_id : 'N/A'}
+              <strong>Customer ID:</strong> {delivery.customer_id || 'N/A'}
             </p>
-
-            {/* Delivery Address */}
             <p>
               <strong>Delivery Address:</strong> {delivery.delivery_address}
             </p>
-
-            {/* Delivery Status */}
             <p>
-              <strong>Status:</strong> {delivery.status}
+              <strong>Total Price:</strong> ${delivery.total_price ? delivery.total_price.toFixed(2) : '0.00'}
             </p>
 
-            {/* Show total price from the related order */}
-            <p>
-              <strong>Total Price:</strong> $
-              {delivery.total_price ? delivery.total_price.toFixed(2) : '0.00'}
-            </p>
-
-            {/* 
-              Additional info: We'll show the Order Items from 
-              delivery.order_data.items, including product ID, quantity, price, etc.
-            */}
             <div className="order-items-section">
-              <strong>Order Items:</strong>
+              <h3>Order Items:</h3>
               {delivery.order_data && delivery.order_data.items && delivery.order_data.items.length > 0 ? (
-                delivery.order_data.items.map((item) => (
-                  <div key={item.id} className="order-item-detail">
-                    <p>
-                      <strong>Product ID:</strong> {item.product}
-                    </p>
-                    <p>
-                      <strong>Product Name:</strong> {item.product_name}
-                    </p>
-                    <p>
-                      <strong>Quantity:</strong> {item.quantity}
-                    </p>
-                    <p>
-                      <strong>Price (this item):</strong> ${item.price}
-                    </p>
-                    <Link to={`/product/${item.product}`} className="product-link" target="_blank">
-                      <img
-                        src={item.product_image_url || '/placeholder.png'}
+                <div className="order-items-grid">
+                  {delivery.order_data.items.map((item) => (
+                    <div key={item.id} className="order-item-card">
+                      <ProductImage
+                        src={item.product_image_url}
                         alt={item.product_name || 'Deleted Product'}
-                        className="order-item-image"
-                        onError={(e) => {
-                          e.target.src = '/placeholder.png';
-                        }}
                       />
-                    </Link>
-                  </div>
-                ))
+                      <p>
+                        <strong>Product Name:</strong> {item.product_name}
+                      </p>
+                      <p>
+                        <strong>Quantity:</strong> {item.quantity}
+                      </p>
+                      <p>
+                        <strong>Price:</strong> ${item.price}
+                      </p>
+                      <Link to={`/product/${item.product}`} className="view-product-button">
+                        View Product
+                      </Link>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <p>No Order Items found.</p>
-              )}
-            </div>
-
-            {/* Also show the direct "products" field (M2M from Delivery) if needed */}
-            <div className="delivery-products-section">
-              <strong>Delivery Products (M2M):</strong>
-              {delivery.products && delivery.products.length > 0 ? (
-                delivery.products.map((prod) => (
-                  <div key={prod.id} className="delivery-product-item">
-                    <p>Product ID: {prod.id}</p>
-                    <p>Product Name: {prod.name}</p>
-                    <img
-                      src={prod.image_url || '/placeholder.png'}
-                      alt={prod.name}
-                      className="product-icon"
-                      onError={(e) => {
-                        e.target.src = '/placeholder.png';
-                      }}
-                    />
-                  </div>
-                ))
-              ) : (
-                <p>No M2M products attached.</p>
               )}
             </div>
           </div>
         ))
       )}
     </div>
+  );
+};
+
+const ProductImage = ({ src, alt }) => {
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <img
+      src={!imageError ? src : '/placeholder.png'}
+      alt={alt}
+      className="product-icon"
+      onError={() => setImageError(true)}
+    />
   );
 };
 
