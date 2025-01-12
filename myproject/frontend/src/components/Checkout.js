@@ -128,7 +128,7 @@ const Checkout = () => {
                 {/* Cart Summary Section */}
                 <div className="cart-summary">
                 <h1>Checkout</h1>
-                    <h2>Cart Summary</h2>
+                    <h2></h2>
                     {cartItems.map((item) => (
                         <div key={item.id} className="cart-item">
                             <p>
@@ -142,7 +142,7 @@ const Checkout = () => {
                 {/* Payment Details Section */}
                 <div className="payment-box">
                     <div className="payment-details">
-                        <h2>Payment Details</h2>
+                        <h1>Payment Details</h1>
             
                         {/* Use Saved Credit Card */}
                         {savedCards.length > 0 && (
