@@ -105,4 +105,16 @@
     border-radius: 8px;
     margin-bottom: 10px;
   }
+
+  .status-update-section {
+    margin-top: 15px;
+  }
+  
+  .status-update-section select {
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
   

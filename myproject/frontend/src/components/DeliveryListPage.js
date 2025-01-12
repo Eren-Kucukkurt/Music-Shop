@@ -29,6 +29,36 @@ const DeliveryListPage = () => {
     fetchDeliveries();
   }, []);
 
+  const handleStatusChange = async (deliveryId, newStatus) => {
+    try {
+      const token = sessionStorage.getItem('access_token');
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+  
+      // Use the correct URL for updating the delivery
+      const response = await axios.put(
+        `http://localhost:8000/api/deliveries/${deliveryId}/`,
+        { status: newStatus },
+        { headers }
+      );
+  
+      // Update the local state to reflect the new status
+      setDeliveries((prevDeliveries) =>
+        prevDeliveries.map((delivery) =>
+          delivery.id === deliveryId ? { ...delivery, status: newStatus } : delivery
+        )
+      );
+  
+      alert(`Delivery status updated to: ${newStatus}`);
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Failed to update delivery status. Please try again.');
+    }
+  };
+  
+
   if (loading) return <p className="loading-message">Loading deliveries...</p>;
   if (error) return <p className="error-message">{error}</p>;
 
@@ -54,7 +84,8 @@ const DeliveryListPage = () => {
               <strong>Delivery Address:</strong> {delivery.delivery_address}
             </p>
             <p>
-              <strong>Total Price:</strong> ${delivery.total_price ? delivery.total_price.toFixed(2) : '0.00'}
+              <strong>Total Price:</strong> $
+              {delivery.total_price ? delivery.total_price.toFixed(2) : '0.00'}
             </p>
 
             <div className="order-items-section">
@@ -85,6 +116,23 @@ const DeliveryListPage = () => {
               ) : (
                 <p>No Order Items found.</p>
               )}
+            </div>
+
+            {/* Status Update Dropdown */}
+            <div className="status-update-section">
+              <label htmlFor={`status-${delivery.id}`}>
+                <strong>Update Status:</strong>
+              </label>
+              <select
+                id={`status-${delivery.id}`}
+                value={delivery.status}
+                onChange={(e) => handleStatusChange(delivery.id, e.target.value)}
+              >
+                <option value="PENDING">Pending</option>
+                <option value="IN-TRANSIT">In-Transit</option>
+                <option value="DELIVERED">Delivered</option>
+                <option value="CANCELED">Canceled</option>
+              </select>
             </div>
           </div>
         ))

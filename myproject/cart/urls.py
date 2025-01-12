@@ -27,4 +27,5 @@ urlpatterns = [
     path('api/revenue-profit-analysis/', RevenueProfitAnalysisView.as_view(), name='revenue-profit-analysis'),
     path('add-to-cart-from-wishlist/', AddToCartFromWishlistView.as_view(), name='add-to-cart-from-wishlist'),
     path('api/deliveries/', DeliveryListView.as_view(), name='delivery-list'),
+    path('api/deliveries/<int:pk>/', DeliveryStatusUpdateView.as_view(), name='delivery-status-update'),
 ]

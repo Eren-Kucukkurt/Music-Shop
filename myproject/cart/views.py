@@ -379,8 +379,8 @@ class CheckoutView(APIView):
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        
 
+        
 
 class UserOrdersView(APIView):
     permission_classes = [IsAuthenticated]
@@ -702,3 +702,41 @@ class DeliveryListView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class DeliveryStatusUpdateView(APIView):
+    """
+    View to update the delivery status and the corresponding order status.
+    """
+    def put(self, request, pk):
+        try:
+            # Get the delivery object
+            delivery = Delivery.objects.get(pk=pk)
+        except Delivery.DoesNotExist:
+            return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update the delivery status
+        new_status = request.data.get("status")
+        if new_status not in ["PENDING", "IN-TRANSIT", "DELIVERED", "CANCELED"]:
+            return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+
+        delivery.status = new_status
+        delivery.save()
+
+        # Update the corresponding order status
+        order = delivery.order
+        if order:
+            if new_status == "PENDING":
+                order.status = "PROCESSING"
+            elif new_status == "IN-TRANSIT":
+                order.status = "IN-TRANSIT"
+            elif new_status == "DELIVERED":
+                order.status = "DELIVERED"
+            elif new_status == "CANCELED":
+                order.status = "CANCELED"
+
+            order.save()
+
+        # Return the updated delivery data
+        serializer = DeliverySerializer(delivery, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)    
