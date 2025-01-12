@@ -75,6 +75,7 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated, username, 
     setUsername('');
     handleMenuClose();
     navigate('/');
+    window.location.reload(); // This forces a complete refresh of the page
   };
 
   const handleNavigation = (path) => {
