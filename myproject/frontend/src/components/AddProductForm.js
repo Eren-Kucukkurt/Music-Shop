@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './AddProductForm.css'; // Optional CSS for styling
+import './AddProductForm.css';
 import { useNavigate } from 'react-router-dom';
 
 const AddProductForm = () => {
-
   const [categories, setCategories] = useState([]);
-
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -15,13 +13,15 @@ const AddProductForm = () => {
     description: '',
     quantity_in_stock: '',
     price: '',
-    cost: '', // New field for cost
+    cost: '',
     warranty_status: '',
     distributor_info: '',
     image: null,
   });
 
-  // Fetch categories when component mounts
+  const [feedback, setFeedback] = useState(null);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -35,23 +35,22 @@ const AddProductForm = () => {
     fetchCategories();
   }, []);
 
-
-  const navigate = useNavigate();
-  const [feedback, setFeedback] = useState(null);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, image: file });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = sessionStorage.getItem('access_token'); // Authorization token
+    const token = sessionStorage.getItem('access_token');
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -61,7 +60,9 @@ const AddProductForm = () => {
 
     const productData = new FormData();
     Object.keys(formData).forEach((key) => {
-      productData.append(key, formData[key]);
+      if (formData[key] !== null && formData[key] !== '') {
+        productData.append(key, formData[key]);
+      }
     });
 
     try {
@@ -75,7 +76,7 @@ const AddProductForm = () => {
         description: '',
         quantity_in_stock: '',
         price: '',
-        cost: '', // Reset cost
+        cost: '',
         warranty_status: '',
         distributor_info: '',
         image: null,
@@ -88,9 +89,6 @@ const AddProductForm = () => {
 
   return (
     <div className="add-product-form">
-      
-      {/* Back Button Deleted */}
-
       <h2>Add New Product</h2>
       {feedback && (
         <div className={`feedback ${feedback.type}`}>
@@ -112,7 +110,9 @@ const AddProductForm = () => {
           onChange={handleChange}
           required
         >
-          <option value="" disabled selected>Select Category</option>
+          <option value="" disabled>
+            Select Category
+          </option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -181,6 +181,7 @@ const AddProductForm = () => {
         <input
           type="file"
           name="image"
+          accept="image/*"
           onChange={handleFileChange}
         />
         <button type="submit">Add Product</button>

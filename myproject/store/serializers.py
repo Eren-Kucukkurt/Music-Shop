@@ -49,7 +49,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     discounted_price = serializers.SerializerMethodField()
     category_name = serializers.CharField(source='category.name', read_only=True)
-    image_url = serializers.SerializerMethodField()  # New field for absolute URL
+    image_url = serializers.SerializerMethodField()  # For absolute URL
+    image = serializers.ImageField(required=False)  # Add the raw image field
 
     class Meta:
         model = Product
@@ -70,25 +71,15 @@ class ProductSerializer(serializers.ModelSerializer):
             'is_discount_active',
             'warranty_status',
             'distributor_info',
-            'image_url',  # Use image_url instead of raw image field
+            'image',  # Include raw image field
+            'image_url',  # Include absolute URL for frontend
             'rating',
             'total_sale',
             'popularity',
             'discounted_price',
         ]
 
-    def to_representation(self, instance):
-        """
-        Override the representation to ensure 'rating' is a float.
-        """
-        data = super().to_representation(instance)
-        data['rating'] = float(data['rating']) if instance.rating is not None else 0
-        return data
-
     def get_discounted_price(self, obj):
-        """
-        Calculate the discounted price if discount is active.
-        """
         return obj.get_discounted_price()
 
     def get_image_url(self, obj):
@@ -99,6 +90,7 @@ class ProductSerializer(serializers.ModelSerializer):
         if obj.image:
             return request.build_absolute_uri(obj.image.url)
         return None
+
 
 
 

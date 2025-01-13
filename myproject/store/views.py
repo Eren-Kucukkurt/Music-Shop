@@ -175,14 +175,14 @@ class AddProductView(APIView):
     """
     API endpoint to add a new product. Only accessible to admin users.
     """
-   # permission_classes = [permissions.IsAdminUser]
-
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
+        serializer = ProductSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class DeleteProductView(APIView):
     """
     API endpoint to delete a product. Only accessible to admin users.
