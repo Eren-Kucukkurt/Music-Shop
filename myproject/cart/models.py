@@ -59,6 +59,11 @@ class Order(models.Model):
         self.last_status_change = now()
         self.save()    
 
+        # Update the related delivery status
+        if hasattr(self, 'delivery'):
+            self.delivery.status = 'CANCELED'
+            self.delivery.save()
+
     def __str__(self):
         return f"Order {self.id} - {self.get_status_display()}"
 
