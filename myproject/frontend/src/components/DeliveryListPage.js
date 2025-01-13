@@ -102,6 +102,9 @@ const DeliveryListPage = () => {
                         <strong>Product Name:</strong> {item.product_name}
                       </p>
                       <p>
+                        <strong>Product ID:</strong> {item.product}
+                      </p>
+                      <p>
                         <strong>Quantity:</strong> {item.quantity}
                       </p>
                       <p>
