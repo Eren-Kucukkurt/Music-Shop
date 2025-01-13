@@ -316,12 +316,14 @@ class UpdateProductView(APIView):
         if not data.get('image'):
             data.pop('image', None)
 
-        serializer = ProductSerializer(product, data=data, partial=True)
+        # Pass the request context to the serializer
+        serializer = ProductSerializer(product, data=data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
   
 
 
