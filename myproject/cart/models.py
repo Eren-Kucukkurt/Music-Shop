@@ -5,6 +5,7 @@ from store.models import Product
 import uuid
 from datetime import timedelta
 from django.utils.timezone import now
+from django.utils import timezone
 
 class Cart(models.Model):
     
@@ -40,37 +41,10 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PROCESSING')
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_status_change = models.DateTimeField(default=now)
+    created_at = models.DateTimeField(default=timezone.now)  # Allow editing
 
-    def update_status(self):
-        """Update the status based on time elapsed."""
-        elapsed_time = now() - self.last_status_change
+    last_status_change = models.DateTimeField(default=timezone.now)
 
-        if self.status == 'PROCESSING' and elapsed_time > timedelta(seconds=100):
-            self.status = 'IN-TRANSIT'
-            self.last_status_change = now()
-            self.save()
-        elif self.status == 'IN-TRANSIT' and elapsed_time > timedelta(seconds=100):
-            self.status = 'DELIVERED'
-            self.last_status_change = now()
-            self.save()
-
-    def cancel_order(self):
-        """Cancel the order and return items to stock if it is still in PROCESSING."""
-        if self.status != 'PROCESSING':
-            raise ValueError("Only orders in the 'PROCESSING' state can be canceled.")
-
-        # Return items to stock
-        for item in self.items.all():  # 'items' is the related_name in OrderItem
-            if item.product:
-                item.product.quantity_in_stock += item.quantity
-                item.product.save()
-
-        # Update the order status
-        self.status = 'CANCELED'
-        self.last_status_change = now()
-        self.save()
 
     def __str__(self):
         return f"Order {self.id} - {self.get_status_display()}"

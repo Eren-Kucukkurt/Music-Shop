@@ -389,10 +389,6 @@ class UserOrdersView(APIView):
         # Get all orders for the authenticated user
         orders = Order.objects.filter(user=request.user).order_by('-created_at')
 
-        # Update the status of each order based on elapsed time
-        for order in orders:
-            order.update_status()
-
         serializer = OrderSerializer(orders, many=True, context={'request': request})
         return Response(serializer.data)
 
