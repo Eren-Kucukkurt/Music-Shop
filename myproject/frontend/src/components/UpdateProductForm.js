@@ -61,7 +61,7 @@ const UpdateProductForm = () => {
     setSelectedProduct(product);
     setFormData({
       name: product.name,
-      category: product.category, // Keep this as ID
+      category: product.category,
       model: product.model,
       serial_number: product.serial_number,
       description: product.description,
@@ -70,10 +70,16 @@ const UpdateProductForm = () => {
       cost: product.cost,
       warranty_status: product.warranty_status,
       distributor_info: product.distributor_info,
-      existingImage: product.image_url, // Preserve existing image
-      image: null, // For new uploads
+      existingImage: product.image_url,
+      image: null,
     });
+  
+    // Scroll to the form after selecting a product
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -123,7 +129,7 @@ const UpdateProductForm = () => {
   const filteredProducts = products.filter(
     (product) =>
       product.name.toLowerCase().includes(searchQuery) ||
-      product.category.toLowerCase().includes(searchQuery) ||
+      product.category?.name?.toLowerCase().includes(searchQuery) ||
       product.model.toLowerCase().includes(searchQuery)
   );
 
