@@ -198,7 +198,7 @@ export default function ProductListing({ products, isLoading }) {
                     }}
                   >
                     <img
-                      src={product.image || 'https://via.placeholder.com/300'}
+                      src={product.image_url || 'https://via.placeholder.com/300'}
                       alt={product.name}
                       style={{
                         maxHeight: '100%',

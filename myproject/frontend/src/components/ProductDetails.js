@@ -182,7 +182,7 @@ const ProductDetails = () => {
       {product && (
         <div className="product-details">
           <div className="product-image-section">
-            <img src={product.image} alt={product.name} className="product-main-image" />
+            <img src={product.image_url} alt={product.name} className="product-main-image" />
           </div>
 
           <div className="product-info-section">

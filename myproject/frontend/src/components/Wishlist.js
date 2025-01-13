@@ -86,29 +86,45 @@ const Wishlist = () => {
   return (
     <div className="wishlist-container">
       <h1>Your Wishlist</h1>
+      <div height="100px"/>
       {message && <p className="success-message">{message}</p>}
       <div className="wishlist-items">
         {wishlist.products.map((product) => (
           <div key={product.id} className="wishlist-item">
             <div className="wishlist-image-container">
-              <img src={product.image || '/placeholder.png'} alt={product.name} className="wishlist-image" />
+              <img src={product.image_url || '/placeholder.png'} alt={product.name} className="wishlist-image" />
             </div>
             <div className="wishlist-info">
-              <h2>{product.name || 'Unnamed Product'}</h2>
-              <p>Category: {product.category_name || 'Uncategorized'}</p>
-              <p>Stock: {product.quantity_in_stock ?? 'Unknown'}</p>
-              {product.is_discount_active && (
+            <h2>{product.name || 'Unnamed Product'}</h2>
+            <p>Category: {product.category_name || 'Uncategorized'}</p>
+            <p>In-stock: {product.quantity_in_stock ?? 'Unknown'}</p>
+            {product.is_discount_active ? (
+              <p className="discount-label">NOW: {product.discount_percentage }% off!</p>
+              ) : (
+              <p className="discount-label">No discount right now, we will let you know!</p>
+              )}
+            <div className="price-container">
+              {product.is_discount_active ? (
                 <>
-                  <p>Discount: {product.discount_percentage || 0}%</p>
-                  <strong>Now: ${parseFloat(product.discounted_price || product.price || 0).toFixed(2)}</strong>
+                  <span className="original-price">
+                    ${parseFloat(product.price || 0).toFixed(2)}
+                  </span>
+                  <span className="discounted-price">
+                    ${parseFloat(product.discounted_price || product.price || 0).toFixed(2)}
+                  </span>
                 </>
+              ) : (
+                <span className="regular-price">
+                  ${parseFloat(product.price || 0).toFixed(2)}
+                </span>
               )}
             </div>
-            <div className="wishlist-actions">
-              <p>Price: ${parseFloat(product.price || 0).toFixed(2)}</p>
+            <div className="button-container">
               <button
                 onClick={() => addToCart(product.id)}
                 className="add-to-cart-button"
+
+                disabled={product.quantity_in_stock <= 0}  
               >
                 Add to Cart
               </button>
@@ -119,6 +135,10 @@ const Wishlist = () => {
                 Remove
               </button>
             </div>
+          </div>
+            <div className="wishlist-actions">
+
+          </div>
           </div>
         ))}
       </div>

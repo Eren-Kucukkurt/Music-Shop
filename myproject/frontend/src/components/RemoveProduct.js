@@ -66,7 +66,7 @@ const RemoveProduct = () => {
           <div key={product.id} className="product-card">
             <div className="product-image-wrapper">
               <img
-                src={product.image || '/placeholder.png'}
+                src={product.image_url || '/placeholder.png'}
                 alt={product.name}
                 className="product-image"
               />

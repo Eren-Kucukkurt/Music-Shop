@@ -70,7 +70,7 @@ const UpdateProductForm = () => {
       cost: product.cost,
       warranty_status: product.warranty_status,
       distributor_info: product.distributor_info,
-      existingImage: product.image, // Preserve existing image
+      existingImage: product.image_url, // Preserve existing image
       image: null, // For new uploads
     });
   };
@@ -155,7 +155,7 @@ const UpdateProductForm = () => {
             onClick={() => handleProductSelect(product)}
           >
             <img
-              src={product.image || '/placeholder.png'}
+              src={product.image_url || '/placeholder.png'}
               alt={product.name}
               className="product-thumbnail"
             />

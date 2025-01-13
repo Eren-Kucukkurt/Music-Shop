@@ -97,7 +97,7 @@ const ProductManagement = () => {
     <li key={product.id} className="product-card">
       <div className="product-image-wrapper">
         <img
-          src={product.image}
+          src={product.image_url || '/placeholder.png'}
           alt={product.name}
           className="product-image"
         />
