@@ -45,6 +45,19 @@ class Order(models.Model):
 
     last_status_change = models.DateTimeField(default=timezone.now)
 
+    def cancel_order(self):
+        """Cancel the order and return items to stock if it is still in PROCESSING."""
+        if self.status != 'PROCESSING':
+            raise ValueError("Only orders in the 'PROCESSING' state can be canceled.")
+        # Return items to stock
+        for item in self.items.all():  # 'items' is the related_name in OrderItem
+            if item.product:
+                item.product.quantity_in_stock += item.quantity
+                item.product.save()
+        # Update the order status
+        self.status = 'CANCELED'
+        self.last_status_change = now()
+        self.save()    
 
     def __str__(self):
         return f"Order {self.id} - {self.get_status_display()}"
