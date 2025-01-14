@@ -14,7 +14,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     
 # users/serializers.py
 class ProfileSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(source='user.email', read_only=False)
+    email = serializers.EmailField(source='user.email', required=False)  # Make email optional
     password = serializers.CharField(write_only=True, required=False, min_length=8)
 
     class Meta:
