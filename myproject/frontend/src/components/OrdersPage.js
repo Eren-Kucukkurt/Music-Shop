@@ -82,19 +82,23 @@ const OrdersPage = () => {
     }));
   };
 
+  // Helper function to check if a refund is eligible
+  const isRefundEligible = (orderDate) => {
+    const orderTime = new Date(orderDate);
+    const now = new Date();
+    const diffInDays = Math.floor((now - orderTime) / (1000 * 60 * 60 * 24));
+    return diffInDays <= 30;
+  };
+
   useEffect(() => {
     fetchOrders();
   }, []);
 
-  if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>
-  Loading orders...
-</Typography>;
+  if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>Loading orders...</Typography>;
   if (error) return <p className="error-message">{error}</p>;
 
   return (
     <div className="orders-page-container">
-
-
       <div className="orders-page-content">
         <h1 className="page-title">Your Orders</h1>
         {orders.length === 0 ? (
@@ -105,9 +109,9 @@ const OrdersPage = () => {
               <div key={order.id} className="order-card">
                 <p><strong>Order ID:</strong> {order.id}</p>
                 <p><strong>Total Price:</strong> ${new Intl.NumberFormat('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(order.total_price)}</p>
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(order.total_price)}</p>
                 <p><strong>Status:</strong> {order.status}</p>
                 <p><strong>Order Date:</strong> {new Date(order.created_at).toLocaleString()}</p>
                 <div>
@@ -134,9 +138,9 @@ const OrdersPage = () => {
                         )}
                         <p>
                           {item.quantity} x {item.product_name || 'Deleted Product'} @ ${new Intl.NumberFormat('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(item.price / item.quantity)} each
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(item.price / item.quantity)} each
                         </p>
                         <p><strong>Refundable:</strong> {item.refundable_quantity} / {item.quantity}</p>
                         {order.status === 'DELIVERED' && item.refundable_quantity > 0 && (
@@ -150,6 +154,7 @@ const OrdersPage = () => {
                               onChange={(e) =>
                                 handleRefundChange(item.id, 'quantity', Number(e.target.value))
                               }
+                              disabled={!isRefundEligible(order.created_at)}
                             />
                             <input
                               type="text"
@@ -158,13 +163,18 @@ const OrdersPage = () => {
                               onChange={(e) =>
                                 handleRefundChange(item.id, 'reason', e.target.value)
                               }
+                              disabled={!isRefundEligible(order.created_at)}
                             />
                             <button
                               className="refund-button"
                               onClick={() => requestRefund(item.id)}
+                              disabled={!isRefundEligible(order.created_at)}
                             >
                               Request Refund
                             </button>
+                            {!isRefundEligible(order.created_at) && (
+                              <p className="refund-expiry-message">Refund window has expired.</p>
+                            )}
                           </div>
                         )}
                       </div>
