@@ -14,10 +14,28 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     
 # users/serializers.py
 class ProfileSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source='user.email', read_only=False)
+    password = serializers.CharField(write_only=True, required=False, min_length=8)
+
     class Meta:
         model = Profile
-        fields = ['id','first_name', 'last_name', 'role', 'tax_id', 'home_address']
-        read_only_fields = ['tax_id']
+        fields = ['id', 'first_name', 'last_name', 'role', 'tax_id', 'home_address', 'email', 'password']
+        read_only_fields = ['tax_id', 'role']
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        email = user_data.get('email')
+        password = validated_data.pop('password', None)
+
+        # Update user fields
+        if email:
+            instance.user.email = email
+        if password:
+            instance.user.set_password(password)
+        instance.user.save()
+
+        # Update profile fields
+        return super().update(instance, validated_data)
 
 
 

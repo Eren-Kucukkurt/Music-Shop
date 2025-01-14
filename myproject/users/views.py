@@ -161,6 +161,8 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
         return self.request.user.profile
     
 class ProfileUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def put(self, request):
         try:
             profile = Profile.objects.get(user=request.user)

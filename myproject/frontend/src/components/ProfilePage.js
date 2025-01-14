@@ -10,6 +10,8 @@ const ProfilePage = () => {
     role: '',
     tax_id: '',
     home_address: '',
+    email: '',
+    password: '',
   });
 
   const [feedback, setFeedback] = useState(null);
@@ -21,7 +23,7 @@ const ProfilePage = () => {
         const headers = { Authorization: `Bearer ${token}` };
 
         const response = await axios.get('http://localhost:8000/api/profile/', { headers });
-        setProfile(response.data); // Ensure the response format matches the new backend
+        setProfile(response.data);
       } catch (error) {
         console.error('Error fetching profile:', error);
       }
@@ -60,12 +62,12 @@ const ProfilePage = () => {
       
         <label htmlFor="profile_id">ID</label>
         <input
-            type="text"
-            id="profile_id"
-            name="id"
-            value={profile.id || 'N/A'}
-            readOnly
-            className="read-only-field"
+          type="text"
+          id="profile_id"
+          name="id"
+          value={profile.id || 'N/A'}
+          readOnly
+          className="read-only-field"
         />
 
         
@@ -109,6 +111,25 @@ const ProfilePage = () => {
           value={profile.home_address}
           onChange={handleChange}
         ></textarea>
+
+        <label htmlFor="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={profile.email}
+          onChange={handleChange}
+          required
+        />
+
+        <label htmlFor="password">New Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter new password (leave blank to keep current)"
+          onChange={handleChange}
+        />
 
         <button type="submit">Save Changes</button>
       </form>
