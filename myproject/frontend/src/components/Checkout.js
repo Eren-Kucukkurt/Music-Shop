@@ -87,43 +87,47 @@ const Checkout = () => {
     };
 
     const handleCheckout = async () => {
+        // Initialize the payload with the address
         let payload = {
-            home_address: homeAddress // Add this line
+            home_address: homeAddress,
         };
     
+        // If a saved card is selected
         if (selectedCardId) {
             payload.credit_card = { use_saved_card: true, card_id: selectedCardId };
         } else {
-            if (!validateCardDetails()) 
+            // Validate new card details
+            if (!validateCardDetails()) {
                 alert('Invalid card details. Please check your card information and try again.');
                 return;
+            }
     
-            payload = {
-                credit_card: {
-                    use_saved_card: false,
-                    save_new_card: saveCard,
-                    card_name: cardName,
-                    card_number: cardNumber,
-                    expiry_date: expiryDate,
-                    cvv: cvv,
-                },
+            // Merge the new card details into the payload
+            payload.credit_card = {
+                use_saved_card: false,
+                save_new_card: saveCard,
+                card_name: cardName,
+                card_number: cardNumber,
+                expiry_date: expiryDate,
+                cvv: cvv,
             };
         }
     
         try {
             // Update profile with new address
             await axios.put('http://localhost:8000/api/profile/', { home_address: homeAddress }, { headers });
-            
+    
             // Process checkout
             await axios.post('http://localhost:8000/checkout/', payload, { headers });
             setSuccessMessage('Order placed successfully!');
             setCartItems([]);
             navigate('/mockbank');
-        } catch {
+        } catch (err) {
             setError('Failed to complete checkout. Please try again.');
+            console.error(err);
         }
     };
-
+    
     if (loading) return <Typography variant="h6" sx={{ textAlign: 'center', marginTop: 3 }}>Loading...</Typography>;
     if (error) return <p className="error-message">{error}</p>;
 
