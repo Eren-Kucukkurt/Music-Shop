@@ -94,7 +94,9 @@ const Checkout = () => {
         if (selectedCardId) {
             payload.credit_card = { use_saved_card: true, card_id: selectedCardId };
         } else {
-            if (!validateCardDetails()) return;
+            if (!validateCardDetails()) 
+                alert('Invalid card details. Please check your card information and try again.');
+                return;
     
             payload = {
                 credit_card: {
